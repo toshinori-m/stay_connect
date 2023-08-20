@@ -33,8 +33,7 @@ services:
       context: ./frontend/
       dockerfile: Dockerfile
     volumes:
-      - ./frontend/src:/frontend/src
-      - ./frontend/node_modules:/frontend/node_modules
+      - ./frontend:/frontend
     command: yarn run serve
     ports:
       - 81:8080
