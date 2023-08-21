@@ -1,0 +1,2 @@
+class TeamTargetAge < ApplicationRecord
+end

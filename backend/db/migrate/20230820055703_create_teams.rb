@@ -7,6 +7,7 @@ class CreateTeams < ActiveRecord::Migration[7.0]
       t.integer :sex, :null => false, :default => "0"
       t.string :track_record, :null => false
 
+      ## User Info
       t.references :user
       t.references :sports_type
       t.string :name
