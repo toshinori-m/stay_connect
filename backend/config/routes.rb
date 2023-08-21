@@ -6,10 +6,13 @@ Rails.application.routes.draw do
 
     resources :target_ages do
       resource :team_target_ages, only: ['create']
+      resource :recruitment_target_ages, only: ['create']
     end
 
     resources :users
     resources :teams
     resources :sports_types
+    resources :recruitments
+    resources :areas
   end
 end

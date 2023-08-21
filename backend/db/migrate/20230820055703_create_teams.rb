@@ -5,7 +5,7 @@ class CreateTeams < ActiveRecord::Migration[7.0]
       t.string :name, :null => false
       t.string :area, :null => false
       t.integer :sex, :null => false, :default => "0"
-      t.string :track_record, :null => false
+      t.text :track_record, :null => false
 
       ## User Info
       t.references :user

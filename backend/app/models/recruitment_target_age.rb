@@ -1,0 +1,2 @@
+class RecruitmentTargetAge < ApplicationRecord
+end
