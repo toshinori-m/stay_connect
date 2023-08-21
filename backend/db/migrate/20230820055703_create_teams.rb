@@ -2,10 +2,10 @@ class CreateTeams < ActiveRecord::Migration[7.0]
   def change
     create_table :teams do |t|
       ## Required
-      t.string :name, :null => false, :default => ""
-      t.string :area, :null => false, :default => ""
-      t.integer :sex, :null => false, :default => ""
-      t.string :track_record, :null => false, :default => ""
+      t.string :name, :null => false
+      t.string :area, :null => false
+      t.integer :sex, :null => false, :default => "0"
+      t.string :track_record, :null => false
 
       t.references :user
       t.references :sports_type

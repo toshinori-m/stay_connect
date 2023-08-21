@@ -5,8 +5,8 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[7.0]
       ## Required
       t.string :provider, :null => false, :default => "email"
       t.string :uid, :null => false, :default => ""
-      t.string :name, :null => false, :default => ""
-      t.string :email, :null => false, :default => ""
+      t.string :name, :null => false
+      t.string :email, :null => false
       t.boolean :email_notification, :null => false, :default => "true"
 
       ## Database authenticatable
