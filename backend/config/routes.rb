@@ -9,10 +9,15 @@ Rails.application.routes.draw do
       resource :recruitment_target_ages, only: ['create']
     end
 
+    resources :chat_rooms do
+      resource :chat_room_users, only: ['create']
+    end
+
     resources :users
     resources :teams
     resources :sports_types
     resources :recruitments
     resources :areas
+    resources :chat_messages
   end
 end
