@@ -5,7 +5,6 @@ class CreateAreas < ActiveRecord::Migration[7.0]
       t.string :name, :null => false
 
       ## User Info
-      t.string :name
       t.timestamps
     end
   end

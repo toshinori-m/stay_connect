@@ -6,7 +6,6 @@ class CreateSportsTypes < ActiveRecord::Migration[7.0]
 
       ## User Info
       t.references :user
-      t.string :name
       t.timestamps
     end
   end

@@ -5,7 +5,6 @@ class CreateChatRooms < ActiveRecord::Migration[7.0]
       t.boolean :paid_or_free, :null => false
 
       ## User Info
-      t.boolean :paid_or_free
       t.timestamps
     end
   end

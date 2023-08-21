@@ -14,13 +14,6 @@ class CreateRecruitments < ActiveRecord::Migration[7.0]
       t.references :user
       t.references :sports_type
       t.string :image
-      t.string :name
-      t.string :area
-      t.integer :sex
-      t.integer :number
-      t.date :start_date
-      t.date :end_date
-      t.text :purpose_body
       t.text :other_body
       t.timestamps
     end
