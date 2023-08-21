@@ -10,7 +10,10 @@ class CreateTeams < ActiveRecord::Migration[7.0]
       ## User Info
       t.references :user
       t.references :sports_type
+<<<<<<< HEAD
       t.text :track_record
+=======
+>>>>>>> bebf206 (migrate実行時のエラーによる修正)
       t.text :other_body
       t.timestamps
     end
