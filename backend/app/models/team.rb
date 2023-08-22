@@ -5,6 +5,9 @@ class Team < ApplicationRecord
 
   has_many :team_target_ages
 
-  validates :user_id, presence: true
-  validates :aim, presence: true, length: { maximum: 140 }
+  validates :name, presence: true, length: { minimum: 2 }
+  validates :area, presence: true
+  enum sex: { man: 0, woman: 1 }
+  validates :sex, presence: true, numericality: { only_integer: true }
+  validates :track_record, presence: true
 end
