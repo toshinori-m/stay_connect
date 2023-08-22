@@ -1,6 +1,6 @@
 class SportsType < ApplicationRecord
-  belongs_to :team
-  belongs_to :recruitment
+  has_one :recruitment
+  has_one :team
 
   validates :name, presence: true, length: { minimum: 2 }
 end
