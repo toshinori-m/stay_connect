@@ -7,7 +7,7 @@ class Team < ApplicationRecord
 
   validates :name, presence: true, length: { minimum: 2 }
   validates :area, presence: true
-  enum sex: { man: 0, woman: 1 }
+  enum sex: { man: 0, woman: 1, mix: 2 }
   validates :sex, presence: true, numericality: { only_integer: true }
   validates :track_record, presence: true
 end
