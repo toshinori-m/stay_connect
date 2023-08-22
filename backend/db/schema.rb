@@ -10,11 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
 ActiveRecord::Schema[7.0].define(version: 2023_08_22_020832) do
-=======
-ActiveRecord::Schema[7.0].define(version: 2023_08_21_050337) do
->>>>>>> bebf206 (migrate実行時のエラーによる修正)
   create_table "areas", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
