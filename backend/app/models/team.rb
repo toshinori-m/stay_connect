@@ -1,7 +1,8 @@
 class Team < ApplicationRecord
   belongs_to :user
   belongs_to :sports_type
-  belongs_to :area
+  # has_one :sports_type
+  belongs_to :prefecture
 
   has_many :team_target_ages
 

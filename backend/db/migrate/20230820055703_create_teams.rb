@@ -10,7 +10,7 @@ class CreateTeams < ActiveRecord::Migration[7.0]
       ## User Info
       t.references :user
       t.references :sports_type
-      t.text :track_record
+      t.references :prefecture
       t.text :other_body
       t.timestamps
     end

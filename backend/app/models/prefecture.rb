@@ -1,4 +1,4 @@
-class Area < ApplicationRecord
+class Prefecture < ApplicationRecord
   has_one :recruitment
   has_one :team
 
