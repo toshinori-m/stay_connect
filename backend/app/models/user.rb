@@ -16,8 +16,6 @@ class User < ActiveRecord::Base
   enum sex: { man: 0, woman: 1 }
   validates :email, presence: true
   validates :email, uniqueness: true
-  # validates :password, presence: true, length: { minimum: 2 }
-  # validates :encrypted_password, presence: true, length: { minimum: 2 }
   enum email_notification: { receivez: true, not_receive: false }
   validates :email_notification, presence: true
 end
