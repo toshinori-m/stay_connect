@@ -9,9 +9,10 @@ class SportsTypesController < ApplicationController
   end
 
   def update
-    return render json: { message: '成功しました', data: find_sports_type }, status: 200 if find_sports_type.update(create_params)
+    sports = SportsType.find(params[:id])
+    return render json: { message: '成功しました', data: sports }, status: 200 if sports.update(create_params)
 
-    render json: { message: '保存出来ませんでした', errors: @sports.errors }, status: 400
+    render json: { message: '保存出来ませんでした', errors: sports.errors }, status: 400
   end
 
   def index
@@ -20,29 +21,18 @@ class SportsTypesController < ApplicationController
   end
 
   def show
-    render json: { message: '成功しました', data: find_sports_type }, status: 200
+    render json: { message: '成功しました', data: SportsType.find(params[:id]) }, status: 200
   end
 
   def destroy
-    return render json: { message: '削除に成功しました', data: @sports }, status: 200 if find_sports_type.destroy
+    sports = SportsType.find(params[:id])
+    return render json: { message: '削除に成功しました', data: sports }, status: 200 if sports.destroy
     
     render json: { message: '削除に失敗' }, status: 400
   end
 
   private
-
-  def authenticate_user
-    unless logged_in?
-      flash[:error] = "このセクションにアクセスするにはログインが必要です"
-      redirect_to new_login_url # リクエストサイクルを停止する
-    end
-  end
-
   def create_params
     params.permit(:name)
-  end
-
-  def find_sports_type
-    @sports = SportsType.find(params[:id])
   end
 end

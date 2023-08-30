@@ -2,5 +2,5 @@ class Prefecture < ApplicationRecord
   has_one :recruitment
   has_one :team
 
-  validates :name, presence: true
+  validates :name, presence: true, length: { minimum: 2 }
 end

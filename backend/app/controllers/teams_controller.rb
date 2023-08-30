@@ -9,9 +9,10 @@ class TeamsController < ApplicationController
   end
 
   def update
-    return render json: { message: '成功しました', data: find_team }, status: 200 if find_team.update(create_params)
+    team = Team.find(params[:id])
+    return render json: { message: '成功しました', data: team }, status: 200 if team.update(create_params)
 
-    render json: { message: '保存出来ませんでした', errors: @teams.errors }, status: 400
+    render json: { message: '保存出来ませんでした', errors: team.errors }, status: 400
   end
 
   def index
@@ -20,28 +21,21 @@ class TeamsController < ApplicationController
   end
 
   def show
-    render json: { message: '成功しました', data: find_team }, status: 200
+    render json: { message: '成功しました', data: Team.find(params[:id]) }, status: 200
   end
 
   def destroy
-    return render json: { message: '削除に成功しました', data: @teams  }, status: 200 if find_team.destroy
+    team = Team.find(params[:id])
+    return render json: { message: '削除に成功しました', data: team }, status: 200 if team.destroy
     
     render json: { message: '削除に失敗' }, status: 400
   end
 
   private
 
-  def new_team
-    Team.new(create_params)
-  end
-
   def create_params
     params
     .permit(:name, :area, :sex, :track_record, :other_body, :sports_type_id, :prefecture_id )
     .merge(user_id: current_user.id )
-  end
-
-  def find_team
-    @teams = Team.find(params[:id])
   end
 end
