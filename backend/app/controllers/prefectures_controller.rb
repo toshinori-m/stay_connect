@@ -1,5 +1,4 @@
 class PrefecturesController < ApplicationController
-  before_action :authenticate_user!, except: [:show, :index]
 
   def create
     prefectures = Prefecture.new(create_params)

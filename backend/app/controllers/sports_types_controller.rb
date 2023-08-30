@@ -1,5 +1,4 @@
 class SportsTypesController < ApplicationController
-  before_action :authenticate_user!, except: [:show, :index]
 
   def create
     sports_types = SportsType.new(create_params)
@@ -32,6 +31,7 @@ class SportsTypesController < ApplicationController
   end
 
   private
+  
   def create_params
     params.permit(:name)
   end
