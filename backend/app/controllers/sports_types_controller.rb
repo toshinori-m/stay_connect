@@ -1,6 +1,6 @@
 class SportsTypesController < ApplicationController
   before_action :authenticate_user!, except: [:show, :index]
-
+  
   def create
     sports_types = SportsType.new(create_params)
     return render json: { message: '成功しました', data: sports_types }, status: 200 if sports_types.save
@@ -32,6 +32,7 @@ class SportsTypesController < ApplicationController
   end
 
   private
+  
   def create_params
     params.permit(:name)
   end
