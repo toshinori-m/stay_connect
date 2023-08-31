@@ -1,5 +1,6 @@
 class TeamsController < ApplicationController
-
+  before_action :authenticate_user!, except: [:show, :index]
+  
   def create
     teams = Team.new(create_params)
     return render json: { message: '成功しました', data: teams }, status: 200 if teams.save
