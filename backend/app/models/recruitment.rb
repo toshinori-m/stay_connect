@@ -11,7 +11,14 @@ class Recruitment < ApplicationRecord
   enum sex: { man: 0, woman: 1, mix: 2 }, _prefix: true
   validates :sex, presence: true
   validates :number, presence: true, numericality: { greater_than: 0 }
-  validates :start_date, presence: true
+  validate :date_before_start
   validates :end_date, comparison: { greater_than: :start_date }, presence: true
   validates :purpose_body, presence: true
+
+  require 'date'
+  
+  def date_before_start
+    return if start_date.blank?
+    errors.add(:start_date, "今日以降の日付を選択してください") if start_date < Date.today
+  end
 end
