@@ -10,13 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_22_020832) do
-  create_table "areas", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
+ActiveRecord::Schema[7.0].define(version: 2023_08_21_050337) do
   create_table "chat_messages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "chat_room_id"
@@ -38,6 +32,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_22_020832) do
 
   create_table "chat_rooms", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.boolean "paid_or_free", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "prefectures", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -71,10 +71,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_22_020832) do
 
   create_table "sports_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
-    t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_sports_types_on_user_id"
   end
 
   create_table "target_ages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -99,9 +97,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_22_020832) do
     t.text "track_record", null: false
     t.bigint "user_id"
     t.bigint "sports_type_id"
+    t.bigint "prefecture_id"
     t.text "other_body"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["prefecture_id"], name: "index_teams_on_prefecture_id"
     t.index ["sports_type_id"], name: "index_teams_on_sports_type_id"
     t.index ["user_id"], name: "index_teams_on_user_id"
   end
