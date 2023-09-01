@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_21_050337) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_31_084240) do
   create_table "chat_messages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "chat_room_id"
@@ -65,6 +65,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_21_050337) do
     t.text "other_body"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "prefecture_id"
+    t.index ["prefecture_id"], name: "index_recruitments_on_prefecture_id"
     t.index ["sports_type_id"], name: "index_recruitments_on_sports_type_id"
     t.index ["user_id"], name: "index_recruitments_on_user_id"
   end
@@ -124,4 +126,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_21_050337) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
+  add_foreign_key "recruitments", "prefectures"
 end

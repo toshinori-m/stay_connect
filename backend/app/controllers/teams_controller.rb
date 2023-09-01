@@ -35,7 +35,7 @@ class TeamsController < ApplicationController
 
   def create_params
     params
-    .permit(:name, :area, :sex, :track_record, :other_body, :sports_type_id, :prefecture_id )
+    .permit(:name, :area, :sex, :track_record, :other_body, :sports_type_id, :prefecture_id, target_age_ids: [] )
     .merge(user_id: current_user.id )
   end
 end
