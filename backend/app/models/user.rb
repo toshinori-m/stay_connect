@@ -9,8 +9,10 @@ class User < ActiveRecord::Base
 
   has_many :teams
   has_many :recruitments
-  has_many :chat_room_users
   has_many :chat_messages
+
+  has_many :chat_room_users, dependent: :destroy
+  has_many :chat_rooms,  through: :appointments
 
   validates :name, presence: true, length: { minimum: 2 }
   enum sex: { man: 0, woman: 1 }

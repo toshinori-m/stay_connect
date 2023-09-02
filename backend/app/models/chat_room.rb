@@ -1,7 +1,8 @@
 class ChatRoom < ApplicationRecord
-  has_many :chat_room_users
   has_many :chat_messages
 
-  enum paid_or_free: { paid: true, free: false }
-  validates :paid_or_free, presence: true
+  has_many :chat_room_users, dependent: :destroy
+  has_many :users,  through: :appointments
+
+  validates :paid_or_free, inclusion: [true, false]
 end
