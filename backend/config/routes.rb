@@ -5,15 +5,18 @@ Rails.application.routes.draw do
     }
 
     resources :target_ages do
-      resource :team_target_ages, only: ['create']
-      resource :recruitment_target_ages, only: ['create']
+      resource :team_target_ages, only: [:create]
+      resource :recruitment_target_ages, only: [:create]
     end
 
     resources :chat_rooms do
-      resource :chat_room_users, only: ['create']
+      resource :chat_room_users, only: [:create]
     end
 
-    resources :users
+    namespace :auth do
+      resources :users, except: [:create, :destroy]
+    end
+
     resources :teams
     resources :sports_types
     resources :recruitments
