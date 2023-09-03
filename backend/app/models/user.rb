@@ -12,7 +12,7 @@ class User < ActiveRecord::Base
   has_many :chat_messages
 
   has_many :chat_room_users, dependent: :destroy
-  has_many :chat_rooms,  through: :appointments
+  has_many :chat_rooms,  through: :chat_room_users
 
   validates :name, presence: true, length: { minimum: 2 }
   enum sex: { man: 0, woman: 1 }

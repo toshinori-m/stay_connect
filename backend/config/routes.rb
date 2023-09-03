@@ -4,20 +4,16 @@ Rails.application.routes.draw do
       registrations: 'auth/registrations'
     }
 
-    resources :target_ages do
-      resource :team_target_ages, only: ['create']
-      resource :recruitment_target_ages, only: ['create']
+    namespace :auth do
+      resources :users, except: [:create, :destroy]
     end
 
-    resources :chat_rooms do
-      resource :chat_room_users, only: ['create']
-    end
-
-    resources :users
     resources :teams
+    resources :target_ages
     resources :sports_types
     resources :recruitments
     resources :prefectures
+    resources :chat_rooms
     resources :chat_messages
   end
 end
