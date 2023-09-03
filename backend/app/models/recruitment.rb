@@ -4,7 +4,7 @@ class Recruitment < ApplicationRecord
   belongs_to :prefecture
 
   has_many :recruitment_target_ages, dependent: :destroy
-  has_many :target_ages,  through: :appointments
+  has_many :target_ages,  through: :recruitment_target_ages
 
   validates :name, presence: true
   validates :area, presence: true
