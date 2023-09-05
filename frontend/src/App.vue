@@ -1,6 +1,6 @@
 <template>
   <div>
-    <component :is="HeaderComponent"></component>
+    <component :is="headerComponent"></component>
     <router-view/>
   </div>
 </template>
@@ -12,7 +12,7 @@ export default ({
   name: 'App',
   components: { OpenHeader },
   computed: {
-    HeaderComponent() {
+    headerComponent() {
       switch(this.$route.path) {
         case '/':
           return 'OpenHeader';
