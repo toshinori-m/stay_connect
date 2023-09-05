@@ -1,0 +1,61 @@
+.signup_button {
+  border: 0;
+  line-height: 2;
+  padding: 5px 20px;
+  font-size: 16px;
+  text-align: center;
+  color: #fff;
+  border-radius: 10px;
+  background-color: blue;
+  box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
+              inset -2px -2px 3px rgba(0, 0, 0, .6);
+  cursor: pointer;
+}
+.signup_button:hover {
+  background-color: #0066FF;
+}
+.signup_button:active {
+  box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
+              inset 2px 2px 3px rgba(0, 0, 0, .6);
+}
+.login_button {
+  border: 0;
+  line-height: 2;
+  padding: 5px 20px;
+  font-size: 16px;
+  text-align: center;
+  color: brack;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
+              inset -2px -2px 3px rgba(0, 0, 0, .6);
+  cursor: pointer;
+}
+.login_button:hover {
+  background-color: gray;
+  color: white;
+}
+.login_button:active {
+  box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
+              inset 2px 2px 3px rgba(0, 0, 0, .6);
+}
+.signup {
+  border: 0;
+  line-height: 2;
+  padding: 20px 60px;
+  font-size: 18px;
+  text-align: center;
+  color: #fff;
+  border-radius: 10px;
+  background-color: blue;
+  box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
+              inset -2px -2px 3px rgba(0, 0, 0, .6);
+  cursor: pointer;
+}
+.signup:hover {
+  background-color: #0066FF;
+}
+.signup:active {
+  box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
+              inset 2px 2px 3px rgba(0, 0, 0, .6);
+}
