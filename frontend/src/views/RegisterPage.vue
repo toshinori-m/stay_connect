@@ -21,7 +21,7 @@
         </div>
       </div>
       <div class="error">{{ error }}</div>
-      <form class= "my-5 text-center" @submit.prevent="redirectToLogin">
+      <form class= "my-5 text-center" @submit.prevent="signUp">
         <button class="signup_button">登録する</button>
       </form>
       <form class= "my-7 text-center" @submit.prevent="redirectToLogin">
@@ -38,18 +38,22 @@ import axios from 'axios'
 export default {
   data () {
     return {
+      name: '',
       email: '',
       password: '',
+      passwordConfirmation: '',
       error: null
     }
   },
   methods: {
-    async login() {
+    async signUp() {
       try {
         this.error = null
         const res = await axios.post('http://localhost:81', {
+          name: this.name,
           email: this.email,
-          password: this.password
+          password: this.password,
+          password_confirmation: this.passwordConfirmation
         })
         .then(res => {
           console.log({ res })
