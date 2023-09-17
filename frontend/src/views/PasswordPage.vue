@@ -32,7 +32,7 @@ export default {
     async SetPassword() {
       try {
         this.error = null
-        const res = await axios.post('http://localhost:81/application', {
+        const res = await axios.post('http://localhost:3001/application', {
           password: this.password,
           password_confirmation: this.password_confirmation
         })

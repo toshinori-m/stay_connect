@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-center mt-20 md:mt-32">
-    <div class="md:w-2/5 rounded-md bg-sky-100">
+    <div class="md:w-2/5 w-full rounded-md bg-sky-100">
       <h2 class="text-center pt-10 font-bold text-3xl text-blue-600">新規ユーザー登録</h2>
       <div class="my-10">
         <div class="w-full md:md:flex md:px-8 items-center">
@@ -33,7 +33,6 @@
 
 <script>
 import axios from 'axios'
-// import setItem from '../../auth/setItem'
 
 export default {
   data () {
@@ -47,17 +46,13 @@ export default {
   },
   methods: {
     async signUp() {
-      try {
         this.error = null
-        const res = await axios.post('http://localhost:81', {
+      try {
+        const res = await axios.post('http://localhost:3001/auth', {
           name: this.name,
           email: this.email,
           password: this.password,
           password_confirmation: this.passwordConfirmation
-        })
-        .then(res => {
-          console.log({ res })
-          return res
         })
         if (!this.error) {
           this.$router.push({ name: 'HomePage' })

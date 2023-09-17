@@ -9,9 +9,7 @@
           <p class="text-lg mt-2">パスワード</p>
           <input class="w-full py-3 px-5 my-2 border-2 border-gray-200 box-border" type="password" required placeholder="パスワード" v-model="password">
           <div class="error">{{ error }}</div>
-          <form class= "my-5" @submit.prevent="redirectToLogin">
-            <button class="signup_button">ログイン</button>
-          </form>
+          <button class="signup_button">ログイン</button>
         </form>
         <form @submit.prevent="redirectToSignup">
           <button class="text-blue-600 bg-clip-padding p-1 border-4 border-violet-300 border-dashed">アカウントをお持ちでない方はこちら</button>
@@ -26,7 +24,6 @@
 
 <script>
 import axios from 'axios'
-// import setItem from '../../auth/setItem'
 
 export default {
   data () {
@@ -40,13 +37,9 @@ export default {
     async login() {
       try {
         this.error = null
-        const res = await axios.post('http://localhost:81', {
+        const res = await axios.post('http://localhost:3001/auth/sign_in', {
           email: this.email,
           password: this.password
-        })
-        .then(res => {
-          console.log({ res })
-          return res
         })
         if (!this.error) {
           this.$router.push({ name: 'HomePage' })
