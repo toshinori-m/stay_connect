@@ -4,12 +4,12 @@
       <form @submit.prevent="redirectToOpen">
         <button class="font-bold text-3xl text-blue-600 md:-mt-1">stay_connect</button>
       </form>
-      <div class="mt-2 md:text-right md:-mt-11">
+      <div class="mt-2 md:text-right md:-mt-11 md:mr-28">
         <form @submit.prevent="redirectToSignup">
           <button class="signup_button">無料登録</button>
         </form>
       </div>
-      <div class="mt-2 md:text-right md:-mt-10 md:mr-32">
+      <div class="mt-2 md:text-right md:-mt-10 md:mr-60">
         <form @submit.prevent="redirectToLogin">
           <button class="login_button">ログイン</button>
         </form>

@@ -1,0 +1,73 @@
+<template>
+  <div class="flex justify-center mt-20 md:mt-32">
+    <div class="md:w-2/5 rounded-md bg-sky-100">
+      <h2 class="text-center pt-10 font-bold text-3xl text-blue-600">新規ユーザー登録</h2>
+      <div class="my-10">
+        <div class="w-full md:md:flex md:px-8 items-center">
+          <p class="text-lg w-40 md:mx-2 pl-2 tracking-tighter text-sm">名前</p>
+          <input class="w-full py-3 px-1.5 my-2 border-2 border-gray-200 box-border" type="text" required placeholder="名前" v-model="name">
+        </div>
+        <div class="w-full md:md:flex md:px-8 items-center">
+          <p class="text-lg w-40 md:mx-2 pl-2 tracking-tighter text-sm">メールアドレス</p>
+          <input class="w-full py-3 px-1.5 my-2 border-2 border-gray-200 box-border" type="email" required placeholder="メールアドレス" v-model="email">
+        </div>
+        <div class="w-full md:md:flex md:px-8 items-center">
+          <p class="text-lg w-40 md:mx-2 pl-2 tracking-tighter text-sm">パスワード</p>
+          <input class="w-full py-3 px-1.5 my-2 border-2 border-gray-200 box-border" type="password" required placeholder="パスワード" v-model="password">
+        </div>
+        <div class="w-full md:md:flex md:px-8 items-center">
+          <p class="text-lg w-40 md:mx-2 pl-2 tracking-tighter text-sm">パスワード<br>（確認用）</p>
+          <input class="w-full py-3 px-1.5 my-2 border-2 border-gray-200 box-border" type="password" required placeholder="パスワード（確認用）" v-model="passwordConfirmation">
+        </div>
+      </div>
+      <div class="error">{{ error }}</div>
+      <form class= "my-5 text-center" @submit.prevent="redirectToLogin">
+        <button class="signup_button">登録する</button>
+      </form>
+      <form class= "my-7 text-center" @submit.prevent="redirectToLogin">
+        <button class="text-blue-600 bg-clip-padding p-1 border-4 border-violet-300 border-dashed">アカウントをお持ちの方はこちら</button>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from 'axios'
+// import setItem from '../../auth/setItem'
+
+export default {
+  data () {
+    return {
+      email: '',
+      password: '',
+      error: null
+    }
+  },
+  methods: {
+    async login() {
+      try {
+        this.error = null
+        const res = await axios.post('http://localhost:81', {
+          email: this.email,
+          password: this.password
+        })
+        .then(res => {
+          console.log({ res })
+          return res
+        })
+        if (!this.error) {
+          this.$router.push({ name: 'HomePage' })
+        }
+        console.log({ res })
+        return res
+      } catch (error) {
+        console.log({ error })
+        this.error = 'メールアドレスかパスワードが違います'
+      }
+    },
+    redirectToLogin () {
+      this.$router.push({name: 'LoginPage'})
+    }
+  }
+}
+</script>
