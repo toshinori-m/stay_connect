@@ -14,5 +14,6 @@ module Myapp
     config.generators do |g|
       g.test_framework false
     end
+    config.action_controller.raise_on_open_redirects = false
   end
 end
