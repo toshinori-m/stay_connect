@@ -13,8 +13,8 @@
       <form class= "text-center" @submit.prevent="redirectToSetPassword">
         <button class="signup_button mb-10">再設定</button>
       </form>
+    </div>
   </div>
- </div>
 </template>
 
 <script>
@@ -31,23 +31,16 @@ export default {
   methods: {
     async SetPassword() {
       try {
-        this.error = null
         const res = await axios.post('http://localhost:3001/application', {
           password: this.password,
           password_confirmation: this.password_confirmation
         })
-        .then(res => {
-          console.log({ res })
-          return res
-        })
         if (!this.error) {
           this.$router.push({ name: 'HomePage' })
         }
-        console.log({ res })
         return res
       } catch (error) {
-      console.log({ error })
-      this.error = 'パスワードが違います'
+        this.error = 'パスワードが違います'
       }
     }
   }
