@@ -32,10 +32,6 @@ export default {
           redirect_url: this.password,
           email: this.email
         })
-        .then(res => {
-          console.log({ res })
-          return res
-        })
         if (!this.error) {
           this.$router.push({ name: 'PasswordPage' })
         }
