@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="absolute top-44 z-30 w-full md:top-16">
-      <div class="rounded-lg md:pl-10">
+      <div class="rounded-lg md:pl-10 md:ml-20">
         <h1 class="font-bold text-xl text-center py-2 pt-9 md:mt-11 md:pt-10 md:px-8 md:text-4xl md:text-left">チームレベルアップのために
         </h1>
         <div class="text-center md:px-28 md:text-left md:mt-7">
@@ -18,7 +18,7 @@
         </div>
       </div>
     </div>
-    <div class="absolute top-96 z-10 md:top-32 md:right-0">
+    <div class="absolute top-96 z-10 md:top-32 md:right-0 md:mr-32">
       <img :src="require('../img/sports.jpeg')" alt="Logo" class="object-cover">
     </div>
   </div>

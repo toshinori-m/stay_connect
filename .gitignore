@@ -19,6 +19,7 @@
 !/backend/tmp/pids/.keep
 
 # Ignore uploaded files in development.
+/backend/.env
 /backend/storage/*
 !/backend/storage/.keep
 /tmp/storage/*
