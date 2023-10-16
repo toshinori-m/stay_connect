@@ -8,10 +8,11 @@
 <script>
 import OpenHeader from './components/OpenHeader.vue';
 import LoginHeader from './components/LoginHeader.vue';
+import HomeHeader from './components/HomeHeader.vue';
 
 export default {
   name: 'App',
-  components: { OpenHeader, LoginHeader },
+  components: { OpenHeader, LoginHeader, HomeHeader },
   computed: {
     headerComponent() {
       switch(this.$route.path) {
@@ -23,8 +24,11 @@ export default {
         case '/signup':
         case '/register':
           return 'LoginHeader';
+        case '/home':
+        case '/event_setting':
+          return 'HomeHeader';
         default:
-          return 'OpenHeader'; 
+          return 'HomeHeader'; 
       }
     }
   }

@@ -6,7 +6,7 @@
       </form>
       <div class="mt-2 md:text-right md:-mt-11 md:mr-28">
         <form @submit.prevent="redirectToSignup">
-          <button class="signup_button">無料登録</button>
+          <button class="ok_button">無料登録</button>
         </form>
       </div>
       <div class="mt-2 md:text-right md:-mt-10 md:mr-60">
