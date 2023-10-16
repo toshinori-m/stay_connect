@@ -8,7 +8,7 @@
         <input class="py-3 px-3 w-72 border-2 border-gray-200 box-border" type="email" required placeholder="メールアドレス" v-model="email">
       </div>
       <form class= "text-center" @submit.prevent="redirectToSetSendEmail">
-        <button class="signup_button mb-10">送信する</button>
+        <button class="ok_button mb-10">送信する</button>
       </form>
     </div>
   </div>
@@ -28,6 +28,7 @@ export default {
   methods: {
     async SetSendEmail() {
       try {
+        this.error = null
         const res = await axios.post('http://localhost:3001/auth/password#create', {
           redirect_url: this.password,
           email: this.email
