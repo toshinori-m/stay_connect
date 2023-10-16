@@ -1,16 +1,16 @@
 class PrefecturesController < ApplicationController
-  before_action :authenticate_user!, except: [:show, :index]
+  before_action :authenticate_user!, except: [:index]
   
   def create
     prefectures = Prefecture.new(create_params)
-    return render json: { message: '成功しました', data: prefectures }, status: 200 if prefectures.save
+    return render json: { message: '成功しました' }, status: 200 if prefectures.save
 
     render json: { message: '保存出来ませんでした', errors: prefectures.errors.messages }, status: 400
   end
 
   def update
     prefecture = Prefecture.find(params[:id])
-    return render json: { message: '成功しました', data: prefecture }, status: 200 if prefecture.update(create_params)
+    return render json: { message: '成功しました' }, status: 200 if prefecture.update(create_params)
 
     render json: { message: '保存出来ませんでした', errors: prefecture.errors }, status: 400
   end
@@ -20,15 +20,11 @@ class PrefecturesController < ApplicationController
     render json: { message: '成功しました', data: prefectures }, status: 200
   end
 
-  def show
-    render json: { message: '成功しました', data: Prefecture.find(params[:id]) }, status: 200
-  end
-
   def destroy
     prefecture = Prefecture.find(params[:id])
-    return render json: { message: '削除に成功しました', data: prefecture }, status: 200 if prefecture.destroy
+    return render json: { message: '削除に成功しました' }, status: 200 if prefecture.destroy
     
-    render json: { message: '削除に失敗' }, status: 400
+    render json: { message: '削除に失敗しました' }, status: 400
   end
 
   private
