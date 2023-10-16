@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_10_035111) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_12_104931) do
   create_table "chat_messages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "chat_room_id"
@@ -42,6 +42,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_10_035111) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "recruitment_sports_disciplines", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "recruitment_id"
+    t.bigint "sports_discipline_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recruitment_id"], name: "index_recruitment_sports_disciplines_on_recruitment_id"
+    t.index ["sports_discipline_id"], name: "index_recruitment_sports_disciplines_on_sports_discipline_id"
+  end
+
   create_table "recruitment_target_ages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "target_age_id"
     t.bigint "recruitment_id"
@@ -66,9 +75,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_10_035111) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "prefecture_id"
+    t.bigint "sports_discipline_id"
     t.index ["prefecture_id"], name: "index_recruitments_on_prefecture_id"
+    t.index ["sports_discipline_id"], name: "index_recruitments_on_sports_discipline_id"
     t.index ["sports_type_id"], name: "index_recruitments_on_sports_type_id"
     t.index ["user_id"], name: "index_recruitments_on_user_id"
+  end
+
+  create_table "sports_disciplines", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "sports_type_id"
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sports_type_id"], name: "index_sports_disciplines_on_sports_type_id"
   end
 
   create_table "sports_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -81,6 +100,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_10_035111) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "team_sports_disciplines", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "sports_discipline_id"
+    t.bigint "team_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sports_discipline_id"], name: "index_team_sports_disciplines_on_sports_discipline_id"
+    t.index ["team_id"], name: "index_team_sports_disciplines_on_team_id"
   end
 
   create_table "team_target_ages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -130,5 +158,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_10_035111) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
+  add_foreign_key "recruitment_sports_disciplines", "recruitments"
+  add_foreign_key "recruitment_sports_disciplines", "sports_disciplines"
   add_foreign_key "recruitments", "prefectures"
+  add_foreign_key "recruitments", "sports_disciplines"
+  add_foreign_key "team_sports_disciplines", "sports_disciplines"
+  add_foreign_key "team_sports_disciplines", "teams"
 end
