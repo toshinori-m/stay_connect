@@ -1,18 +1,18 @@
 class SportsTypesController < ApplicationController
-  before_action :authenticate_user!, except: [:show, :index]
+  before_action :authenticate_user!, except: [:index]
   
   def create
     sports_types = SportsType.new(create_params)
-    return render json: { message: '成功しました', data: sports_types }, status: 200 if sports_types.save
+    return render json: { message: '成功しました' }, status: 200 if sports_types.save
 
     render json: { message: '保存出来ませんでした', errors: sports_types.errors.messages }, status: 400
   end
 
   def update
-    sports = SportsType.find(params[:id])
-    return render json: { message: '成功しました', data: sports }, status: 200 if sports.update(create_params)
+    sports_type = SportsType.find(params[:id])
+    return render json: { message: '成功しました' }, status: 200 if sports_type.update(create_params)
 
-    render json: { message: '保存出来ませんでした', errors: sports.errors }, status: 400
+    render json: { message: '保存出来ませんでした', errors: sports_type.errors }, status: 400
   end
 
   def index
@@ -20,15 +20,11 @@ class SportsTypesController < ApplicationController
     render json: { message: '成功しました', data: sports_types }, status: 200
   end
 
-  def show
-    render json: { message: '成功しました', data: SportsType.find(params[:id]) }, status: 200
-  end
-
   def destroy
-    sports = SportsType.find(params[:id])
-    return render json: { message: '削除に成功しました', data: sports }, status: 200 if sports.destroy
+    sports_type = SportsType.find(params[:id])
+    return render json: { message: '削除に成功しました' }, status: 200 if sports_type.destroy
     
-    render json: { message: '削除に失敗' }, status: 400
+    render json: { message: '削除に失敗しました' }, status: 400
   end
 
   private
