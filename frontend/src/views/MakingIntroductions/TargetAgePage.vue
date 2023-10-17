@@ -7,7 +7,7 @@
           <label class="mx-5" for="age">対象年齢</label>
           <input class="py-3 px-3 w-72 border-2 border-gray-200 box-border" type="text" id="age" required placeholder="対象年齢" v-model="name">
         </div>
-        <div class="error text-sm text-red-400" v-for="(errMsg, index) in errors" :key="index">{{ errMsg }}</div>
+        <div class="error text-sm text-red-400">{{ error }}</div>
         <button class="ok_button mb-10 mx-2 md:mx-5">登録</button>
         <button class="update_button mb-5 mx-2 md:mx-5" @click="TargetAgeEdit">編集</button>
         <button class="cancel_button mb-10 mx-2 md:mx-5" @click="TargetAgeCancel">戻る</button>
@@ -22,7 +22,7 @@ export default {
   data() {
     return {
       name: "",
-      errors: []
+      error: null
     }
   },
   methods: {
@@ -37,7 +37,7 @@ export default {
         })
         this.$router.push({ name: 'EventSettingPage' })
       } catch (error) {
-        this.error.push('対象年齢に誤りがあります。')
+        this.error = '対象年齢に誤りがあります。'
       }
     },
     TargetAgeEdit() {
