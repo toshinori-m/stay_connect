@@ -44,7 +44,7 @@ export default {
   methods: {
     async getSportsType() {
       try {
-        this.error = null
+        this.errors = []
         const res = await axios.get('http://localhost:3001/sports_types', {
           headers: {
           uid: window.localStorage.getItem('uid'),
@@ -59,7 +59,7 @@ export default {
     },
     async getSportsDiscipline() {
       try {
-        this.error = null
+        this.errors = []
         const res = await axios.get('http://localhost:3001/sports_disciplines', {
           params: {
             sports_type_id: this.sport_type_selected.id
@@ -77,7 +77,7 @@ export default {
     },
     async editSportsDiscipline(sportsDisciplineId) {
       try {
-        this.error = null
+        this.errors = []
         const sportsDiscipline = this.sports_disciplines.find(sports_discipline => sports_discipline.id === sportsDisciplineId);
         if (!sportsDiscipline) return;
         await axios.patch(`http://localhost:3001/sports_disciplines/${sportsDisciplineId}`, {
@@ -88,12 +88,12 @@ export default {
         })
         this.$router.push({ name: 'SportsDisciplinePage' })
       } catch (error) {
-        this.errors.push('職種名に誤りがあります。')
+        this.errors.push('種目に誤りがあります。')
       }
     },
     async deleteSportsDiscipline(sportsDisciplineId) {
       try {
-        this.error = null
+        this.errors = []
         await axios.delete(`http://localhost:3001/sports_disciplines/${sportsDisciplineId}`, {
           data: {
             'access-token': localStorage.getItem('access-token'),
