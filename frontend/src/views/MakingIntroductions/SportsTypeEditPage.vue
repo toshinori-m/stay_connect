@@ -34,7 +34,7 @@ export default {
   methods: {
     async getSportsType() {
       try {
-        this.error = null
+        this.errors = []
         const res = await axios.get(`http://localhost:3001/sports_types/`, {
           'access-token': localStorage.getItem('access-token'),
           client: localStorage.getItem('client'),
@@ -47,7 +47,7 @@ export default {
     },
     async editSportsType(sportsTypeId) {
       try {
-        this.error = null
+        this.errors = []
         const sportsType = this.sports_types.find(sports_type => sports_type.id === sportsTypeId);
         if (!sportsType) return;
         await axios.patch(`http://localhost:3001/sports_types/${sportsTypeId}`, {
@@ -63,7 +63,7 @@ export default {
     },
     async deleteSportsType(sportsTypeId) {
       try {
-        this.error = null
+        this.errors = []
         await axios.delete(`http://localhost:3001/sports_types/${sportsTypeId}`, {
           data: {
             'access-token': localStorage.getItem('access-token'),
