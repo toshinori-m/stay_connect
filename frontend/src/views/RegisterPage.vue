@@ -54,13 +54,11 @@ export default {
           password: this.password,
           password_confirmation: this.passwordConfirmation
         })
-        if (!this.error) {
-          window.localStorage.setItem('access-token', res.headers['access-token'])
-          window.localStorage.setItem('client', res.headers.client)
-          window.localStorage.setItem('uid', res.headers.uid)
-          window.localStorage.setItem('name', res.data.data.name)
-          this.$router.push({ name: 'HomePage' })
-        }
+        window.localStorage.setItem('access-token', res.headers['access-token'])
+        window.localStorage.setItem('client', res.headers.client)
+        window.localStorage.setItem('uid', res.headers.uid)
+        window.localStorage.setItem('name', res.data.data.name)
+        this.$router.push({ name: 'HomePage' })
         return res
       } catch (error) {
         this.error = 'メールアドレスかパスワードが違います'

@@ -29,14 +29,11 @@ export default {
     async SetSendEmail() {
       try {
         this.error = null
-        const res = await axios.post('http://localhost:3001/auth/password#create', {
+        await axios.post('http://localhost:3001/auth/password#create', {
           redirect_url: this.password,
           email: this.email
         })
-        if (!this.error) {
-          this.$router.push({ name: 'PasswordPage' })
-        }
-        return res
+        this.$router.push({ name: 'PasswordPage' })
       } catch (error) {
       this.error = 'メールアドレスが違います'
       }
