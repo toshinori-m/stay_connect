@@ -17,7 +17,10 @@
               <button @click="home">ホーム</button>
             </li>
             <li class="p-5 md:p-0 mx-5 hover:bg-sky-400 hover:text-white">
-              <button @click="event_setting">イベント作成</button>
+              <button @click="eventSetting">イベント作成</button>
+            </li>
+            <li class="p-5 md:p-0 mx-5 hover:bg-sky-400 hover:text-white">
+              <button @click="eventSettingList">イベント一覧</button>
             </li>
             <li class="p-5 md:p-0 mx-5">基本設定</li>
             <li class="p-5 md:p-0 mx-5">ログアウト</li>
@@ -36,14 +39,17 @@ export default {
     }
   },
   methods: {
-    toggle () {
+    toggle() {
       this.isClose = !this.isClose;
     },
-    home () {
+    home() {
       this.$router.push({name: 'HomePage'})
     },
-    event_setting () {
+    eventSetting() {
       this.$router.push({name: 'EventSettingPage'})
+    },
+    eventSettingList() {
+      this.$router.push({name: 'EventSettingListPage'})
     }
   }
 }
