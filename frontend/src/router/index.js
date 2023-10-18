@@ -5,6 +5,18 @@ import Password from '../views/PasswordPage'
 import SendEmail from '../views/SendEmailPage'
 import Signup from '../views/SignupPage'
 import Register from '../views/RegisterPage'
+import Home from '../views/HomePage'
+import SportsType from '../views/MakingIntroductions/SportsTypePage'
+import SportsTypeEdit from '../views/MakingIntroductions/SportsTypeEditPage'
+import EventSetting from '../views/MakingIntroductions/EventSettingPage'
+import EventSettingList from '../views/MakingIntroductions/EventSettingListPage'
+import EventSettingEdit from '../views/MakingIntroductions/EventSettingEditPage'
+import SportsDiscipline from '../views/MakingIntroductions/SportsDisciplinePage'
+import SportsDisciplineEdit from '../views/MakingIntroductions/SportsDisciplineEditPage'
+import Prefecture from '../views/MakingIntroductions/PrefecturePage'
+import PrefectureEdit from '../views/MakingIntroductions/PrefectureEditPage'
+import TargetAge from '../views/MakingIntroductions/TargetAgePage'
+import TargetAgeEdit from '../views/MakingIntroductions/TargetAgeEditPage'
 
 const routes = [
   {
@@ -36,6 +48,66 @@ const routes = [
     path: '/register',
     name: 'RegisterPage',
     component: Register
+  },
+  {
+    path: '/home',
+    name: 'HomePage',
+    component: Home
+  },
+  {
+    path: '/sports_type',
+    name: 'SportsTypePage',
+    component: SportsType
+  },
+  {
+    path: '/sports_type_edit',
+    name: 'SportsTypeEditPage',
+    component: SportsTypeEdit
+  },
+  {
+    path: '/event_setting',
+    name: 'EventSettingPage',
+    component: EventSetting
+  },
+  {
+    path: '/event_setting_list',
+    name: 'EventSettingListPage',
+    component: EventSettingList
+  },
+  {
+    path: '/event_setting_edit',
+    name: 'EventSettingEditPage',
+    component: EventSettingEdit
+  },
+  {
+    path: '/sports_discipline',
+    name: 'SportsDisciplinePage',
+    component: SportsDiscipline
+  },
+  {
+    path: '/sports_discipline_edit',
+    name: 'SportsDisciplineEditPage',
+    component: SportsDisciplineEdit
+  },
+  {
+    path: '/prefecture',
+    name: 'PrefecturePage',
+    component: Prefecture
+  },
+  {
+    path: '/prefecture_edit',
+    name: 'PrefectureEditPage',
+    component: PrefectureEdit
+  },
+  {
+    path: '/target_age',
+    name: 'TargetAgePage',
+    component: TargetAge
+  },
+  {
+    path: '/target_age_edit',
+    name: 'TargetAgeEditPage',
+    component: TargetAgeEdit
   }
 ]
 

@@ -8,8 +8,8 @@
           <input class="w-full py-3 px-5 my-2 border-2 border-gray-200 box-border" type="email" required placeholder="メールアドレス" v-model="email">
           <p class="text-lg mt-2">パスワード</p>
           <input class="w-full py-3 px-5 my-2 border-2 border-gray-200 box-border" type="password" required placeholder="パスワード" v-model="password">
-          <div class="error">{{ error }}</div>
-          <button class="signup_button">ログイン</button>
+          <div class="error text-sm text-red-400">{{ error }}</div>
+          <button class="ok_button">ログイン</button>
         </form>
         <form @submit.prevent="redirectToSignup">
           <button class="text-blue-600 bg-clip-padding p-1 border-4 border-violet-300 border-dashed">アカウントをお持ちでない方はこちら</button>
@@ -40,11 +40,13 @@ export default {
           email: this.email,
           password: this.password
         })
-        if (!this.error) {
-          this.$router.push({ name: 'HomePage' })
-        }
+        window.localStorage.setItem('access-token', res.headers['access-token'])
+        window.localStorage.setItem('client', res.headers.client)
+        window.localStorage.setItem('uid', res.headers.uid)
+        window.localStorage.setItem('name', res.data.data.name)
+        this.$router.push({ name: 'HomePage' })
         return res
-      } catch (error) {
+      } catch(error) {
         this.error = 'メールアドレスかパスワードが違います'
       }
     },

@@ -39,9 +39,6 @@
 </template>
 
 <script>
-// import axios from 'axios'
-// import setItem from '../../auth/setItem'
-
 export default {
   methods: {
     redirectToRegister () {

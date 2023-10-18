@@ -11,7 +11,7 @@
         <input class="py-3 px-3 w-72 border-2 border-gray-200 box-border" type="password" required placeholder="パスワード再入力" v-model="password_confirmation" >
       </div>
       <form class= "text-center" @submit.prevent="redirectToSetPassword">
-        <button class="signup_button mb-10">再設定</button>
+        <button class="ok_button mb-10">再設定</button>
       </form>
     </div>
   </div>
@@ -31,13 +31,12 @@ export default {
   methods: {
     async SetPassword() {
       try {
+        this.error = null
         const res = await axios.post('http://localhost:3001/application', {
           password: this.password,
           password_confirmation: this.password_confirmation
         })
-        if (!this.error) {
-          this.$router.push({ name: 'HomePage' })
-        }
+        this.$router.push({ name: 'HomePage' })
         return res
       } catch (error) {
         this.error = 'パスワードが違います'

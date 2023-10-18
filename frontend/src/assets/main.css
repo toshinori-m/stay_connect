@@ -1,4 +1,4 @@
-.signup_button {
+.ok_button {
   border: 0;
   line-height: 2;
   padding: 5px 20px;
@@ -11,10 +11,10 @@
               inset -2px -2px 3px rgba(0, 0, 0, .6);
   cursor: pointer;
 }
-.signup_button:hover {
+.ok_button:hover {
   background-color: #0066FF;
 }
-.signup_button:active {
+.ok_button:active {
   box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
               inset 2px 2px 3px rgba(0, 0, 0, .6);
 }
@@ -59,3 +59,86 @@
   box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
               inset 2px 2px 3px rgba(0, 0, 0, .6);
 }
+.cancel_button {
+  border: 0;
+  line-height: 2;
+  padding: 5px 20px;
+  font-size: 16px;
+  text-align: center;
+  color: #fff;
+  text-shadow: 1px 1px 1px #000;
+  border-radius: 10px;
+  background-color: rgba(0, 128, 0, 0.832);
+  background-image: linear-gradient(to top left,
+                                    rgba(0, 0, 0, .2),
+                                    rgba(0, 0, 0, .2) 30%,
+                                    rgba(0, 0, 0, 0));
+  box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
+              inset -2px -2px 3px rgba(0, 0, 0, .6);
+  cursor: pointer;
+  }
+  .cancel_button:hover {
+    background-color: rgb(6, 204, 6);
+  }
+  .cancel_button:active {
+    box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
+                inset 2px 2px 3px rgba(0, 0, 0, .6);
+  }
+  .update_button {
+    border: 0;
+    line-height: 2;
+    padding: 5px 20px;
+    font-size: 16px;
+    text-align: center;
+    color: #fff;
+    text-shadow: 1px 1px 1px #000;
+    border-radius: 10px;
+    background-color: rgb(254 240 138);
+    background-image: linear-gradient(to top left,
+                                      rgba(0, 0, 0, .2),
+                                      rgba(0, 0, 0, .2) 30%,
+                                      rgba(0, 0, 0, 0));
+    box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
+                inset -2px -2px 3px rgba(0, 0, 0, .6);
+    cursor: pointer;
+    }
+    .update_button:hover {
+      background-color: rgb(250 204 21);
+    }
+    .update_button:active {
+      box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
+                  inset 2px 2px 3px rgba(0, 0, 0, .6);
+    }
+
+    .delete_button {
+      border: 0;
+      line-height: 2;
+      padding: 5px 20px;
+      font-size: 16px;
+      text-align: center;
+      color: #fff;
+      text-shadow: 1px 1px 1px #000;
+      border-radius: 10px;
+      background-color: rgb(220 38 38);
+      background-image: linear-gradient(to top left,
+                                        rgba(0, 0, 0, .2),
+                                        rgba(0, 0, 0, .2) 30%,
+                                        rgba(0, 0, 0, 0));
+      box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
+                  inset -2px -2px 3px rgba(0, 0, 0, .6);
+      cursor: pointer;
+      }
+      .delete_button:hover {
+        background-color: rgb(251 113 133);
+      }
+      .delete_button:active {
+        box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
+                    inset 2px 2px 3px rgba(0, 0, 0, .6);
+      }
+      .error {
+        color: #ff3f80;
+        font-size: 14px;
+        margin: 20px 20px;
+      }
+      
+      

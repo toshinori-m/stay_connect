@@ -5,6 +5,8 @@ class Team < ApplicationRecord
 
   has_many :team_target_ages, dependent: :destroy
   has_many :target_ages,  through: :team_target_ages
+  has_many :team_sports_disciplines, dependent: :destroy
+  has_many :sports_disciplines, through: :team_sports_disciplines
 
   validates :name, presence: true, length: { minimum: 2 }
   validates :area, presence: true, length: { minimum: 2 }

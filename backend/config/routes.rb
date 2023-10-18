@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     resources :teams
     resources :target_ages
     resources :sports_types
+    resources :sports_disciplines
     resources :recruitments
     resources :prefectures
     resources :chat_rooms
