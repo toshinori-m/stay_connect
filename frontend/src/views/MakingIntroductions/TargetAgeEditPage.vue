@@ -34,7 +34,7 @@ export default {
   methods: {
     async getTargetAge() {
       try {
-        this.error = null
+        this.errors = []
         const res = await axios.get(`http://localhost:3001/target_ages/`, {
           'access-token': localStorage.getItem('access-token'),
           client: localStorage.getItem('client'),
@@ -47,7 +47,7 @@ export default {
     },
     async editTargetAge(targetAgeId) {
       try {
-        this.error = null
+        this.errors = []
         const targetAge = this.target_ages.find(target_age => target_age.id === targetAgeId);
         if (!targetAge) return;
         await axios.patch(`http://localhost:3001/target_ages/${targetAgeId}`, {
@@ -63,7 +63,7 @@ export default {
     },
     async deleteTargetAge(targetAgeId) {
       try {
-        this.error = null
+        this.errors = []
         await axios.delete(`http://localhost:3001/target_ages/${targetAgeId}`, {
           data: {
             'access-token': localStorage.getItem('access-token'),

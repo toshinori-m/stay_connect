@@ -36,9 +36,7 @@ export default {
           password: this.password,
           password_confirmation: this.password_confirmation
         })
-        if (!this.error) {
-          this.$router.push({ name: 'HomePage' })
-        }
+        this.$router.push({ name: 'HomePage' })
         return res
       } catch (error) {
         this.error = 'パスワードが違います'

@@ -37,7 +37,7 @@ export default {
         })
         this.$router.push({ name: 'EventSettingPage' })
       } catch (error) {
-        this.error = '競技名に誤りがあります。'
+        this.error = '都道府県名に誤りがあります。'
       }
     },
     prefectureEdit() {

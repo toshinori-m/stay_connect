@@ -40,7 +40,7 @@ export default {
   methods: {
     async getSportsType() {
       try {
-        this.error = null
+        this.errors = []
         const res = await axios.get('http://localhost:3001/sports_types', {
           'access-token': localStorage.getItem('access-token'),
           client: localStorage.getItem('client'),
@@ -53,7 +53,7 @@ export default {
     },
     async sports_discipline() {
       try {
-        this.error = null
+        this.errors = []
         await axios.post('http://localhost:3001/sports_disciplines', {
           sports_type_id: this.selected,
           name: this.name,

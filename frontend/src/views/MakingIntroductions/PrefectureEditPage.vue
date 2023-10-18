@@ -34,7 +34,7 @@ export default {
   methods: {
     async getPrefecture() {
       try {
-        this.error = null
+        this.errors = []
         const res = await axios.get(`http://localhost:3001/prefectures/`, {
           'access-token': localStorage.getItem('access-token'),
           client: localStorage.getItem('client'),
@@ -47,7 +47,7 @@ export default {
     },
     async editPrefecture(prefectureId) {
       try {
-        this.error = null
+        this.errors = []
         const prefecture = this.prefectures.find(prefecture => prefecture.id === prefectureId);
         if (!prefecture) return;
         await axios.patch(`http://localhost:3001/prefectures/${prefectureId}`, {
@@ -63,7 +63,7 @@ export default {
     },
     async deletePrefecture(prefectureId) {
       try {
-        this.error = null
+        this.errors = []
         await axios.delete(`http://localhost:3001/prefectures/${prefectureId}`, {
           data: {
             'access-token': localStorage.getItem('access-token'),
@@ -73,7 +73,7 @@ export default {
         })
         this.$router.push({ name: 'PrefecturePage' })
       } catch (error) {
-        this.error.push('競技名を削除出来ませんでした。')
+        this.errors.push('競技名を削除出来ませんでした。')
       }
     },
     prefectureCancel () {
