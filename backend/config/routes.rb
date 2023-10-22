@@ -16,5 +16,6 @@ Rails.application.routes.draw do
     resources :prefectures
     resources :chat_rooms
     resources :chat_messages
+    resources :recruitment_sports_disciplines, only: [:index]
   end
 end
