@@ -189,7 +189,6 @@ export default {
         this.sports_disciplines = res.data.data
         this.sports_discipline_selected = this.recruitment_sports_disciplines.map(rsd => 
         this.sports_disciplines.find(sd => sd.id === rsd.sports_discipline_id)).filter(Boolean);
-        
       } catch (error) {
         this.errors.push('種目を選択していません。')
       }
@@ -199,9 +198,9 @@ export default {
         this.errors = []
         const res = await axios.get('http://localhost:3001/prefectures', {
           headers: {
-          uid: window.localStorage.getItem('uid'),
-          "access-token": window.localStorage.getItem('access-token'),
-          client: window.localStorage.getItem('client')
+            uid: window.localStorage.getItem('uid'),
+            "access-token": window.localStorage.getItem('access-token'),
+            client: window.localStorage.getItem('client')
           }
         })
         this.prefectures = res.data.data
@@ -215,9 +214,9 @@ export default {
         this.errors = []
         const res = await axios.get('http://localhost:3001/target_ages', {
           headers: {
-          uid: window.localStorage.getItem('uid'),
-          "access-token": window.localStorage.getItem('access-token'),
-          client: window.localStorage.getItem('client')
+            uid: window.localStorage.getItem('uid'),
+            "access-token": window.localStorage.getItem('access-token'),
+            client: window.localStorage.getItem('client')
           }
         })
         this.target_ages = res.data.data
@@ -234,8 +233,8 @@ export default {
         const targetAgeIds = this.target_age_selected.map(target => target.id);
         const recruitment = this.recruitments;
         if (recruitment.id !== recruitmentId) {
-            console.error("ID mismatch:", recruitment.id, recruitmentId);
-            return;
+          console.error("ID mismatch:", recruitment.id, recruitmentId);
+          return;
         }
         if (!recruitment) return;
         await axios.patch(`http://localhost:3001/recruitments/${recruitmentId}`, {
@@ -270,24 +269,22 @@ export default {
     },
     async deleteEventSetting(recruitmentId) {
       try {
-          this.errors = []
-          if (this.recruitments.id !== recruitmentId) {
-              console.error("ID mismatch:", this.recruitments.id, recruitmentId);
-              console.error("Recruitment not found for ID:", recruitmentId);
-              return;
+        this.errors = []
+        if (this.recruitments.id !== recruitmentId) {
+          console.error("ID mismatch:", this.recruitments.id, recruitmentId);
+          console.error("Recruitment not found for ID:", recruitmentId);
+          return;
+        }
+        await axios.delete(`http://localhost:3001/recruitments/${recruitmentId}`, {
+          data: {
+            'access-token': localStorage.getItem('access-token'),
+            client: localStorage.getItem('client'),
+            uid: localStorage.getItem('uid')
           }
-          await axios.delete(`http://localhost:3001/recruitments/${recruitmentId}`, {
-            data: {
-              'access-token': localStorage.getItem('access-token'),
-              client: localStorage.getItem('client'),
-              uid: localStorage.getItem('uid')
-            }
-          })
-
-          this.$router.push({ name: 'EventSettingListPage' })
+        })
+        this.$router.push({ name: 'EventSettingListPage' })
       } catch (error) {
-          console.error("Error:", error.response.data);
-          this.errors.push('イベントを削除出来ませんでした。')
+        this.errors.push('イベントを削除出来ませんでした。')
       }
     },
     EventSettingEditCancel() {
