@@ -3,7 +3,7 @@ class Auth::UsersController < ApplicationController
   
   def update
     user = User.find(params[:id])
-    return render json: { message: '成功しました', data: user }, status: 200 if user.update(create_params)
+    return render json: { message: '成功しました', data: user }, status: 200 if user.update(user_params)
 
     render json: { message: '保存出来ませんでした', errors: user.errors }, status: 400
   end
@@ -20,7 +20,7 @@ class Auth::UsersController < ApplicationController
 
   private
 
-  def create_params
+  def user_params
     params
     .permit(:name, :email, :password, :image, :birthday, :sex, :self_introduction)
   end

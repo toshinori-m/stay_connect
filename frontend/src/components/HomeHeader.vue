@@ -22,7 +22,9 @@
             <li class="p-5 md:p-0 mx-5 hover:bg-sky-400 hover:text-white">
               <button @click="eventSettingList">イベント一覧</button>
             </li>
-            <li class="p-5 md:p-0 mx-5">基本設定</li>
+            <li class="p-5 md:p-0 mx-5 hover:bg-sky-400 hover:text-white">
+              <button @click="editBasicSetting">基本設定</button>
+            </li>
             <li class="p-5 md:p-0 mx-5">ログアウト</li>
           </ul>
         </div>
@@ -50,6 +52,9 @@ export default {
     },
     eventSettingList() {
       this.$router.push({name: 'EventSettingListPage'})
+    },
+    editBasicSetting() {
+      this.$router.push({name: 'BasicSettingEditPage'});
     }
   }
 }

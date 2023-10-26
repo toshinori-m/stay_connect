@@ -17,6 +17,7 @@ import Prefecture from '../views/MakingIntroductions/PrefecturePage'
 import PrefectureEdit from '../views/MakingIntroductions/PrefectureEditPage'
 import TargetAge from '../views/MakingIntroductions/TargetAgePage'
 import TargetAgeEdit from '../views/MakingIntroductions/TargetAgeEditPage'
+import BasicSettingEdit from '../views/BasicSetting/BasicSettingEditPage'
 
 const routes = [
   {
@@ -48,6 +49,71 @@ const routes = [
     path: '/register',
     name: 'RegisterPage',
     component: Register
+  },
+  {
+    path: '/home',
+    name: 'HomePage',
+    component: Home
+  },
+  {
+    path: '/sports_type',
+    name: 'SportsTypePage',
+    component: SportsType
+  },
+  {
+    path: '/sports_type_edit',
+    name: 'SportsTypeEditPage',
+    component: SportsTypeEdit
+  },
+  {
+    path: '/event_setting',
+    name: 'EventSettingPage',
+    component: EventSetting
+  },
+  {
+    path: '/event_setting_list',
+    name: 'EventSettingListPage',
+    component: EventSettingList
+  },
+  {
+    path: '/event_setting_edit/:id',
+    name: 'EventSettingEditPage',
+    component: EventSettingEdit
+  },
+  {
+    path: '/sports_discipline',
+    name: 'SportsDisciplinePage',
+    component: SportsDiscipline
+  },
+  {
+    path: '/sports_discipline_edit',
+    name: 'SportsDisciplineEditPage',
+    component: SportsDisciplineEdit
+  },
+  {
+    path: '/prefecture',
+    name: 'PrefecturePage',
+    component: Prefecture
+  },
+  {
+    path: '/prefecture_edit',
+    name: 'PrefectureEditPage',
+    component: PrefectureEdit
+  },
+  {
+    path: '/target_age',
+    name: 'TargetAgePage',
+    component: TargetAge
+  },
+  {
+    path: '/target_age_edit',
+    name: 'TargetAgeEditPage',
+    component: TargetAgeEdit
+  },
+  {
+    path: '/basic_setting_edit',
+    name: 'BasicSettingEditPage',
+    component: BasicSettingEdit
   }
 ]
 
