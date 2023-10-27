@@ -146,7 +146,7 @@ export default {
       if (!this.prefecture_selected) {
         return this.prefecture_selected_error = '都道府県を選択して下さい';
       }
-      if (!this.target_age_selected) {
+      if (!this.target_age_selected.length) {
         return this.target_age_selected_error = '対象年齢を選択して下さい';
       }
       try {
