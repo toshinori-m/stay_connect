@@ -16,7 +16,7 @@ class RecruitmentsController < ApplicationController
     recruitment = Recruitment.find(params[:id])
     return render json: { message: '成功しました' }, status: 200 if recruitment.update(create_params)
 
-    render json: { message: '保存出来ませんでした', errors: recruitment.errors }, status: 400
+    render json: { message: '保存出来ませんでした', errors: recruitment.errors.messages }, status: 400
   end
 
   def index
