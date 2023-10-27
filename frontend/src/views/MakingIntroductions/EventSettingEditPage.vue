@@ -39,7 +39,7 @@
               <input class="xl:place-self-center mx-6 py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="event_url" type="url" placeholder="http://" v-model="recruitments.event_url">
             </li>
             <li class="xl:grid grid-cols-3 gap-4">
-              <label class="l:place-self-start  xl:mt-3 ml-4" for="name">イベント名</label>
+              <label class="xl:place-self-start xl:mt-3 ml-4" for="name">イベント名</label>
               <input class="xl:place-self-center mx-10 py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="name" type="text" v-model="recruitments.name">
             </li>
             <li class="xl:grid grid-cols-3 gap-4 sm:flex sm:items-center">
@@ -232,11 +232,8 @@ export default {
         const disciplineIds = this.sports_discipline_selected.map(discipline => discipline.id);
         const targetAgeIds = this.target_age_selected.map(target => target.id);
         const recruitment = this.recruitments;
-        if (recruitment.id !== recruitmentId) {
-          console.error("ID mismatch:", recruitment.id, recruitmentId);
-          return;
-        }
         if (!recruitment) return;
+        if (recruitment.id !== recruitmentId) return;
         await axios.patch(`http://localhost:3001/recruitments/${recruitmentId}`, {
           image: this.recruitments.event_url,
           name: this.recruitments.name,
@@ -270,11 +267,7 @@ export default {
     async deleteEventSetting(recruitmentId) {
       try {
         this.errors = []
-        if (this.recruitments.id !== recruitmentId) {
-          console.error("ID mismatch:", this.recruitments.id, recruitmentId);
-          console.error("Recruitment not found for ID:", recruitmentId);
-          return;
-        }
+        if (this.recruitments.id !== recruitmentId) return;
         await axios.delete(`http://localhost:3001/recruitments/${recruitmentId}`, {
           data: {
             'access-token': localStorage.getItem('access-token'),
