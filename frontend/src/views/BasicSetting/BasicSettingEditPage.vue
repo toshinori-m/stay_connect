@@ -40,8 +40,8 @@ export default {
           }
         })
         this.user = res.data.data
-      } catch (error) {
-        this.error.push(data.errors)
+      } catch {
+        this.$router.push({name: 'LoginPage'})
       }
     },
     BasicSettingEditCancel() {
