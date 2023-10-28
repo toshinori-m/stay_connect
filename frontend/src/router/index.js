@@ -17,6 +17,7 @@ import Prefecture from '../views/MakingIntroductions/PrefecturePage'
 import PrefectureEdit from '../views/MakingIntroductions/PrefectureEditPage'
 import TargetAge from '../views/MakingIntroductions/TargetAgePage'
 import TargetAgeEdit from '../views/MakingIntroductions/TargetAgeEditPage'
+import BasicSettingEdit from '../views/BasicSetting/BasicSettingEditPage'
 
 const routes = [
   {
@@ -108,6 +109,11 @@ const routes = [
     path: '/target_age_edit',
     name: 'TargetAgeEditPage',
     component: TargetAgeEdit
+  },
+  {
+    path: '/basic_setting_edit',
+    name: 'BasicSettingEditPage',
+    component: BasicSettingEdit
   }
 ]
 
