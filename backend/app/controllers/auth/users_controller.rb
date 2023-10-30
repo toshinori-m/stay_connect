@@ -9,13 +9,11 @@ class Auth::UsersController < ApplicationController
   end
 
   def index
-    return render json: { is_login: true, data: current_user }, status: 200 if current_user
-
-    render json: { is_login: false }, status: 400
+    @current_user = current_user
   end
 
   def show
-    render json: { data: User.select(:name, :image, :birthday, :sex) }, status: 200
+    @current_user = current_user
   end
 
   private

@@ -74,7 +74,8 @@ export default {
           headers: {
           uid: window.localStorage.getItem('uid'),
           "access-token": window.localStorage.getItem('access-token'),
-          client: window.localStorage.getItem('client')
+          client: window.localStorage.getItem('client'),
+          'Accept': 'application/json'
           }
         })
         this.user = res.data.data
