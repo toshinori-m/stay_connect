@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     }
 
     namespace :auth do
+      resources :users, only: [:update, :index, :show], defaults: { format: 'json' }
       resources :users, except: [:create, :destroy]
     end
 
