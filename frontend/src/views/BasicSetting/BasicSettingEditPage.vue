@@ -46,9 +46,9 @@
             <li class="xl:grid grid-cols-3 gap-4 mt-6">
               <label class="xl:place-self-start -ml-32 sm:-ml-36 sm:mr-20 mr-12 xl:mr-6 xl:ml-5" for="email_notification">メール通知</label>
               <input class="xl:place-self-center border-gray-200 box-border" id="email_notification" type="checkbox" v-model="user.email_notification">
-              <label class="xl:mr-36 xl:-ml-36 mt-1" for="email_notification">{{ user.email_notification === 'receivez' ? '受信する' : '受信しない' }}</label>
+              <label class="xl:mr-36 xl:-ml-36 mt-1" for="email_notification">{{ user.email_notification ? '受信する' : '受信しない' }}</label>
             </li>
-            <div class="error text-sm text-red-400" v-for="(errMsg, index) in error" :key="index">{{ errMsg }}</div>
+            <div class="error text-sm text-red-400">{{ error }}</div>
             <button class="update_button mx-5 mt-7">更新</button>
           </ul>
         </form>
@@ -83,6 +83,32 @@ export default {
         this.$router.push({name: 'LoginPage'})
       }
     },
+    async basicSettingEdit(userId) {
+      try {
+        this.error = null
+        const user = this.user;
+        if (!user) return;
+        if (user.id !== userId) return;
+        await axios.patch(`http://localhost:3001/auth/users/${userId}`, {
+          name: this.user.name,
+          email: this.user.email,
+          image: this.user.image,
+          birthday: this.user.birthday,
+          sex: this.user.sex,
+          self_introduction: this.user.self_introduction
+        }, {
+          headers: {
+            'access-token': localStorage.getItem('access-token'),
+            client: localStorage.getItem('client'),
+            uid: localStorage.getItem('uid'),
+            'Accept': 'application/json'
+          }
+        })
+        this.$router.push({ name: 'HomePage' })
+      } catch {
+        this.error = '基本設定に誤りがあります。'
+      }
+    },
     setImage(e) {
       const file = e.target.files[0];
       const reader = new FileReader();
@@ -91,7 +117,7 @@ export default {
       };
       reader.readAsDataURL(file);
     },
-    redirectToSendEmail () {
+    redirectToSendEmail() {
       this.$router.push({name: 'SendEmailPage'})
     },
     BasicSettingEditCancel() {
