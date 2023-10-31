@@ -111,7 +111,7 @@ const routes = [
     component: TargetAgeEdit
   },
   {
-    path: '/basic_setting_edit.json',
+    path: '/basic_setting_edit',
     name: 'BasicSettingEditPage',
     component: BasicSettingEdit
   }

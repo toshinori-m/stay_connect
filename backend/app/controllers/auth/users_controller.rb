@@ -2,10 +2,8 @@ class Auth::UsersController < ApplicationController
   before_action :authenticate_user!, except: [:show, :index]
   
   def update
-    user = User.find(params[:id])
-    return render json: { data: user }, status: 200 if user.update(user_params)
-
-    render json: {}, status: 400
+    @current_user = User.find(params[:id])
+    @current_user.update(user_params)
   end
 
   def index
