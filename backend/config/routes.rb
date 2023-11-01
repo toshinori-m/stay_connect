@@ -9,15 +9,16 @@ Rails.application.routes.draw do
       resources :users, except: [:create, :destroy]
     end
 
+    resources :recruitments do
+      resources :sports_disciplines, only: [:index], controller: 'recruitment_sports_disciplines'
+      resources :target_ages, only: [:index], controller: 'recruitment_target_ages'
+    end
     resources :teams
     resources :target_ages
     resources :sports_types
     resources :sports_disciplines
-    resources :recruitments
     resources :prefectures
     resources :chat_rooms
     resources :chat_messages
-    resources :recruitment_sports_disciplines, only: [:index]
-    resources :recruitment_target_ages, only: [:index]
   end
 end

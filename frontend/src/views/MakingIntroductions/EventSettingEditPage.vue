@@ -144,9 +144,9 @@ export default {
           uid: localStorage.getItem('uid')
         })
         this.recruitments = res.data.data
-        const rdsRes = await axios.get(`http://localhost:3001/recruitment_sports_disciplines?recruitment_id=${recruitmentId}`);
+        const rdsRes = await axios.get(`http://localhost:3001/recruitments/${recruitmentId}/sports_disciplines`);
         this.recruitment_sports_disciplines = rdsRes.data;
-        const rtaRes = await axios.get(`http://localhost:3001/recruitment_target_ages?recruitment_id=${recruitmentId}`);
+        const rtaRes = await axios.get(`http://localhost:3001/recruitments/${recruitmentId}/target_ages`);
         this.recruitment_target_ages = rtaRes.data;
         this.getSportsType()
         this.getPrefectures()
