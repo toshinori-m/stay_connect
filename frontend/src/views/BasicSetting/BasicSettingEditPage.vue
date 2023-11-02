@@ -5,7 +5,7 @@
       <button class="cancel_button mx-5 float-right" @click="BasicSettingEditCancel">戻る</button>
       <div class="my-10">
         <div class="error text-sm text-red-400" v-for="(errMsg, index) in error" :key="index">{{ errMsg }}</div>
-        <form class= "text-center" @submit.prevent="basicSettingEdit(user.id)">
+        <form class= "text-center" @submit.prevent="basicSettingEdit">
           <ul>
             <li class="xl:grid grid-cols-3 gap-4">
               <label class="sm:float-left xl:mt-3 ml-28 sm:ml-6 sm:mt-3 xl:mr-20 xl:-ml-2" for="name">名前</label>
@@ -83,19 +83,18 @@ export default {
         this.$router.push({name: 'LoginPage'})
       }
     },
-    async basicSettingEdit(userId) {
+    async basicSettingEdit() {
       try {
         this.error = null
-        const user = this.user;
-        if (!user) return;
-        if (user.id !== userId) return;
-        await axios.patch(`http://localhost:3001/auth/users/${userId}`, {
+        if (!this.user) return
+        await axios.patch(`http://localhost:3001/auth/users/${this.user.id}`, {
           name: this.user.name,
           email: this.user.email,
           image: this.user.image,
           birthday: this.user.birthday,
           sex: this.user.sex,
-          self_introduction: this.user.self_introduction
+          self_introduction: this.user.self_introduction,
+          email_notification: this.user.email_notification
         }, {
           headers: {
             'access-token': localStorage.getItem('access-token'),
