@@ -45,7 +45,7 @@
             </li>
             <li class="xl:grid grid-cols-3 gap-4 mt-6">
               <label class="xl:place-self-start -ml-32 sm:-ml-36 sm:mr-20 mr-12 xl:mr-6 xl:ml-5" for="email_notification">メール通知</label>
-              <input class="xl:place-self-center border-gray-200 box-border" id="email_notification" type="checkbox" v-model="user.email_notification">
+              <input class="xl:place-self-center border-gray-200 box-border" id="email_notification" type="checkbox" :checked="user.email_notification === 'receives'" @change="toggleEmailNotification">
               <label class="xl:mr-36 xl:-ml-36 mt-1" for="email_notification">{{ user.email_notification ? '受信する' : '受信しない' }}</label>
             </li>
             <div class="error text-sm text-red-400">{{ error }}</div>
@@ -63,6 +63,7 @@ export default {
     return {
       user: {},
       image: null,
+      email_notification: 'receives',
       error: null
     }
   },
@@ -115,6 +116,9 @@ export default {
         this.image = e.target.result;
       };
       reader.readAsDataURL(file);
+    },
+      toggleEmailNotification(event) {
+      this.user.email_notification = event.target.checked ? 'receives' : 'not_receive';
     },
     redirectToSendEmail() {
       this.$router.push({name: 'SendEmailPage'})

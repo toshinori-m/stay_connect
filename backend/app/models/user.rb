@@ -18,6 +18,6 @@ class User < ActiveRecord::Base
   enum sex: { man: 0, woman: 1 }
   validates :email, presence: true
   validates :email, uniqueness: true
-  enum email_notification: { receivez: true, not_receive: false }
+  enum email_notification: { receives: true, not_receive: false }
   validates :email_notification, presence: true
 end
