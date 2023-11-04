@@ -4,28 +4,34 @@
       <button class="font-bold text-3xl text-blue-600 md:-mt-1" @click="home">stay_connect</button>
       <div class="mt-2 md:text-right md:-mt-11">
         <div class="flex justify-center flex-wrap md:justify-end items-center md:-mt-5">
-        <form @submit.prevent="redirectToRegister">
-          <button class="my-2 text-blue-600 px-3 py-2">
-            <span className="i-lucide-mail w-6 h-6 float-left"></span>
-          </button>
-        </form>
-          <div class="text-right">
-            <button className="md:hidden i-lucide-align-justify w-6 h-6 float-left text-blue-600" @click="toggle"></button>
+          <form @submit.prevent="redirectToRegister">
+            <button class="bg-sky-200 my-2 text-blue-600 px-3 py-2">
+              <span class="i-lucide-mail w-6 h-6 float-left"></span>
+            </button>
+          </form>
+          <div class="text-right bg-sky-200">
+            <button class="xl:hidden i-lucide-align-justify w-6 h-6 float-left text-blue-600" @click="toggle"></button>
           </div>
-          <ul v-bind:class="{ 'hidden' : isClose }" class="flex-col md:flex md:flex-row justify-end text-blue-600 ">
-            <li class="p-5 md:p-0 mx-5 hover:bg-sky-400 hover:text-white">
+          <ul v-bind:class="{'hidden' :isClose}" @click="toggle" class="bg-sky-200 flex-col xl:flex xl:flex-row justify-end text-blue-600">
+            <li class="p-4 mx-5 hover:bg-sky-400 hover:text-white">
               <button @click="home">ホーム</button>
             </li>
-            <li class="p-5 md:p-0 mx-5 hover:bg-sky-400 hover:text-white">
+            <li class="p-4 mx-5 hover:bg-sky-400 hover:text-white">
               <button @click="eventSetting">イベント作成</button>
             </li>
-            <li class="p-5 md:p-0 mx-5 hover:bg-sky-400 hover:text-white">
+            <li class="p-4 mx-5 hover:bg-sky-400 hover:text-white">
               <button @click="eventSettingList">イベント一覧</button>
             </li>
-            <li class="p-5 md:p-0 mx-5 hover:bg-sky-400 hover:text-white">
+            <li class="p-4 mx-5 hover:bg-sky-400 hover:text-white">
               <button @click="editBasicSetting">基本設定</button>
             </li>
-            <li class="p-5 md:p-0 mx-5">ログアウト</li>
+            <li class="p-4 mx-5 hover:bg-sky-400 hover:text-white">
+              <button @click="teamProfileList">チーム紹介一覧</button>
+            </li>
+            <li class="p-4 mx-5 hover:bg-sky-400 hover:text-white">
+              <button  @click="logOut">ログアウト</button>
+            </li>
+            <div class="error">{{ error }}</div>
           </ul>
         </div>
       </div>
@@ -34,13 +40,35 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data () {
     return {
-      isClose: true
+      isClose: true,
+      error: null
     }
   },
   methods: {
+    async logOut() {
+      this.error = null
+      try {
+        await axios.delete('http://localhost:3001/auth/sign_out', {
+          headers: {
+            uid: window.localStorage.getItem('uid'),
+            "access-token": window.localStorage.getItem('access-token'),
+            client: window.localStorage.getItem('client')
+          }
+        })
+        window.localStorage.removeItem('access-token')
+        window.localStorage.removeItem('client')
+        window.localStorage.removeItem('uid')
+        window.localStorage.removeItem('name')
+        this.$router.push({ name: 'LoginPage' })
+      } catch {
+        this.error = 'ログアウトできませんでした'
+      }
+    },
     toggle() {
       this.isClose = !this.isClose;
     },
@@ -55,6 +83,9 @@ export default {
     },
     editBasicSetting() {
       this.$router.push({name: 'BasicSettingEditPage'});
+    },
+    teamProfileList() {
+      this.$router.push({name: 'TeamProfileListPage'});
     }
   }
 }
