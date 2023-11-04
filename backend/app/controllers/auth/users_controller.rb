@@ -18,6 +18,6 @@ class Auth::UsersController < ApplicationController
 
   def user_params
     params
-    .permit(:name, :email, :password, :image, :birthday, :sex, :self_introduction)
+    .permit(:name, :email, :password, :image, :birthday, :sex, :self_introduction, :email_notification)
   end
 end

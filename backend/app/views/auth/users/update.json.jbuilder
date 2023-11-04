@@ -6,4 +6,5 @@ json.data do
   json.birthday @current_user.birthday
   json.sex @current_user.sex
   json.self_introduction @current_user.self_introduction
+  json.email_notification @current_user.email_notification
 end

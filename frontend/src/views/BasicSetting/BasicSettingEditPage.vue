@@ -5,7 +5,7 @@
       <button class="cancel_button mx-5 float-right" @click="BasicSettingEditCancel">戻る</button>
       <div class="my-10">
         <div class="error text-sm text-red-400" v-for="(errMsg, index) in error" :key="index">{{ errMsg }}</div>
-        <form class= "text-center" @submit.prevent="basicSettingEdit(user.id)">
+        <form class= "text-center" @submit.prevent="basicSettingEdit">
           <ul>
             <li class="xl:grid grid-cols-3 gap-4">
               <label class="sm:float-left xl:mt-3 ml-28 sm:ml-6 sm:mt-3 xl:mr-20 xl:-ml-2" for="name">名前</label>
@@ -45,10 +45,10 @@
             </li>
             <li class="xl:grid grid-cols-3 gap-4 mt-6">
               <label class="xl:place-self-start -ml-32 sm:-ml-36 sm:mr-20 mr-12 xl:mr-6 xl:ml-5" for="email_notification">メール通知</label>
-              <input class="xl:place-self-center border-gray-200 box-border" id="email_notification" type="checkbox" v-model="user.email_notification">
-              <label class="xl:mr-36 xl:-ml-36 mt-1" for="email_notification">{{ user.email_notification === 'receivez' ? '受信する' : '受信しない' }}</label>
+              <input class="xl:place-self-center border-gray-200 box-border" id="email_notification" type="checkbox" :checked="user.email_notification === 'receives'" @change="toggleEmailNotification">
+              <label class="xl:mr-36 xl:-ml-36 mt-1" for="email_notification">{{ user.email_notification ? '受信する' : '受信しない' }}</label>
             </li>
-            <div class="error text-sm text-red-400" v-for="(errMsg, index) in error" :key="index">{{ errMsg }}</div>
+            <div class="error text-sm text-red-400">{{ error }}</div>
             <button class="update_button mx-5 mt-7">更新</button>
           </ul>
         </form>
@@ -63,6 +63,7 @@ export default {
     return {
       user: {},
       image: null,
+      email_notification: 'receives',
       error: null
     }
   },
@@ -83,6 +84,31 @@ export default {
         this.$router.push({name: 'LoginPage'})
       }
     },
+    async basicSettingEdit() {
+      try {
+        this.error = null
+        if (!this.user) return
+        await axios.patch(`http://localhost:3001/auth/users/${this.user.id}`, {
+          name: this.user.name,
+          email: this.user.email,
+          image: this.user.image,
+          birthday: this.user.birthday,
+          sex: this.user.sex,
+          self_introduction: this.user.self_introduction,
+          email_notification: this.user.email_notification
+        }, {
+          headers: {
+            'access-token': localStorage.getItem('access-token'),
+            client: localStorage.getItem('client'),
+            uid: localStorage.getItem('uid'),
+            'Accept': 'application/json'
+          }
+        })
+        this.$router.push({ name: 'HomePage' })
+      } catch {
+        this.error = '基本設定に誤りがあります。'
+      }
+    },
     setImage(e) {
       const file = e.target.files[0];
       const reader = new FileReader();
@@ -91,7 +117,10 @@ export default {
       };
       reader.readAsDataURL(file);
     },
-    redirectToSendEmail () {
+      toggleEmailNotification(event) {
+      this.user.email_notification = event.target.checked ? 'receives' : 'not_receive';
+    },
+    redirectToSendEmail() {
       this.$router.push({name: 'SendEmailPage'})
     },
     BasicSettingEditCancel() {
