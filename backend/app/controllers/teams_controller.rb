@@ -2,40 +2,33 @@ class TeamsController < ApplicationController
   before_action :authenticate_user!, except: [:show, :index]
   
   def create
-    teams = Team.new(create_params)
-    return render json: { message: '成功しました', data: teams }, status: 200 if teams.save
-
-    render json: { message: '保存出来ませんでした', errors: teams.errors.messages }, status: 400
+    @team = current_user.teams.new(create_params)
+    return render json: { errors: @team.errors.full_messages }, status: 400 unless @team.save
   end
 
   def update
-    team = Team.find(params[:id])
-    return render json: { message: '成功しました', data: team }, status: 200 if team.update(create_params)
-
-    render json: { message: '保存出来ませんでした', errors: team.errors }, status: 400
+    @team = current_user.teams.find(params[:id])
+    return render json: { errors: @team.errors.full_messages }, status: 400 unless @team.update(create_params)
   end
 
   def index
-    teams = Team.all
-    render json: { message: '成功しました', data: teams }, status: 200
+    @team = Team.all
   end
 
   def show
-    render json: { message: '成功しました', data: Team.find(params[:id]) }, status: 200
+    @team = Team.find(params[:id])
   end
 
   def destroy
-    team = Team.find(params[:id])
-    return render json: { message: '削除に成功しました', data: team }, status: 200 if team.destroy
-    
-    render json: { message: '削除に失敗' }, status: 400
+    @team = Team.find(params[:id])
+    @team.destroy
   end
 
   private
 
   def create_params
     params
-    .permit(:name, :area, :sex, :track_record, :other_body, :sports_type_id, :prefecture_id, target_age_ids: [] )
-    .merge(user_id: current_user.id )
+    .require(:team)
+    .permit(:name, :area, :sex, :track_record, :other_body, :sports_type_id, :prefecture_id, sports_discipline_ids: [], target_age_ids: [])
   end
 end

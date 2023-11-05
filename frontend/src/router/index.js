@@ -19,6 +19,7 @@ import TargetAge from '../views/MakingIntroductions/TargetAgePage'
 import TargetAgeEdit from '../views/MakingIntroductions/TargetAgeEditPage'
 import BasicSettingEdit from '../views/BasicSetting/BasicSettingEditPage'
 import TeamProfileList from '../views/TeamProfile/TeamProfileListPage'
+import TeamProfile from '../views/TeamProfile/TeamProfilePage'
 
 const routes = [
   {
@@ -120,6 +121,11 @@ const routes = [
     path: '/team_profile_list',
     name: 'TeamProfileListPage',
     component: TeamProfileList
+  },
+  {
+    path: '/team_profile',
+    name: 'TeamProfilePage',
+    component: TeamProfile
   }
 ]
 
