@@ -146,9 +146,8 @@ export default {
           uid: localStorage.getItem('uid'),
           'Accept': 'application/json'
         })
-        // this.$router.push({ name: 'HomePage' })
+        this.$router.push({ name: 'HomePage' })
       } catch (errors) {
-        console("errors:",errors)
         if (errors.response.data.errors) {
           this.backend_errors = errors.response.data.errors;
         }
@@ -165,7 +164,7 @@ export default {
           }
         })
         this.sports_types = res.data.data
-      } catch (error) {
+      } catch {
         this.errors.push('競技を表示できませんでした。')
       }
     },
@@ -183,7 +182,7 @@ export default {
           }
         })
         this.sports_disciplines = res.data.data
-      } catch (error) {
+      } catch {
         this.errors.push('種目を表示できませんでした。')
       }
     },
@@ -198,7 +197,7 @@ export default {
           }
         })
         this.prefectures = res.data.data
-      } catch (error) {
+      } catch {
         this.errors.push('都道府県を表示できませんでした。')
       }
     },
@@ -213,7 +212,7 @@ export default {
           }
         })
         this.target_ages = res.data.data
-      } catch (error) {
+      } catch {
         this.errors.push('対象年齢を表示できませんでした。')
       }
     },
