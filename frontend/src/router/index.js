@@ -18,7 +18,9 @@ import PrefectureEdit from '../views/MakingIntroductions/PrefectureEditPage'
 import TargetAge from '../views/MakingIntroductions/TargetAgePage'
 import TargetAgeEdit from '../views/MakingIntroductions/TargetAgeEditPage'
 import BasicSettingEdit from '../views/BasicSetting/BasicSettingEditPage'
+import TeamProfileEdit from '../views/TeamProfile/TeamProfileEditPage'
 import TeamProfileList from '../views/TeamProfile/TeamProfileListPage'
+import TeamProfile from '../views/TeamProfile/TeamProfilePage'
 
 const routes = [
   {
@@ -117,9 +119,19 @@ const routes = [
     component: BasicSettingEdit
   },
   {
+    path: '/team_profile_edit/:id',
+    name: 'TeamProfileEditPage',
+    component: TeamProfileEdit
+  },
+  {
     path: '/team_profile_list',
     name: 'TeamProfileListPage',
     component: TeamProfileList
+  },
+  {
+    path: '/team_profile',
+    name: 'TeamProfilePage',
+    component: TeamProfile
   }
 ]
 

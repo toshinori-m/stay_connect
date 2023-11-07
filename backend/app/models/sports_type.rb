@@ -1,5 +1,5 @@
 class SportsType < ApplicationRecord
-  has_one :team
+  has_many :teams
   has_many :recruitments
   has_many :sports_disciplines
 
