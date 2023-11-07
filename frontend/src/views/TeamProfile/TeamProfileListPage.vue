@@ -38,15 +38,16 @@ export default {
   methods: {
     async getTeamProfile() {
       try {
-        this.errors = null
+        this.error = null
         const res = await axios.get(`http://localhost:3001/teams`, {
           headers: {
           uid: window.localStorage.getItem('uid'),
           "access-token": window.localStorage.getItem('access-token'),
-          client: window.localStorage.getItem('client')
+          client: window.localStorage.getItem('client'),
+          'Accept': 'application/json'
           }
         })
-        this.teams = res.data.data
+        this.teams = res.data
       } catch {
         this.error = 'チーム紹介名を表示できませんでした。'
       }
@@ -58,7 +59,7 @@ export default {
       this.$router.push({name: 'HomePage'})
     },
     createTeamProfile() {
-      this.$router.push({name: 'TeamProfileCreatePage'})
+      this.$router.push({name: 'TeamProfilePage'})
     }
   },
   mounted() {
