@@ -6,7 +6,6 @@ Rails.application.routes.draw do
 
     namespace :auth do
       resources :users, only: [:update, :index, :show], defaults: { format: 'json' }
-      resources :users, except: [:create, :destroy]
     end
 
     resources :recruitments do
@@ -23,7 +22,10 @@ Rails.application.routes.draw do
     resources :sports_types
     resources :sports_disciplines
     resources :prefectures
-    resources :chat_rooms
-    resources :chat_messages
+
+    resources :chat_rooms, defaults: { format: 'json' }  do
+      resources :chat_messages, defaults: { format: 'json' }
+      resources :users, only: [:index, :create, :destroy], controller: 'chat_room_users'
+    end
   end
 end

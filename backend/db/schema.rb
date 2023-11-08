@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_12_104931) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_08_013235) do
   create_table "chat_messages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "chat_room_id"
@@ -31,7 +31,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_12_104931) do
   end
 
   create_table "chat_rooms", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.boolean "paid_or_free", null: false
+    t.boolean "paid_or_free", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

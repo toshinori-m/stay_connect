@@ -1,39 +1,24 @@
 class ChatMessagesController < ApplicationController
-  before_action :authenticate_user!, except: [:show, :index]
+  before_action :authenticate_user!, only: [:create, :index]
   
   def create
-    chat_messages = ChatMessage.new(create_params)
-    return render json: { message: '成功しました', data: chat_messages }, status: 200 if chat_messages.save
-
-    render json: { message: '保存出来ませんでした', errors: chat_messages.errors.messages }, status: 400
-  end
-
-  def update
-    chat_message = ChatMessage.find(params[:id])
-    return render json: { message: '成功しました', data: chat_message }, status: 200 if chat_message.update(create_params)
-
-    render json: { message: '保存出来ませんでした', errors: chat_message.errors }, status: 400
+    chat_room = ChatRoom.find_by(id: create_params[:chat_room_id])
+    @chat_message = chat_room.chat_messages.new(create_params.merge(user: current_user))
+    return render json: { errors: @chat_message.errors.full_messages }, status: 400 unless @chat_message.save
   end
 
   def index
-    chat_messages = ChatMessage.all
-    render json: { message: '成功しました', data: chat_messages }, status: 200
-  end
+    chat_room = ChatRoom.find_by(id: params[:chat_room_id])
+    return render json: { errors: @chat_message.errors.full_messages }, status: 400 unless chat_room
 
-  def show
-    render json: { message: '成功しました', data: ChatMessage.find(params[:id]) }, status: 200
-  end
-
-  def destroy
-    chat_message = ChatMessage.find(params[:id])
-    return render json: { message: '削除に成功しました', data: chat_message }, status: 200 if chat_message.destroy
-    
-    render json: { message: '削除に失敗' }, status: 400
+    @chat_messages = chat_room.chat_messages.order(created_at: :desc)
   end
 
   private
 
   def create_params
-    params.permit(:message, :chat_room_id).merge(user_id: current_user.id )
+    params
+    .require(:chat_message)
+    .permit(:message, :chat_room_id)
   end
 end
