@@ -25,7 +25,6 @@ Rails.application.routes.draw do
 
     resources :chat_rooms, defaults: { format: 'json' }  do
       resources :chat_messages, defaults: { format: 'json' }
-      resources :users, only: [:index, :create, :destroy], controller: 'chat_room_users'
     end
   end
 end
