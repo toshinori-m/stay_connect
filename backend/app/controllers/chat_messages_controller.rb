@@ -4,14 +4,13 @@ class ChatMessagesController < ApplicationController
   def create
     chat_room = ChatRoom.find(create_params[:chat_room_id])
     @chat_message = current_user.chat_messages.new(create_params)
-    @chat_message.chat_room = chat_room
 
     return render json: { errors: @chat_message.errors.full_messages }, status: 400 unless @chat_message.save
   end
 
   def index
     chat_room = ChatRoom.find(create_params[:chat_room_id])
-    @chat_messages = chat_room.chat_messages.includes(:user).order(created_at: :desc)
+    @chat_messages = chat_room.chat_messages.eager_load(:user).order(created_at: :desc)
 
     return render json: { errors: @chat_message.errors.full_messages }, status: 400 unless chat_room
   end
