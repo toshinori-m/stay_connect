@@ -23,8 +23,10 @@ Rails.application.routes.draw do
     resources :sports_disciplines
     resources :prefectures
 
-    resources :chat_rooms, defaults: { format: 'json' }  do
-      resources :chat_messages, defaults: { format: 'json' }
+    resources :chat_rooms, defaults: { format: 'json' } do
+      scope module: :chat_rooms do
+        resources :chat_messages, defaults: { format: 'json' }
+      end
     end
   end
 end
