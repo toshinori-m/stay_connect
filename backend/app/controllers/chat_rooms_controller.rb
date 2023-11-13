@@ -8,14 +8,14 @@ class ChatRoomsController < ApplicationController
       chat_room_user = ChatRoomUser.new(user: current_user, chat_room: @chat_room)
       chat_room_user.save!
     end
-    rescue ActiveRecord::RecordInvalid => e
+  rescue ActiveRecord::RecordInvalid => e
     render json: { errors: e.record.errors.full_messages }, status: 400
   end
 
   def update
     @chat_room = current_user.chat_rooms.find(params[:id])
 
-    render json: { errors: @chat_room.errors.full_messages }, status: 400 unless @chat_room.update(create_params) and return
+    render json: { errors: @chat_room.errors.full_messages }, status: 400 unless @chat_room.update(create_params)
   end
 
   def index
