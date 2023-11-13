@@ -1,20 +1,21 @@
 class ChatRoomsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:show]
   
   def create
-    @chat_room = current_user.chat_rooms.new(create_params)
-    if @chat_room.save
+    ChatRoom.transaction do
+      @chat_room = current_user.chat_rooms.new(create_params)
+      @chat_room.save!
       chat_room_user = ChatRoomUser.new(user: current_user, chat_room: @chat_room)
-      chat_room_user.save
-    else
-      render json: { errors: @chat_room.errors.full_messages }, status: 400
+      chat_room_user.save!
     end
+    rescue ActiveRecord::RecordInvalid => e
+    render json: { errors: e.record.errors.full_messages }, status: 400
   end
 
   def update
     @chat_room = current_user.chat_rooms.find(params[:id])
 
-    return render json: { errors: @chat_room.errors.full_messages }, status: 400 unless @chat_room.update(create_params)
+    render json: { errors: @chat_room.errors.full_messages }, status: 400 unless @chat_room.update(create_params) and return
   end
 
   def index
@@ -22,8 +23,9 @@ class ChatRoomsController < ApplicationController
   end
 
   def destroy
-    @chat_room = current_user.chat_rooms.find(params[:id])
-    @chat_room.destroy
+    chat_room = current_user.chat_rooms.find(params[:id])
+    chat_room.destroy
+    render json: {}, status: 200
   end
 
   private
