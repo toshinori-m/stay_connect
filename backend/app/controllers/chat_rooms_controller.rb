@@ -1,39 +1,38 @@
 class ChatRoomsController < ApplicationController
-  before_action :authenticate_user!, except: [:show, :index]
+  before_action :authenticate_user!, except: [:show]
   
   def create
-    chat_rooms = ChatRoom.new(create_params)
-    return render json: { message: '成功しました', data: chat_rooms }, status: 200 if chat_rooms.save
-
-    render json: { message: '保存出来ませんでした', errors: chat_rooms.errors.messages }, status: 400
+    ChatRoom.transaction do
+      @chat_room = current_user.chat_rooms.new(create_params)
+      @chat_room.save!
+      chat_room_user = ChatRoomUser.new(user: current_user, chat_room: @chat_room)
+      chat_room_user.save!
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { errors: e.record.errors.full_messages }, status: 400
   end
 
   def update
-    chat_room = ChatRoom.find(params[:id])
-    return render json: { message: '成功しました', data: chat_room }, status: 200 if chat_room.update(create_params)
+    @chat_room = current_user.chat_rooms.find(params[:id])
 
-    render json: { message: '保存出来ませんでした', errors: chat_room.errors }, status: 400
+    render json: { errors: @chat_room.errors.full_messages }, status: 400 unless @chat_room.update(create_params)
   end
 
   def index
-    chat_rooms = ChatRoom.all
-    render json: { message: '成功しました', data: chat_rooms }, status: 200
-  end
-
-  def show
-    render json: { message: '成功しました', data: ChatRoom.find(params[:id]) }, status: 200
+    @chat_rooms = current_user.chat_rooms
   end
 
   def destroy
-    chat_room = ChatRoom.find(params[:id])
-    return render json: { message: '削除に成功しました', data: chat_room }, status: 200 if chat_room.destroy
-    
-    render json: { message: '削除に失敗' }, status: 400
+    chat_room = current_user.chat_rooms.find(params[:id])
+    chat_room.destroy
+    render json: {}, status: 200
   end
 
   private
 
   def create_params
-    params.permit(:paid_or_free )
+    params
+    .require(:chat_room)
+    .permit(:paid_or_free )
   end
 end
