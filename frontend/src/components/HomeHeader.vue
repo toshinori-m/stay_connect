@@ -4,11 +4,9 @@
       <button class="font-bold text-3xl text-blue-600 md:-mt-1" @click="home">stay_connect</button>
       <div class="mt-2 md:text-right md:-mt-11">
         <div class="flex justify-center flex-wrap md:justify-end items-center md:-mt-5">
-          <form @submit.prevent="redirectToRegister">
-            <button class="bg-sky-200 my-2 text-blue-600 px-3 py-2">
-              <span class="i-lucide-mail w-6 h-6 float-left"></span>
-            </button>
-          </form>
+          <button class="bg-sky-200 my-2 text-blue-600 px-3 py-2" @click="chatRoomList">
+            <span class="i-lucide-mail w-6 h-6 float-left"></span>
+          </button>
           <div class="text-right bg-sky-200">
             <button class="xl:hidden i-lucide-align-justify w-6 h-6 float-left text-blue-600" @click="toggle"></button>
           </div>
@@ -66,11 +64,14 @@ export default {
         window.localStorage.removeItem('name')
         this.$router.push({ name: 'LoginPage' })
       } catch {
-        this.error = 'ログアウトできませんでした'
+        this.$router.push({ name: 'LoginPage' })
       }
     },
     toggle() {
       this.isClose = !this.isClose;
+    },
+    chatRoomList() {
+      this.$router.push({name: 'ChatRoomListPage'})
     },
     home() {
       this.$router.push({name: 'HomePage'})
