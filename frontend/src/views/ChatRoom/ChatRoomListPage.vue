@@ -2,7 +2,7 @@
   <div class="flex flex-col items-center justify-center mt-12">
     <div class="md:w-2/5 rounded-md shadow-gray-200 bg-sky-100">
       <h2 class="text-center pt-10 font-bold text-3xl text-blue-600 mt-16 md:mt-1">チャットルーム一覧</h2>
-      <button class="cancel_button mx-5 float-right" @click="ChatRoomListCancel">戻る</button>
+      <button class="cancel_button mx-5 float-right" @click="chatRoomListCancel">戻る</button>
       <div class="my-14">
         <div class="error text-sm text-red-400">{{ error }}</div>
         <div class="flex flex-col items-center justify-center">
@@ -40,13 +40,13 @@ export default {
         })
         this.chat_rooms = res.data
       } catch {
-      this.errors.push('チャットルームを表示できませんでした。')
+        this.errors.push('チャットルームを表示できませんでした。')
       }
     },
-    async editChatRoom(chatRoomId) {
+    editChatRoom(chatRoomId) {
       this.$router.push({name: 'ChatRoomListPage', params: {id: chatRoomId} });
     },
-    ChatRoomListCancel() {
+    chatRoomListCancel() {
       this.$router.push({name: 'HomePage'})
     }
   },
