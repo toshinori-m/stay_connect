@@ -1,24 +1,37 @@
 module ChatRooms
   class ChatMessagesController < ApplicationController
     before_action :authenticate_user!, only: [:create, :index]
-    
-    def create
-      @chat_message = current_user.chat_messages.new(create_params)
+    before_action :set_chat_room, only: [:create]
 
-      return render json: { errors: @chat_message.errors.full_messages }, status: 400 unless @chat_message.save
+    def create
+      message = @chat_room.chat_messages.new(message_params.merge(user: current_user))
+    
+      if message.save
+        RoomChannel.broadcast_to(@chat_room, {
+          message: message.message,
+          name: current_user.name,
+          created_at: message.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        })
+        head :ok
+      else
+        render json: { errors: message.errors.full_messages }, status: :unprocessable_entity
+      end
     end
 
     def index
-      chat_room = ChatRoom.find(create_params[:chat_room_id])
-      @chat_messages = chat_room.chat_messages.eager_load(:user).order(created_at: :desc)
+      @chat_messages = @chat_room.chat_messages.eager_load(:user).order(created_at: :desc)
     end
 
     private
 
-    def create_params
-      params
-      .require(:chat_message)
-      .permit(:message, :chat_room_id)
+    def set_chat_room
+      @chat_room = ChatRoom.find(params[:chat_room_id])
+    rescue ActiveRecord::RecordNotFound
+      render json: { error: 'Chat room not found' }, status: :not_found
+    end
+
+    def message_params
+      params.require(:chat_message).permit(:message)
     end
   end
 end
