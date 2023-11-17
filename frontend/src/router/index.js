@@ -21,6 +21,7 @@ import BasicSettingEdit from '../views/BasicSetting/BasicSettingEditPage'
 import TeamProfileEdit from '../views/TeamProfile/TeamProfileEditPage'
 import TeamProfileList from '../views/TeamProfile/TeamProfileListPage'
 import TeamProfile from '../views/TeamProfile/TeamProfilePage'
+import ChatRoomList from '../views/ChatRoom/ChatRoomListPage'
 
 const routes = [
   {
@@ -132,6 +133,11 @@ const routes = [
     path: '/team_profile',
     name: 'TeamProfilePage',
     component: TeamProfile
+  },
+  {
+    path: '/chat_room_list',
+    name: 'ChatRoomListPage',
+    component: ChatRoomList
   }
 ]
 
