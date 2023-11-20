@@ -19,7 +19,13 @@ class ChatRoomsController < ApplicationController
   end
 
   def index
-    @chat_rooms = current_user.chat_rooms
+    @chat_rooms_with_other_user = current_user.chat_rooms.eager_load(chat_room_users: :user).map do |room|
+      other_user = room.chat_room_users.where.not(user_id: current_user.id).first&.user
+      {
+        chat_room: room,
+        other_user_name: other_user&.name
+      }
+    end
   end
 
   def destroy
