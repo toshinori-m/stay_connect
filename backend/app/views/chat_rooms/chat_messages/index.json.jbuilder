@@ -4,5 +4,5 @@ json.array! @chat_messages do |chat_message|
   json.user_id chat_message.user.id
   json.name chat_message.user.name
   json.email chat_message.user.email
-  json.created_at chat_message.created_at
+  json.created_at chat_message.created_at.strftime("%Y-%m-%d %H:%M:%S")
 end
