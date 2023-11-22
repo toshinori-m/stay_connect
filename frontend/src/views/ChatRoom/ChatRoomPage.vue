@@ -6,7 +6,7 @@
       <div class="my-14">
         <form class="flex flex-col items-center justify-center">
           <textarea
-            class="text-left mt-3 mb-8 sm:ml-4 sm:mr-6 w-full h-28 pt-3 ring-offset-2 ring-2 rounded-lg"
+            class="text-left mt-3 mb-8 sm:mx-6 w-full h-28 pt-3 ring-offset-2 ring-2 rounded-lg"
             placeholder="メッセージを入力してEnterを押すと送信出来ます。"
             v-model="message"
             @keypress.enter.prevent="chatMessage"
@@ -14,7 +14,7 @@
         </form>
         <div class="error text-sm text-red-400" v-for="(errMsg, index) in errors" :key="index">{{ errMsg }}</div>
         <div class="flex flex-col items-center justify-center">
-          <ul class="text-left my-2 sm:ml-4 sm:mr-6 w-full px-2 ring-offset-2 ring-2 rounded-lg" type="text" v-for="message in messages" :key="message.id">
+          <ul class="text-left my-2 sm:mx-6 w-full px-2 ring-offset-2 ring-2 rounded-lg" type="text" v-for="message in messages" :key="message.id">
             <li class="name text-sm">{{ message.name }}</li>
             <li class="created-at text-xs text-gray-400">{{ message.created_at }}</li>
             <li class="message pt-3">{{ message.message }}</li>
