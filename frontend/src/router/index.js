@@ -22,6 +22,7 @@ import TeamProfileEdit from '../views/TeamProfile/TeamProfileEditPage'
 import TeamProfileList from '../views/TeamProfile/TeamProfileListPage'
 import TeamProfile from '../views/TeamProfile/TeamProfilePage'
 import ChatRoomList from '../views/ChatRoom/ChatRoomListPage'
+import ChatRoom from '../views/ChatRoom/ChatRoomPage'
 
 const routes = [
   {
@@ -138,6 +139,11 @@ const routes = [
     path: '/chat_room_list',
     name: 'ChatRoomListPage',
     component: ChatRoomList
+  },
+  {
+    path: '/chat_room/:id',
+    name: 'ChatRoomPage',
+    component: ChatRoom
   }
 ]
 

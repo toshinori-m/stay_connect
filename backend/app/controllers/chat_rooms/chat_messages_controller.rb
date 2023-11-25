@@ -1,7 +1,7 @@
 module ChatRooms
   class ChatMessagesController < ApplicationController
     before_action :authenticate_user!, only: [:create, :index]
-    before_action :set_chat_room, only: [:create]
+    before_action :set_chat_room, only: [:create, :index]
 
     def create
       message = @chat_room.chat_messages.new(message_params.merge(user: current_user))
