@@ -12,6 +12,14 @@ class ChatRoomsController < ApplicationController
     render json: { errors: e.record.errors.full_messages }, status: 400
   end
 
+  def add_user
+    @chat_room = ChatRoom.find(params[:id])
+    user = User.find_by(id: params[:user_id])
+    chat_room_user = ChatRoomUser.new(chat_room: @chat_room, user: user)
+
+    render json: { errors: chat_room_user.errors.full_messages }, status: 400 unless chat_room_user.save!
+  end
+
   def update
     @chat_room = current_user.chat_rooms.find(params[:id])
 
@@ -19,13 +27,7 @@ class ChatRoomsController < ApplicationController
   end
 
   def index
-    @chat_rooms_with_other_user = current_user.chat_rooms.eager_load(chat_room_users: :user).map do |room|
-      other_user = room.other_user(user_id: current_user.id)
-      {
-        chat_room: room,
-        other_user_name: other_user&.name
-      }
-    end
+    @chat_rooms_with_other_user = current_user.chat_rooms_with_other_users
   end
 
   def destroy
