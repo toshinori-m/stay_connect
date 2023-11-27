@@ -14,10 +14,14 @@ class ChatRoomsController < ApplicationController
 
   def add_user
     @chat_room = ChatRoom.find(params[:id])
+    
+    render json: { error: 'ユーザーIDが見つからないか、無効です。' }, status: 400 and return unless params[:user_id].present?
+  
+    chat_room_user = @chat_room.chat_room_users.new(user_id: params[:user_id])
 
-    return chat_room_user = @chat_room.chat_room_users.new(user_id: params[:user_id]) if params[:user_id].present?
+    head :ok and return if chat_room_user.save!
 
-    render json: { errors: chat_room_user.errors.full_messages }, status: 400 unless chat_room_user.save!
+    render json: { errors: chat_room_user.errors.full_messages }, status: 400
   end
 
   def update
