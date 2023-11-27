@@ -12,7 +12,7 @@ module ChatRooms
           name: current_user.name,
           created_at: message.created_at.strftime("%Y-%m-%d %H:%M:%S")
         })
-        (@chat_room.users.distinct - [current_user]).each do |user|
+        (@chat_room.users.where.not(id: current_user.id).distinct).each do |user|
           UserMailer.with(user_name: message.user.name, user_message: message.message, recipient_email: user.email, recipient_name: user.name ).new_message_notification.deliver_later
         end
         head :ok

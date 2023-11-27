@@ -14,8 +14,8 @@ class ChatRoomsController < ApplicationController
 
   def add_user
     @chat_room = ChatRoom.find(params[:id])
-    user = User.find_by(id: params[:user_id])
-    chat_room_user = ChatRoomUser.new(chat_room: @chat_room, user: user)
+
+    return chat_room_user = @chat_room.chat_room_users.new(user_id: params[:user_id]) if params[:user_id].present?
 
     render json: { errors: chat_room_user.errors.full_messages }, status: 400 unless chat_room_user.save!
   end
