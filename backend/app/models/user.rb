@@ -20,4 +20,14 @@ class User < ActiveRecord::Base
   validates :email, uniqueness: true
   enum email_notification: { receives: true, not_receive: false }
   validates :email_notification, presence: true
+
+  def chat_rooms_with_other_users
+    chat_rooms.eager_load(chat_room_users: :user).map do |room|
+      other_user = room.other_user(user_id: id)
+      {
+        chat_room: room,
+        other_user_name: other_user&.name
+      }
+    end
+  end
 end

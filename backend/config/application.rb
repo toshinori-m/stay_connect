@@ -15,5 +15,6 @@ module Myapp
       g.test_framework false
     end
     config.action_controller.raise_on_open_redirects = false
+    config.active_job.queue_adapter = :async
   end
 end
