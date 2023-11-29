@@ -12,6 +12,7 @@
     "@rails/actioncable": "^7.1.2",
     "axios": "^1.5.0",
     "core-js": "^3.8.3",
+    "firebase": "^10.6.0",
     "vue": "^3.2.13",
     "vue-axios": "^3.5.2",
     "vue-router": "^4.0.3"

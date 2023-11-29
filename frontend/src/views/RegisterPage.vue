@@ -33,6 +33,7 @@
 
 <script>
 import axios from 'axios'
+import firebase from "@/plugins/firebase"
 
 export default {
   data () {
@@ -46,13 +47,22 @@ export default {
   },
   methods: {
     async signUp() {
+      if (this.password !== this.passwordConfirmation) {
+        this.error = "パスワードとパスワード確認が一致していません" 
+        return
+      }
       try {
         this.error = null
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+        const user = userCredential.user
         const res = await axios.post('http://localhost:3001/auth', {
-          name: this.name,
-          email: this.email,
-          password: this.password,
-          password_confirmation: this.passwordConfirmation
+          user: {
+            name: this.name,
+            email: this.email,
+            password: this.password,
+            password_confirmation: this.passwordConfirmation,
+            uid: user.uid
+          }
         })
         window.localStorage.setItem('access-token', res.headers['access-token'])
         window.localStorage.setItem('client', res.headers.client)
@@ -61,7 +71,11 @@ export default {
         this.$router.push({ name: 'HomePage' })
         return res
       } catch (error) {
-        this.error = 'メールアドレスかパスワードが違います'
+        if (error.code) {
+          this.error = 'Firebaseエラー: ' + error.message
+        } else {
+          this.error = 'メールアドレスかパスワードが違います'
+        }
       }
     },
     redirectToLogin () {
