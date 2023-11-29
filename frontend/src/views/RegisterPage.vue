@@ -33,7 +33,8 @@
 
 <script>
 import axios from 'axios'
-import firebase from "@/plugins/firebase"
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { auth } from "@/plugins/firebase"
 
 export default {
   data () {
@@ -53,7 +54,7 @@ export default {
       }
       try {
         this.error = null
-        const userCredential = await firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+        const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password)
         const user = userCredential.user
         const res = await axios.post('http://localhost:3001/auth', {
           user: {
