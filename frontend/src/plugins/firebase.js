@@ -1,11 +1,13 @@
-import firebase from "firebase/compat/app"
-import "firebase/compat/auth"
+import { initializeApp } from 'firebase/app'
+import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 
-const fbConfig = {
+const firebaseConfig = {
     apiKey: process.env.VUE_APP_API_KEY,
     authDomain: process.env.VUE_APP_AUTH_DOMAIN,
     projectId: process.env.VUE_APP_PROJECT_ID,
 };
-firebase.initializeApp(fbConfig)
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
+const googleProvider = new GoogleAuthProvider()
 
-export default firebase
+export { auth, googleProvider }

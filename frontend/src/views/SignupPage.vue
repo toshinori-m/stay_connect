@@ -41,9 +41,8 @@
 
 <script>
 import axios from 'axios'
-import firebase from 'firebase/app'
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
-
+import { auth, googleProvider } from '@/plugins/firebase'
+import { signInWithPopup } from 'firebase/auth';
 
 export default {
   data () {
@@ -61,8 +60,8 @@ export default {
     async signInWithGoogle() {
       try {
         this.error = null
-        const provider = new firebase.auth.GoogleAuthProvider()
-        const result = await firebase.auth().signInWithPopup(provider)
+        const result = await signInWithPopup(auth, googleProvider)
+        console.log(result); // 情報
         console.log(result.user); // ユーザー情報
         console.log(result.credential); // 認証情報
         console.log(result.additionalUserInfo); // 追加ユーザー情報
