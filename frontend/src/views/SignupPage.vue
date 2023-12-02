@@ -61,6 +61,7 @@ export default {
     async signInWithGoogle() {
       try {
         this.error = null
+        // this.error = null
         const provider = new firebase.auth.GoogleAuthProvider()
         const result = await firebase.auth().signInWithPopup(provider)
         console.log(result.user); // ユーザー情報
