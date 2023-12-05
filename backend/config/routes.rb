@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  # constraints format: :json do
+  constraints format: :json do
   #   mount_devise_token_auth_for 'User', at: 'auth', controllers: {
   #     registrations: 'auth/registrations'
   #   }
@@ -28,6 +28,6 @@ Rails.application.routes.draw do
         resources :chat_messages, defaults: { format: 'json' }
         resources :users, only: [:index, :create, :destroy], controller: 'chat_room_users'
       end
-    # end
+    end
   end
 end
