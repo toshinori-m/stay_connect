@@ -71,7 +71,7 @@ export default {
     async getBasicSettingEdit() {
       try {
         this.error = null
-        const res = await axios.get('http://localhost:3001/auth/users', {
+        const res = await axios.get('http://localhost:3001/users', {
           headers: {
           uid: window.localStorage.getItem('uid'),
           "access-token": window.localStorage.getItem('access-token'),
@@ -88,7 +88,7 @@ export default {
       try {
         this.error = null
         if (!this.user) return
-        await axios.patch(`http://localhost:3001/auth/users/${this.user.id}`, {
+        await axios.patch(`http://localhost:3001/users/${this.user.id}`, {
           name: this.user.name,
           email: this.user.email,
           image: this.user.image,

@@ -60,8 +60,8 @@ export default {
           user: {
             name: this.name,
             email: this.email,
-            password: this.password,
-            password_confirmation: this.passwordConfirmation,
+            // password: this.password,
+            // password_confirmation: this.passwordConfirmation,
             uid: user.uid
           }
         })

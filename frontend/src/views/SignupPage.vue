@@ -41,9 +41,8 @@
 
 <script>
 import axios from 'axios'
-import firebase from 'firebase/app'
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
-
+import { auth } from "@/plugins/firebase"
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 
 export default {
   data () {
@@ -61,31 +60,24 @@ export default {
     async signInWithGoogle() {
       try {
         this.error = null
-        const provider = new firebase.auth.GoogleAuthProvider()
-        const result = await firebase.auth().signInWithPopup(provider)
-        console.log(result.user); // ユーザー情報
-        console.log(result.credential); // 認証情報
-        console.log(result.additionalUserInfo); // 追加ユーザー情報
-        console.log(result.operationType); // 操作タイプ
+        const provider = new GoogleAuthProvider()
+        const result = await signInWithPopup(auth, provider)
         const user = result.user
-        const res = await axios.post('http://localhost:3001/auth', {
+        const name = user.displayName
+        const email = user.email
+        const res = await axios.post('http://localhost:3001/users', {
           user: {
-            name: this.name,
-            email: this.email,
-            password: this.password,
-            password_confirmation: this.passwordConfirmation,
+            name: name,
+            email: email,
             uid: user.uid
           }
         })
-        window.localStorage.setItem('access-token', res.headers['access-token'])
-        window.localStorage.setItem('client', res.headers.client)
-        window.localStorage.setItem('uid', res.headers.uid)
-        window.localStorage.setItem('name', res.data.data.name)
         this.$router.push({ name: 'HomePage' })
         return res
       } catch (error) {
-        console.error('Google Sign In Error:', error)
-        // エラー処理を行う
+        if (error.response.data.error) {
+          this.error = error.response.data.error;
+        }
       }
     }
   }
