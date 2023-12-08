@@ -1,5 +1,5 @@
-import firebase from "@/plugins/firebase";
-import axios from "@/plugins/axios";
+import firebase from "@/plugins/firebase"
+import axios from "@/plugins/axios"
 
 const authCheck = ({ store, redirect }) => {
   firebase.auth().onAuthStateChanged(async user => {
@@ -8,13 +8,12 @@ const authCheck = ({ store, redirect }) => {
         params: {
           uid: user.uid,
         },
-      });
-      console.log("ログインしているユーザー:", data);
+      })
       store.dispatch("auth/setUser", data)
     } else {
       store.dispatch("auth/setUser", null)
     }
-  });
-};
+  })
+}
 
-export default authCheck;
+export default authCheck
