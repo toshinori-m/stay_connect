@@ -63,19 +63,17 @@ export default {
         const provider = new GoogleAuthProvider()
         const result = await signInWithPopup(auth, provider)
         const user = result.user
-        const name = user.displayName
-        const email = user.email
-        this.$store.commit('setUser', {
-          name: name,
-          email: email,
-          uid: user.uid
-        })
         const res = await axios.post('http://localhost:3001/users', {
           user: {
-            name: name,
-            email: email,
+            name: user.displayName,
+            email: user.email,
             uid: user.uid
           }
+        })
+        this.$store.commit('setUser', {
+          name: user.displayName,
+          email: user.email,
+          uid: user.uid
         })
         this.$router.push({ name: 'HomePage' })
         return res
