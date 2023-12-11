@@ -25,6 +25,9 @@ const store = createStore({
       if (user) {
         commit('setUser', JSON.parse(user))
       }
+    },
+    logout({ commit }) {
+      commit('setUser', null)
     }
   },
   getters: {
