@@ -15,27 +15,24 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { getAuth, sendPasswordResetEmail } from "firebase/auth"
 
 export default {
   data() {
     return {
-      password: "",
       email: "",
       error: null
     }
   },
   methods: {
-    async SetSendEmail() {
+    async redirectToSetSendEmail() {
       try {
         this.error = null
-        await axios.post('http://localhost:3001/auth/password#create', {
-          redirect_url: this.password,
-          email: this.email
-        })
-        this.$router.push({ name: 'PasswordPage' })
+        const auth = getAuth()
+        await sendPasswordResetEmail(auth, this.email)
+        alert('再設定のご案内メールを送信しました。')
       } catch (error) {
-      this.error = 'メールアドレスが違います'
+        this.error = 'メール送信に失敗しました。正しいメールアドレスを入力してください。'
       }
     }
   }
