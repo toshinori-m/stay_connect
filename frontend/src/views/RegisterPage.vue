@@ -41,8 +41,8 @@ export default {
     return {
       name: '',
       email: '',
-      password:'',
-      passwordConfirmation:'',
+      password: '',
+      passwordConfirmation: '',
       error: null
     }
   },
