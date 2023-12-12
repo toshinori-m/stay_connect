@@ -17,7 +17,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
+
 export default {
   data() {
     return {
@@ -31,12 +32,13 @@ export default {
         this.error = null
         await axios.post('http://localhost:3001/prefectures', {
           name: this.name,
-          'access-token': localStorage.getItem('access-token'),
-          client: localStorage.getItem('client'),
-          uid: localStorage.getItem('uid')
+        }, {
+          headers: {
+            'uid': JSON.parse(localStorage.getItem('currentUser')).uid
+          }
         })
         this.$router.push({ name: 'EventSettingPage' })
-      } catch (error) {
+      } catch {
         this.error = '都道府県名に誤りがあります。'
       }
     },
