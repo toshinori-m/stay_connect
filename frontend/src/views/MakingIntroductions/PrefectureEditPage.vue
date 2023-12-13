@@ -22,7 +22,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
+import getItem from '@/auth/getItem'
 
 export default {
   data() {
@@ -36,9 +37,7 @@ export default {
       try {
         this.error = null
         const res = await axios.get(`http://localhost:3001/prefectures/`, {
-          headers: {
-            'uid': JSON.parse(localStorage.getItem('currentUser')).uid
-          }
+          headers: getItem
         })
         this.prefectures = res.data.data
       } catch {
@@ -53,9 +52,7 @@ export default {
         await axios.patch(`http://localhost:3001/prefectures/${prefectureId}`, {
           name: prefecture.name,
         }, {
-          headers: {
-            'uid': JSON.parse(localStorage.getItem('currentUser')).uid
-          }
+          headers: getItem
         })
         this.$router.push({ name: 'PrefecturePage' })
       } catch {
@@ -66,9 +63,7 @@ export default {
       try {
         this.error = null
         await axios.delete(`http://localhost:3001/prefectures/${prefectureId}`, {
-          headers: {
-            'uid': JSON.parse(localStorage.getItem('currentUser')).uid
-          }
+          headers: getItem
         })
         this.$router.push({ name: 'PrefecturePage' })
       } catch {

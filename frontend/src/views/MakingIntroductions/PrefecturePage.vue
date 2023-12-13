@@ -18,6 +18,7 @@
 
 <script>
 import axios from 'axios'
+import getItem from '@/auth/getItem'
 
 export default {
   data() {
@@ -33,9 +34,7 @@ export default {
         await axios.post('http://localhost:3001/prefectures', {
           name: this.name,
         }, {
-          headers: {
-            'uid': JSON.parse(localStorage.getItem('currentUser')).uid
-          }
+          headers: getItem
         })
         this.$router.push({ name: 'EventSettingPage' })
       } catch {
