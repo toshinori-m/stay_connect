@@ -35,7 +35,7 @@ export default {
     async getSportsType() {
       try {
         this.error = null
-        const res = await apiClient.get(`/sports_types`)
+        const res = await apiClient.get('/sports_types')
         this.sports_types = res.data.data
       } catch {
         this.error = '競技名を表示できませんでした。'
