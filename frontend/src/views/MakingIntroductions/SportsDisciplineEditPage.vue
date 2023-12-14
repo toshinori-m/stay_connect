@@ -5,7 +5,7 @@
       <button class="cancel_button mx-5 float-right" @click="sports_discipline_cancel">戻る</button>
       <div class="error text-sm text-red-400">{{ error }}</div>
       <div class="text-center">
-        <div class="mt-10 mb-1 xl:text-left xl:grid grid-cols-3 gap-4">
+        <div class="mt-1 mb-5 xl:text-left xl:grid grid-cols-3 gap-4">
           <label class="xl:mt-3 xl:mx-auto ml-4 mr-10" for="type">競技</label>
           <select class="xl:place-self-center py-2 px-1 my-2 w-72 border-2 border-gray-200 box-border" v-model="sport_type_selected" @change="getSportsDiscipline" >
             <option disabled value="">1つを選択して下さい</option>
@@ -31,8 +31,7 @@
 </template>
 
 <script>
-import axios from 'axios'
-import getItem from '@/auth/getItem'
+import apiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -47,9 +46,7 @@ export default {
     async getSportsType() {
       try {
         this.error = null
-        const res = await axios.get('http://localhost:3001/sports_types', {
-          headers: getItem
-        })
+        const res = await apiClient.get('/sports_types')
         this.sports_types = res.data.data
       } catch {
         this.error = '競技を表示できませんでした。競技を選択して下さい。'
@@ -58,11 +55,10 @@ export default {
     async getSportsDiscipline() {
       try {
         this.error = null
-        const res = await axios.get('http://localhost:3001/sports_disciplines', {
+        const res = await apiClient.get('/sports_disciplines', {
           params: {
             sports_type_id: this.sport_type_selected.id
-          },
-          headers: getItem
+          }
         })
         this.sports_disciplines = res.data.data
       } catch {
@@ -74,10 +70,8 @@ export default {
         this.error = null
         const sportsDiscipline = this.sports_disciplines.find(sports_discipline => sports_discipline.id === sportsDisciplineId);
         if (!sportsDiscipline) return;
-        await axios.patch(`http://localhost:3001/sports_disciplines/${sportsDisciplineId}`, {
+        await apiClient.patch(`/sports_disciplines/${sportsDisciplineId}`, {
           name: sportsDiscipline.name
-        }, {
-          headers: getItem
         })
         this.$router.push({ name: 'SportsDisciplinePage' })
       } catch {
@@ -87,9 +81,7 @@ export default {
     async deleteSportsDiscipline(sportsDisciplineId) {
       try {
         this.error = null
-        await axios.delete(`http://localhost:3001/sports_disciplines/${sportsDisciplineId}`, {
-          headers: getItem
-        })
+        await apiClient.delete(`/sports_disciplines/${sportsDisciplineId}`)
         this.$router.push({ name: 'SportsDisciplinePage' })
       } catch {
         this.error = '競技名を削除出来ませんでした。'

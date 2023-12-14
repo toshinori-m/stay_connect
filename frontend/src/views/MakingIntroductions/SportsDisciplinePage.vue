@@ -27,8 +27,7 @@
 </template>
 
 <script>
-import axios from 'axios'
-import getItem from '@/auth/getItem'
+import apiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -43,9 +42,7 @@ export default {
     async getSportsType() {
       try {
         this.error = null
-        const res = await axios.get('http://localhost:3001/sports_types', {
-          headers: getItem
-        })
+        const res = await apiClient.get('/sports_types')
         this.sports_types = res.data.data
       } catch {
         this.error = '競技を表示できませんでした。競技を選択して下さい。'
@@ -54,11 +51,9 @@ export default {
     async sports_discipline() {
       try {
         this.error = null
-        await axios.post('http://localhost:3001/sports_disciplines', {
+        await apiClient.post('/sports_disciplines', {
           sports_type_id: this.selected,
           name: this.name
-        }, {
-          headers: getItem
         })
         this.$router.push({ name: 'EventSettingPage' })
       } catch {
