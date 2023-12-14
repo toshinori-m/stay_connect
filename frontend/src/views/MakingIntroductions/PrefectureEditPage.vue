@@ -22,8 +22,7 @@
 </template>
 
 <script>
-import axios from 'axios'
-import getItem from '@/auth/getItem'
+import apiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -36,9 +35,7 @@ export default {
     async getPrefecture() {
       try {
         this.error = null
-        const res = await axios.get(`http://localhost:3001/prefectures/`, {
-          headers: getItem
-        })
+        const res = await apiClient.get(`/prefectures/`)
         this.prefectures = res.data.data
       } catch {
       this.error = '競技名を表示できませんでした。'
@@ -49,10 +46,8 @@ export default {
         this.error = null
         const prefecture = this.prefectures.find(prefecture => prefecture.id === prefectureId);
         if (!prefecture) return;
-        await axios.patch(`http://localhost:3001/prefectures/${prefectureId}`, {
+        await apiClient.patch(`/prefectures/${prefectureId}`, {
           name: prefecture.name,
-        }, {
-          headers: getItem
         })
         this.$router.push({ name: 'PrefecturePage' })
       } catch {
@@ -62,15 +57,13 @@ export default {
     async deletePrefecture(prefectureId) {
       try {
         this.error = null
-        await axios.delete(`http://localhost:3001/prefectures/${prefectureId}`, {
-          headers: getItem
-        })
+        await apiClient.delete(`/prefectures/${prefectureId}`)
         this.$router.push({ name: 'PrefecturePage' })
       } catch {
         this.error = '競技名を削除出来ませんでした。'
       }
     },
-    prefectureCancel () {
+    prefectureCancel() {
       this.$router.push({name: 'PrefecturePage'})
     }
   },

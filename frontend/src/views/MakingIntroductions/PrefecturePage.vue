@@ -17,8 +17,7 @@
 </template>
 
 <script>
-import axios from 'axios'
-import getItem from '@/auth/getItem'
+import apiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -31,10 +30,8 @@ export default {
     async prefecture() {
       try {
         this.error = null
-        await axios.post('http://localhost:3001/prefectures', {
-          name: this.name,
-        }, {
-          headers: getItem
+        await apiClient.post('/prefectures', {
+          name: this.name
         })
         this.$router.push({ name: 'EventSettingPage' })
       } catch {
