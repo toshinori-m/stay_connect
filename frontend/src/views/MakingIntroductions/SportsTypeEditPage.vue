@@ -22,8 +22,7 @@
 </template>
 
 <script>
-import axios from 'axios'
-import getItem from '@/auth/getItem'
+import apiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -36,9 +35,7 @@ export default {
     async getSportsType() {
       try {
         this.error = null
-        const res = await axios.get(`http://localhost:3001/sports_types/`, {
-          headers: getItem
-        })
+        const res = await apiClient.get(`/sports_types`)
         this.sports_types = res.data.data
       } catch {
         this.error = '競技名を表示できませんでした。'
@@ -49,10 +46,8 @@ export default {
         this.error = null
         const sportsType = this.sports_types.find(sports_type => sports_type.id === sportsTypeId);
         if (!sportsType) return;
-        await axios.patch(`http://localhost:3001/sports_types/${sportsTypeId}`, {
+        await apiClient.patch(`/sports_types/${sportsTypeId}`, {
           name: sportsType.name
-        }, {
-          headers: getItem
         })
         this.$router.push({ name: 'SportsTypePage' })
       } catch {
@@ -62,9 +57,7 @@ export default {
     async deleteSportsType(sportsTypeId) {
       try {
         this.error = null
-        await axios.delete(`http://localhost:3001/sports_types/${sportsTypeId}`, {
-          headers: getItem
-        })
+        await apiClient.delete(`/sports_types/${sportsTypeId}`)
         this.$router.push({ name: 'SportsTypePage' })
       } catch {
         this.error = '競技名を削除出来ませんでした。'

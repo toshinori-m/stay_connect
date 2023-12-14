@@ -17,8 +17,7 @@
 </template>
 
 <script>
-import axios from 'axios'
-import getItem from '@/auth/getItem'
+import apiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -31,10 +30,8 @@ export default {
     async sportType() {
       try {
         this.error = null
-        await axios.post('http://localhost:3001/sports_types', {
+        await apiClient.post('/sports_types', {
           name: this.name
-        }, {
-          headers: getItem
         })
         this.$router.push({ name: 'EventSettingPage' })
       } catch {
