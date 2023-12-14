@@ -13,7 +13,7 @@
               </li>
               <li><button class="delete_button" @click="deleteTargetAge(target_age.id)">削除</button>
               </li>
-          </ul>
+            </ul>
           </form>
         </div>
       </div>
