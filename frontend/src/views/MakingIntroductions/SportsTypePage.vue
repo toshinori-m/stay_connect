@@ -17,7 +17,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/lib/apiClient'
+
 export default {
   data() {
     return {
@@ -29,14 +30,11 @@ export default {
     async sportType() {
       try {
         this.error = null
-        await axios.post('http://localhost:3001/sports_types', {
-          name: this.name,
-          'access-token': localStorage.getItem('access-token'),
-          client: localStorage.getItem('client'),
-          uid: localStorage.getItem('uid')
+        await apiClient.post('/sports_types', {
+          name: this.name
         })
         this.$router.push({ name: 'EventSettingPage' })
-      } catch (error) {
+      } catch {
         this.error = '競技名に誤りがあります。'
       }
     },

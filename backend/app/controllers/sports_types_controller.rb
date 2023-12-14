@@ -1,5 +1,5 @@
 class SportsTypesController < ApplicationController
-  before_action :authenticate_user!, except: [:index]
+  before_action :authenticate, except: [:index]
   
   def create
     sports_types = SportsType.new(create_params)
