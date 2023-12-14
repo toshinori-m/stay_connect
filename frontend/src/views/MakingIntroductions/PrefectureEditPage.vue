@@ -4,7 +4,7 @@
       <h2 class="text-center pt-10 font-bold text-3xl text-blue-600 mt-16 md:mt-1">都道府県名編集</h2>
         <button class="cancel_button mx-5 float-right" @click="prefectureCancel">戻る</button>
         <div class="my-10">
-        <div class="error text-sm text-red-400" v-for="(errMsg, index) in errors" :key="index">{{ errMsg }}</div>
+          <div class="error text-sm text-red-400">{{ error }}</div>
         <div class="rounded-2xl mt-2 mx-auto py-2 px-3 sm:w-4/5 md:w-3/4" v-for="prefecture in prefectures" :key="prefecture.id">
           <form class= "prefecture text-center" @submit.prevent="editPrefecture(prefecture.id)">
             <input class="sm:ml-4 sm:mr-6 py-3 px-3 w-72 border-2 border-gray-200 box-border" type="text" v-model="prefecture.name">
@@ -22,61 +22,48 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/lib/apiClient'
 
 export default {
   data() {
     return {
       prefectures: [],
-      errors: []
+      error: null
     }
   },
   methods: {
     async getPrefecture() {
       try {
-        this.errors = []
-        const res = await axios.get(`http://localhost:3001/prefectures/`, {
-          'access-token': localStorage.getItem('access-token'),
-          client: localStorage.getItem('client'),
-          uid: localStorage.getItem('uid')
-        })
+        this.error = null
+        const res = await apiClient.get(`/prefectures/`)
         this.prefectures = res.data.data
-      } catch (error) {
-      this.errors.push('競技名を表示できませんでした。')
+      } catch {
+      this.error = '競技名を表示できませんでした。'
       }
     },
     async editPrefecture(prefectureId) {
       try {
-        this.errors = []
+        this.error = null
         const prefecture = this.prefectures.find(prefecture => prefecture.id === prefectureId);
         if (!prefecture) return;
-        await axios.patch(`http://localhost:3001/prefectures/${prefectureId}`, {
+        await apiClient.patch(`/prefectures/${prefectureId}`, {
           name: prefecture.name,
-          'access-token': localStorage.getItem('access-token'),
-          client: localStorage.getItem('client'),
-          uid: localStorage.getItem('uid')
         })
         this.$router.push({ name: 'PrefecturePage' })
-      } catch (error) {
-        this.errors.push('競技名に誤りがあります。')
+      } catch {
+        this.error = '競技名に誤りがあります。'
       }
     },
     async deletePrefecture(prefectureId) {
       try {
-        this.errors = []
-        await axios.delete(`http://localhost:3001/prefectures/${prefectureId}`, {
-          data: {
-            'access-token': localStorage.getItem('access-token'),
-            client: localStorage.getItem('client'),
-            uid: localStorage.getItem('uid')
-          }
-        })
+        this.error = null
+        await apiClient.delete(`/prefectures/${prefectureId}`)
         this.$router.push({ name: 'PrefecturePage' })
-      } catch (error) {
-        this.errors.push('競技名を削除出来ませんでした。')
+      } catch {
+        this.error = '競技名を削除出来ませんでした。'
       }
     },
-    prefectureCancel () {
+    prefectureCancel() {
       this.$router.push({name: 'PrefecturePage'})
     }
   },

@@ -5,6 +5,7 @@ module Session
   end
 
   def current_user
-    @_current_user ||= User.find_by(uid: params[:uid])
+    uid = request.headers['uid']
+    @_current_user ||= User.find_by(uid: uid)
   end
 end
