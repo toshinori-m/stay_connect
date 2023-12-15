@@ -4,7 +4,7 @@
       <h2 class="text-center pt-10 font-bold text-3xl text-blue-600 mt-16 md:mt-1">イベント一覧</h2>
       <button class="cancel_button mx-5 float-right" @click="EventSettingCancel">戻る</button>
       <div class="my-14">
-        <div class="error text-sm text-red-400" v-for="(errMsg, index) in errors" :key="index">{{ errMsg }}</div>
+        <div class="error text-sm text-red-400">{{ error }}</div>
         <div class="text-left my-3 sm:ml-4 sm:mr-6 w-72 pt-3 ring-offset-2 ring-2 rounded-lg" type="text" v-for="recruitment in recruitments" :key="recruitment.id">イベント名:{{ recruitment.name }}
           <div class="flex justify-center">
             <button class="update_button" @click="editRecruitment(recruitment.id)">更新</button>
@@ -16,29 +16,23 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/lib/apiClient'
 
 export default {
   data() {
     return {
       recruitments: [],
-      errors: []
+      error: null
     }
   },
   methods: {
     async getRecruitment() {
       try {
-        this.errors = []
-        const res = await axios.get(`http://localhost:3001/recruitments`, {
-          headers: {
-          uid: window.localStorage.getItem('uid'),
-          "access-token": window.localStorage.getItem('access-token'),
-          client: window.localStorage.getItem('client')
-          }
-        })
+        this.error = null
+        const res = await apiClient.get('/recruitments')
         this.recruitments = res.data.data
-      } catch (error) {
-      this.errors.push('競技名を表示できませんでした。')
+      } catch {
+      this.error = '競技名を表示できませんでした。'
       }
     },
     async editRecruitment(recruitmentId) {
