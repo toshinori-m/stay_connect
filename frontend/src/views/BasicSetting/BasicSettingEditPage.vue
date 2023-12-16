@@ -4,7 +4,6 @@
       <h2 class="text-center pt-10 font-bold text-3xl text-blue-600">基本設定編集</h2>
       <button class="cancel_button mx-5 float-right" @click="BasicSettingEditCancel">戻る</button>
       <div class="my-10">
-        <div class="error text-sm text-red-400" v-for="(errMsg, index) in error" :key="index">{{ errMsg }}</div>
         <form class= "text-center" @submit.prevent="basicSettingEdit">
           <ul>
             <li class="xl:grid grid-cols-3 gap-4">
@@ -15,7 +14,7 @@
               <label class="xl:place-self-start xl:mt-3 xl:mr-4 xl:ml-3" for="icon">アイコン</label>
               <input class="xl:place-self-center mx-6 py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="icon" type="file" @change="setImage($event)">
             </li>
-            <img class="text-gray-400" :src="image" alt="アイコンのイメージ">
+            <img class="text-gray-400" :src="user.image_url" alt="アイコンのイメージ">
             <li class="xl:grid grid-cols-3 gap-4 mt-5">
               <label class="sm:float-left sm:mt-4 sm:ml-7 sm:-mr-4 xl:mt-3 xl:mr-20 xl:ml-1 xl:mr-24 mx-2" for="birthday">誕生日</label>
               <input class="xl:place-self-center mx-6 py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="birthday" type="date" required placeholder="誕生日" v-model="user.birthday">
@@ -57,28 +56,26 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
+import apiClient from '@/lib/apiClient'
+import { mapActions, mapGetters } from "vuex"
+
 export default {
   data() {
     return {
       user: {},
-      image: null,
+      imageFile: null,
       email_notification: 'receives',
       error: null
     }
+  },
+  computed: {
+    ...mapGetters("posts", ["posts"])
   },
   methods: {
     async getBasicSettingEdit() {
       try {
         this.error = null
-        const res = await axios.get('http://localhost:3001/users', {
-          headers: {
-          uid: window.localStorage.getItem('uid'),
-          "access-token": window.localStorage.getItem('access-token'),
-          client: window.localStorage.getItem('client'),
-          'Accept': 'application/json'
-          }
-        })
+        const res = await apiClient.get('/users')
         this.user = res.data.data
       } catch {
         this.$router.push({name: 'LoginPage'})
@@ -87,38 +84,39 @@ export default {
     async basicSettingEdit() {
       try {
         this.error = null
-        if (!this.user) return
-        await axios.patch(`http://localhost:3001/users/${this.user.id}`, {
-          name: this.user.name,
-          email: this.user.email,
-          image: this.user.image,
-          birthday: this.user.birthday,
-          sex: this.user.sex,
-          self_introduction: this.user.self_introduction,
-          email_notification: this.user.email_notification
-        }, {
-          headers: {
-            'access-token': localStorage.getItem('access-token'),
-            client: localStorage.getItem('client'),
-            uid: localStorage.getItem('uid'),
-            'Accept': 'application/json'
-          }
-        })
+        const formData = new FormData()
+        formData.append('user[name]', this.user.name)
+        formData.append('user[email]', this.user.email)
+        formData.append('user[birthday]', this.user.birthday)
+        formData.append('user[sex]', this.user.sex)
+        formData.append('user[email_notification]', this.user.email_notification)
+        if (this.user.self_introduction) {
+          formData.append('user[self_introduction]', this.user.self_introduction);
+        }
+        if (this.imageFile) {
+          formData.append('user[image]', this.imageFile);
+        }
+        if (!this.user || !this.user.id) return
+        await apiClient.patch(`/users/${this.user.id}`, formData)
         this.$router.push({ name: 'HomePage' })
       } catch {
         this.error = '基本設定に誤りがあります。'
       }
     },
-    setImage(e) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.image = e.target.result;
-      };
-      reader.readAsDataURL(file);
+    ...mapActions("posts", ["createPost"]),
+    setImage(event) {
+      const file = event.target.files[0]
+      if (file) {
+        this.imageFile = file
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          this.user.image_url = e.target.result
+        }
+        reader.readAsDataURL(this.imageFile)
+      }
     },
       toggleEmailNotification(event) {
-      this.user.email_notification = event.target.checked ? 'receives' : 'not_receive';
+      this.user.email_notification = event.target.checked ? 'receives' : 'not_receive'
     },
     redirectToSendEmail() {
       this.$router.push({name: 'SendEmailPage'})
