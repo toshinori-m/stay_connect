@@ -75,7 +75,8 @@ export default {
     async getBasicSettingEdit() {
       try {
         this.error = null
-        const res = await apiClient.get('/users')
+        const uid = JSON.parse(localStorage.getItem('currentUser')).uid
+        const res = await apiClient.get(`/users/${uid}`)
         this.user = res.data.data
       } catch {
         this.$router.push({name: 'LoginPage'})

@@ -14,7 +14,7 @@ class UsersController < ApplicationController
     render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity and return unless @user.update(user_params)
   end
 
-  def index
+  def show
     @user = current_user
   end
 
