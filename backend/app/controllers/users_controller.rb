@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :authenticate, except: [:create, :show]
+  before_action :authenticate, except: [:create]
   
   def create
     existing_user = User.find_by(email: user_params[:email])
@@ -11,7 +11,7 @@ class UsersController < ApplicationController
 
   def update
     @user = User.find(params[:id])
-    @user.update(user_params)
+    render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity and return unless @user.update(user_params)
   end
 
   def show
