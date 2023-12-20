@@ -8,7 +8,7 @@ class ChatRoomsController < ApplicationController
       chat_room_user = ChatRoomUser.new(user: current_user, chat_room: @chat_room)
       chat_room_user.save!
     end
-    rescue ActiveRecord::RecordInvalid => e
+  rescue ActiveRecord::RecordInvalid => e
     render json: { errors: e.record.errors.full_messages }, status: 400
   end
 

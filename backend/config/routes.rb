@@ -22,7 +22,7 @@ Rails.application.routes.draw do
     resources :chat_rooms, defaults: { format: 'json' } do
       scope module: :chat_rooms do
         resources :chat_messages, defaults: { format: 'json' }
-        resources :chat_room_users
+        resources :chat_room_users, only: [:index, :create]
       end
     end
   end

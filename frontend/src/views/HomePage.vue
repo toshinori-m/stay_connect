@@ -12,9 +12,6 @@ export default {
     },
     isUserLoggedIn() {
       return this.$store.getters.isUserLoggedIn
-    },
-    apiClientUid() {
-      return this.$store.state.apiClientUid
     }
   },
   mounted() {
