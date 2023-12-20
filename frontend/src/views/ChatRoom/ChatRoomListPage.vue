@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -31,16 +31,10 @@ export default {
     async getChatRoomList() {
       try {
         this.error = null
-        const res = await axios.get(`http://localhost:3001/chat_rooms`, {
-          headers: {
-          uid: window.localStorage.getItem('uid'),
-          "access-token": window.localStorage.getItem('access-token'),
-          client: window.localStorage.getItem('client')
-          }
-        })
+        const res = await apiClient.get('/chat_rooms')
         this.chat_rooms = res.data
-      } catch {
-        this.errors.push('チャットルームを表示できませんでした。')
+      } catch (error) {
+        this.error = error.response ? error.response.data :'チャットルームを表示できませんでした。'
       }
     },
     editChatRoom(chatRoomId) {
