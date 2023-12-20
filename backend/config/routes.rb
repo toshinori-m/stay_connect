@@ -20,13 +20,9 @@ Rails.application.routes.draw do
     resources :prefectures
     
     resources :chat_rooms, defaults: { format: 'json' } do
-      member do
-        post 'add_user', to: 'chat_rooms#add_user'
-      end
-      
       scope module: :chat_rooms do
         resources :chat_messages, defaults: { format: 'json' }
-        resources :users, only: [:index, :create, :destroy], controller: 'chat_room_users'
+        resources :chat_room_users, only: [:index, :create]
       end
     end
   end
