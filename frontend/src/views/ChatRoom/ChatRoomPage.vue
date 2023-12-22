@@ -67,7 +67,7 @@ export default {
     }
   },
   mounted() {
-    const consumer = createConsumer(`ws://localhost:3001/cable?uid=${JSON.parse(localStorage.getItem('currentUser')).uid}`)
+    const consumer = createConsumer(`ws://localhost:3001/cable?uid=${this.$store.getters['uid']}`)
     this.messageChannel = consumer.subscriptions.create({ channel: "RoomChannel", room_id: this.$route.params.id }, {
       connected: () => {
         this.getChatMessage()

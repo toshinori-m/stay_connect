@@ -33,6 +33,9 @@ const store = createStore({
   getters: {
     isUserLoggedIn: state => {
       return !!state.currentUser
+    },
+    uid: state => {
+      return state.currentUser ? state.currentUser.uid : null
     }
   }
 })
