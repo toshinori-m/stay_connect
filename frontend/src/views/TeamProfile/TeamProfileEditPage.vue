@@ -117,11 +117,11 @@ export default {
       try {
         this.errors = []
         const teamId = this.$route.params.id;
-        const res = await apiClient.get(`http://localhost:3001/teams/${teamId}`)
+        const res = await apiClient.get(`/teams/${teamId}`)
         this.team = res.data.data
-        const rdsRes = await apiClient.get(`http://localhost:3001/teams/${teamId}/sports_disciplines`)
+        const rdsRes = await apiClient.get(`/teams/${teamId}/sports_disciplines`)
         this.team_sports_disciplines = rdsRes.data
-        const rtaRes = await apiClient.get(`http://localhost:3001/teams/${teamId}/target_ages`)
+        const rtaRes = await apiClient.get(`/teams/${teamId}/target_ages`)
         this.team_target_ages = rtaRes.data
         this.getSportsType()
         this.getPrefectures()
@@ -133,7 +133,7 @@ export default {
     async getSportsType() {
       try {
         this.errors = []
-        const res = await apiClient.get('http://localhost:3001/sports_types')
+        const res = await apiClient.get('/sports_types')
         this.sports_types = res.data.data
         const sportsTypeId = this.team.sports_type_id;
         this.sports_type_selected = this.sports_types.find(st => st.id === sportsTypeId);
@@ -145,7 +145,7 @@ export default {
     async getSportsDiscipline() {
       try {
         this.errors = []
-        const res = await apiClient.get('http://localhost:3001/sports_disciplines', {
+        const res = await apiClient.get('/sports_disciplines', {
           params: {
             sports_type_id: this.sports_type_selected.id
           }
@@ -160,7 +160,7 @@ export default {
     async getPrefectures () {
       try {
         this.errors = []
-        const res = await apiClient.get('http://localhost:3001/prefectures')
+        const res = await apiClient.get('/prefectures')
         this.prefectures = res.data.data
         this.prefecture_selected = this.team.prefecture_id;
       } catch {
@@ -170,7 +170,7 @@ export default {
     async getTargetAge() {
       try {
         this.errors = []
-        const res = await apiClient.get('http://localhost:3001/target_ages')
+        const res = await apiClient.get('/target_ages')
         this.target_ages = res.data.data
         this.target_age_selected = this.team_target_ages.map(rta => 
         this.target_ages.find(ta => ta.id === rta.target_age_id)).filter(Boolean);
@@ -184,7 +184,7 @@ export default {
         const disciplineIds = this.sports_discipline_selected.map(discipline => discipline.id);
         const targetAgeIds = this.target_age_selected.map(target => target.id);
         if (!this.team) return;
-        await apiClient.patch(`http://localhost:3001/teams/${this.team.id}`, {
+        await apiClient.patch(`/teams/${this.team.id}`, {
           team: { 
             name: this.team.name,
             area: this.team.area,
@@ -208,7 +208,7 @@ export default {
       try {
         this.errors = []
         if (!this.team) return;
-        await apiClient.delete(`http://localhost:3001/teams/${this.team.id}`)
+        await apiClient.delete(`/teams/${this.team.id}`)
         this.$router.push({ name: 'TeamProfileListPage' })
       } catch {
         this.errors.push('チーム紹介を削除出来ませんでした。')

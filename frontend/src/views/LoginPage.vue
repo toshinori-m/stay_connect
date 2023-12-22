@@ -51,7 +51,7 @@ export default {
         })
         this.$router.push({ name: 'HomePage' })
         return res
-      } catch (error) {
+      } catch {
         this.error = 'メールアドレスかパスワードが違います'
       }
     },
@@ -67,7 +67,7 @@ export default {
           uid: user.uid
         })
         this.$router.push({ name: 'HomePage' })
-      } catch (error) {
+      } catch {
         this.error = "ユーザー登録からGoogleアカウントで登録して下さい"
       }
     },

@@ -39,7 +39,7 @@ export default {
     async getTeamProfile() {
       try {
         this.error = null
-        const res = await apiClient.get('http://localhost:3001/teams')
+        const res = await apiClient.get('/teams')
         this.teams = res.data
       } catch {
         this.error = 'チーム紹介名を表示できませんでした。'
