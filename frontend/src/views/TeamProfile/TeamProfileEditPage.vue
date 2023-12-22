@@ -87,7 +87,7 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
+import apiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -117,19 +117,12 @@ export default {
       try {
         this.errors = []
         const teamId = this.$route.params.id;
-        const res = await axios.get(`http://localhost:3001/teams/${teamId}`, {
-          headers: {
-            'access-token': localStorage.getItem('access-token'),
-            'client': localStorage.getItem('client'),
-            'uid': localStorage.getItem('uid'),
-            'Accept': 'application/json'
-          }
-        })
+        const res = await apiClient.get(`http://localhost:3001/teams/${teamId}`)
         this.team = res.data.data
-        const rdsRes = await axios.get(`http://localhost:3001/teams/${teamId}/sports_disciplines`);
-        this.team_sports_disciplines = rdsRes.data;
-        const rtaRes = await axios.get(`http://localhost:3001/teams/${teamId}/target_ages`);
-        this.team_target_ages = rtaRes.data;
+        const rdsRes = await apiClient.get(`http://localhost:3001/teams/${teamId}/sports_disciplines`)
+        this.team_sports_disciplines = rdsRes.data
+        const rtaRes = await apiClient.get(`http://localhost:3001/teams/${teamId}/target_ages`)
+        this.team_target_ages = rtaRes.data
         this.getSportsType()
         this.getPrefectures()
         this.getTargetAge()
@@ -140,13 +133,7 @@ export default {
     async getSportsType() {
       try {
         this.errors = []
-        const res = await axios.get('http://localhost:3001/sports_types', {
-          headers: {
-          uid: window.localStorage.getItem('uid'),
-          "access-token": window.localStorage.getItem('access-token'),
-          client: window.localStorage.getItem('client')
-          }
-        })
+        const res = await apiClient.get('http://localhost:3001/sports_types')
         this.sports_types = res.data.data
         const sportsTypeId = this.team.sports_type_id;
         this.sports_type_selected = this.sports_types.find(st => st.id === sportsTypeId);
@@ -158,14 +145,9 @@ export default {
     async getSportsDiscipline() {
       try {
         this.errors = []
-        const res = await axios.get('http://localhost:3001/sports_disciplines', {
+        const res = await apiClient.get('http://localhost:3001/sports_disciplines', {
           params: {
             sports_type_id: this.sports_type_selected.id
-          },
-          headers: {
-            'access-token': localStorage.getItem('access-token'),
-            client: localStorage.getItem('client'),
-            uid: localStorage.getItem('uid')
           }
         })
         this.sports_disciplines = res.data.data
@@ -178,13 +160,7 @@ export default {
     async getPrefectures () {
       try {
         this.errors = []
-        const res = await axios.get('http://localhost:3001/prefectures', {
-          headers: {
-            uid: window.localStorage.getItem('uid'),
-            "access-token": window.localStorage.getItem('access-token'),
-            client: window.localStorage.getItem('client')
-          }
-        })
+        const res = await apiClient.get('http://localhost:3001/prefectures')
         this.prefectures = res.data.data
         this.prefecture_selected = this.team.prefecture_id;
       } catch {
@@ -194,13 +170,7 @@ export default {
     async getTargetAge() {
       try {
         this.errors = []
-        const res = await axios.get('http://localhost:3001/target_ages', {
-          headers: {
-            uid: window.localStorage.getItem('uid'),
-            "access-token": window.localStorage.getItem('access-token'),
-            client: window.localStorage.getItem('client')
-          }
-        })
+        const res = await apiClient.get('http://localhost:3001/target_ages')
         this.target_ages = res.data.data
         this.target_age_selected = this.team_target_ages.map(rta => 
         this.target_ages.find(ta => ta.id === rta.target_age_id)).filter(Boolean);
@@ -214,7 +184,7 @@ export default {
         const disciplineIds = this.sports_discipline_selected.map(discipline => discipline.id);
         const targetAgeIds = this.target_age_selected.map(target => target.id);
         if (!this.team) return;
-        await axios.patch(`http://localhost:3001/teams/${this.team.id}`, {
+        await apiClient.patch(`http://localhost:3001/teams/${this.team.id}`, {
           team: { 
             name: this.team.name,
             area: this.team.area,
@@ -225,12 +195,6 @@ export default {
             sports_discipline_ids: disciplineIds,
             prefecture_id: this.prefecture_selected,
             target_age_ids: targetAgeIds,
-          }
-        }, {
-          headers: {
-            'access-token': localStorage.getItem('access-token'),
-            client: localStorage.getItem('client'),
-            uid: localStorage.getItem('uid')
           }
         })
         this.$router.push({ name: 'TeamProfileListPage' })
@@ -244,13 +208,7 @@ export default {
       try {
         this.errors = []
         if (!this.team) return;
-        await axios.delete(`http://localhost:3001/teams/${this.team.id}`, {
-          data: {
-            'access-token': localStorage.getItem('access-token'),
-            client: localStorage.getItem('client'),
-            uid: localStorage.getItem('uid')
-          }
-        })
+        await apiClient.delete(`http://localhost:3001/teams/${this.team.id}`)
         this.$router.push({ name: 'TeamProfileListPage' })
       } catch {
         this.errors.push('チーム紹介を削除出来ませんでした。')

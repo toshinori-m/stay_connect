@@ -1,5 +1,5 @@
 class TeamsController < ApplicationController
-  before_action :authenticate_user!, except: [:show, :index]
+  before_action :authenticate, except: [:index]
   
   def create
     @team = current_user.teams.new(create_params)
