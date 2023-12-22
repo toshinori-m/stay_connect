@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -39,14 +39,7 @@ export default {
     async getTeamProfile() {
       try {
         this.error = null
-        const res = await axios.get(`http://localhost:3001/teams`, {
-          headers: {
-          uid: window.localStorage.getItem('uid'),
-          "access-token": window.localStorage.getItem('access-token'),
-          client: window.localStorage.getItem('client'),
-          'Accept': 'application/json'
-          }
-        })
+        const res = await apiClient.get('http://localhost:3001/teams')
         this.teams = res.data
       } catch {
         this.error = 'チーム紹介名を表示できませんでした。'
