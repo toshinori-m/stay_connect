@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-function getApiClient() {
+export default function getApiClient() {
   const user = localStorage.getItem('currentUser')
   const uid = !!user ? JSON.parse(user).uid : null
   return axios.create({
@@ -10,7 +10,3 @@ function getApiClient() {
     }
   })
 }
-
-const apiClient = getApiClient()
-
-export default apiClient

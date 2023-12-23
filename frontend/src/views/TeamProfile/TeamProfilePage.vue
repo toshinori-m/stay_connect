@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import apiClient from '@/lib/apiClient'
+import getApiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -129,6 +129,7 @@ export default {
         return this.target_age_selected_error = '対象年齢を選択して下さい';
       }
       try {
+        const apiClient = getApiClient()
         this.backend_errors = ""
         const disciplineIds = this.sports_discipline_selected.map(discipline => discipline.id)
         const targetAgeIds = this.target_age_selected.map(target => target.id)
@@ -154,6 +155,7 @@ export default {
     },
     async getSportsType () {
       try {
+        const apiClient = getApiClient()
         this.errors = []
         const res = await apiClient.get('/sports_types')
         this.sports_types = res.data.data
@@ -163,6 +165,7 @@ export default {
     },
     async getSportsDiscipline () {
       try {
+        const apiClient = getApiClient()
         this.errors = []
         const res = await apiClient.get('/sports_disciplines', {
           params: {
@@ -176,6 +179,7 @@ export default {
     },
     async getPrefectures () {
       try {
+        const apiClient = getApiClient()
         this.errors = []
         const res = await apiClient.get('/prefectures')
         this.prefectures = res.data.data
@@ -185,6 +189,7 @@ export default {
     },
     async getTargetAge () {
       try {
+        const apiClient = getApiClient()
         this.errors = []
         const res = await apiClient.get('/target_ages')
         this.target_ages = res.data.data

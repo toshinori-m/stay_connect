@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import apiClient from '@/lib/apiClient'
+import getApiClient from '@/lib/apiClient'
 import { auth } from "@/plugins/firebase"
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 
@@ -53,6 +53,7 @@ export default {
         return
       }
       try {
+        const apiClient = getApiClient()
         this.error = null
         const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password)
         const user = userCredential.user

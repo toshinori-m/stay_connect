@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import apiClient from '@/lib/apiClient'
+import getApiClient from '@/lib/apiClient'
 import { auth } from "@/plugins/firebase"
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 
@@ -42,6 +42,7 @@ export default {
     },
     async signInWithGoogle() {
       try {
+        const apiClient = getApiClient()
         this.error = null
         const provider = new GoogleAuthProvider()
         const result = await signInWithPopup(auth, provider)

@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import apiClient from '@/lib/apiClient'
+import getApiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -34,6 +34,7 @@ export default {
   methods: {
     async getTargetAge() {
       try {
+        const apiClient = getApiClient()
         this.error = null
         const res = await apiClient.get('/target_ages')
         this.target_ages = res.data.data
@@ -43,6 +44,7 @@ export default {
     },
     async editTargetAge(targetAgeId) {
       try {
+        const apiClient = getApiClient()
         this.error = null
         const targetAge = this.target_ages.find(target_age => target_age.id === targetAgeId);
         if (!targetAge) return;
@@ -56,6 +58,7 @@ export default {
     },
     async deleteTargetAge(targetAgeId) {
       try {
+        const apiClient = getApiClient()
         this.error = null
         await apiClient.delete(`/target_ages/${targetAgeId}`)
         this.$router.push({ name: 'TargetAgePage' })

@@ -105,7 +105,7 @@
   </div>
 </template>
 <script>
-import apiClient from '@/lib/apiClient'
+import getApiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -137,6 +137,7 @@ export default {
   methods: {
     async getEventSettingEdit() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
         const recruitmentId = this.$route.params.id;
         const res = await apiClient.get(`/recruitments/${recruitmentId}`)
@@ -154,6 +155,7 @@ export default {
     },
     async getSportsType() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
         const res = await apiClient.get('/sports_types')
         this.sports_types = res.data.data
@@ -166,6 +168,7 @@ export default {
     },
     async getSportsDiscipline() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
         const res = await apiClient.get('/sports_disciplines', {
           params: {
@@ -181,6 +184,7 @@ export default {
     },
     async getPrefectures () {
       try {
+        const apiClient = getApiClient()
         this.errors = []
         const res = await apiClient.get('/prefectures')
         this.prefectures = res.data.data
@@ -191,6 +195,7 @@ export default {
     },
     async getTargetAge() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
         const res = await apiClient.get('/target_ages')
         this.target_ages = res.data.data
@@ -202,6 +207,7 @@ export default {
     },
     async editEventSetting(recruitmentId) {
       try {
+        const apiClient = getApiClient()
         this.errors = []
         const disciplineIds = this.sports_discipline_selected.map(discipline => discipline.id);
         const targetAgeIds = this.target_age_selected.map(target => target.id);
@@ -234,6 +240,7 @@ export default {
     },
     async deleteEventSetting(recruitmentId) {
       try {
+        const apiClient = getApiClient()
         this.errors = []
         if (this.recruitments.id !== recruitmentId) return
         await apiClient.delete(`/recruitments/${recruitmentId}`)
