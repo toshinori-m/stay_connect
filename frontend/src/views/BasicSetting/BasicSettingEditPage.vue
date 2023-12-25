@@ -56,7 +56,7 @@
   </div>
 </template>
 <script>
-import apiClient from '@/lib/apiClient'
+import getApiClient from '@/lib/apiClient'
 import { mapActions, mapGetters } from "vuex"
 
 export default {
@@ -74,6 +74,7 @@ export default {
   methods: {
     async getBasicSettingEdit() {
       try {
+        const apiClient = getApiClient()
         this.error = null
         const uid = JSON.parse(localStorage.getItem('currentUser')).uid
         const res = await apiClient.get(`/users/${uid}`)
@@ -84,6 +85,7 @@ export default {
     },
     async basicSettingEdit() {
       try {
+        const apiClient = getApiClient()
         this.error = null
         const formData = new FormData()
         formData.append('user[name]', this.user.name)

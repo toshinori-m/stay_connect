@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import apiClient from '@/lib/apiClient'
+import getApiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -41,6 +41,7 @@ export default {
   methods: {
     async getSportsType() {
       try {
+        const apiClient = getApiClient()
         this.error = null
         const res = await apiClient.get('/sports_types')
         this.sports_types = res.data.data
@@ -50,6 +51,7 @@ export default {
     },
     async sports_discipline() {
       try {
+        const apiClient = getApiClient()
         this.error = null
         await apiClient.post('/sports_disciplines', {
           sports_type_id: this.selected,

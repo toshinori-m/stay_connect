@@ -31,7 +31,7 @@ export default {
         const auth = getAuth()
         await sendPasswordResetEmail(auth, this.email)
         alert('再設定のご案内メールを送信しました。')
-      } catch (error) {
+      } catch {
         this.error = 'メール送信に失敗しました。正しいメールアドレスを入力してください。'
       }
     }

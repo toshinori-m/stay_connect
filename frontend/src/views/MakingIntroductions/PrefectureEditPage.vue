@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import apiClient from '@/lib/apiClient'
+import getApiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -34,6 +34,7 @@ export default {
   methods: {
     async getPrefecture() {
       try {
+        const apiClient = getApiClient()
         this.error = null
         const res = await apiClient.get(`/prefectures/`)
         this.prefectures = res.data.data
@@ -43,6 +44,7 @@ export default {
     },
     async editPrefecture(prefectureId) {
       try {
+        const apiClient = getApiClient()
         this.error = null
         const prefecture = this.prefectures.find(prefecture => prefecture.id === prefectureId);
         if (!prefecture) return;
@@ -56,6 +58,7 @@ export default {
     },
     async deletePrefecture(prefectureId) {
       try {
+        const apiClient = getApiClient()
         this.error = null
         await apiClient.delete(`/prefectures/${prefectureId}`)
         this.$router.push({ name: 'PrefecturePage' })

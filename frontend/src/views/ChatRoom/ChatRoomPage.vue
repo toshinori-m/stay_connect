@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import apiClient from '@/lib/apiClient'
+import getApiClient from '@/lib/apiClient'
 import { createConsumer } from "@rails/actioncable"
 
 export default {
@@ -40,6 +40,7 @@ export default {
   methods: {
     async getChatMessage() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
         const res = await apiClient.get(`/chat_rooms/${this.$route.params.id}/chat_messages`)
         this.messages = res.data
@@ -49,6 +50,7 @@ export default {
     },
     async chatMessage() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
         await apiClient.post(`/chat_rooms/${this.$route.params.id}/chat_messages`, {
           chat_message: { 

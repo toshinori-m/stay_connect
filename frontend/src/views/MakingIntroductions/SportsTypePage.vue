@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import apiClient from '@/lib/apiClient'
+import getApiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -29,6 +29,7 @@ export default {
   methods: {
     async sportType() {
       try {
+        const apiClient = getApiClient()
         this.error = null
         await apiClient.post('/sports_types', {
           name: this.name

@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import getApiClient from '@/lib/apiClient'
 import { auth } from "@/plugins/firebase"
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 
@@ -53,10 +53,11 @@ export default {
         return
       }
       try {
+        const apiClient = getApiClient()
         this.error = null
         const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password)
         const user = userCredential.user
-        const res = await axios.post('http://localhost:3001/users', {
+        const res = await apiClient.post('/users', {
           user: {
             name: this.name,
             email: user.email,

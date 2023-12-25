@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import apiClient from '@/lib/apiClient'
+import getApiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -28,6 +28,7 @@ export default {
   methods: {
     async getRecruitment() {
       try {
+        const apiClient = getApiClient()
         this.error = null
         const res = await apiClient.get('/recruitments')
         this.recruitments = res.data.data

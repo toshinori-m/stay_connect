@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import getApiClient from '@/lib/apiClient'
 import { auth } from "@/plugins/firebase"
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 
@@ -42,11 +42,12 @@ export default {
     },
     async signInWithGoogle() {
       try {
+        const apiClient = getApiClient()
         this.error = null
         const provider = new GoogleAuthProvider()
         const result = await signInWithPopup(auth, provider)
         const user = result.user
-        const res = await axios.post('http://localhost:3001/users', {
+        const res = await apiClient.post('/users', {
           user: {
             name: user.displayName,
             email: user.email,

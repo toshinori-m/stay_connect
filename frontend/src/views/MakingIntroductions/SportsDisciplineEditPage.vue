@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import apiClient from '@/lib/apiClient'
+import getApiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -45,6 +45,7 @@ export default {
   methods: {
     async getSportsType() {
       try {
+        const apiClient = getApiClient()
         this.error = null
         const res = await apiClient.get('/sports_types')
         this.sports_types = res.data.data
@@ -54,6 +55,7 @@ export default {
     },
     async getSportsDiscipline() {
       try {
+        const apiClient = getApiClient()
         this.error = null
         const res = await apiClient.get('/sports_disciplines', {
           params: {
@@ -67,6 +69,7 @@ export default {
     },
     async editSportsDiscipline(sportsDisciplineId) {
       try {
+        const apiClient = getApiClient()
         this.error = null
         const sportsDiscipline = this.sports_disciplines.find(sports_discipline => sports_discipline.id === sportsDisciplineId);
         if (!sportsDiscipline) return;
@@ -80,6 +83,7 @@ export default {
     },
     async deleteSportsDiscipline(sportsDisciplineId) {
       try {
+        const apiClient = getApiClient()
         this.error = null
         await apiClient.delete(`/sports_disciplines/${sportsDisciplineId}`)
         this.$router.push({ name: 'SportsDisciplinePage' })

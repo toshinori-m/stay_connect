@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import apiClient from '@/lib/apiClient'
+import getApiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -38,9 +38,10 @@ export default {
   methods: {
     async getTeamProfile() {
       try {
+        const apiClient = getApiClient()
         this.error = null
-        const res = await apiClient.get('http://localhost:3001/teams')
-        this.teams = res.data
+        const res = await apiClient.get('/teams')
+        this.teams = res.data.data
       } catch {
         this.error = 'チーム紹介名を表示できませんでした。'
       }

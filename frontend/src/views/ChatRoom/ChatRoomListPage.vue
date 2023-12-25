@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import apiClient from '@/lib/apiClient'
+import getApiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -30,6 +30,7 @@ export default {
   methods: {
     async getChatRoomList() {
       try {
+        const apiClient = getApiClient()
         this.error = null
         const res = await apiClient.get('/chat_rooms')
         this.chat_rooms = res.data
