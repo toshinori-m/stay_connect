@@ -8,6 +8,6 @@ class SearchesController < ApplicationController
     @recruitments = @recruitments.joins(:target_ages).where(target_ages: { name: params[:target_age_name] }) if params[:target_age_name].present?
     @recruitments = @recruitments.joins(:sports_type).where(sports_types: { name: params[:sports_type_name] }) if params[:sports_type_name].present?
     
-    @recruitments = @recruitments.includes(:prefecture, :sports_disciplines, :target_ages, :sports_type)
+    @recruitments = @recruitments.preload(:prefecture, :sports_disciplines, :target_ages, :sports_type)
   end
 end

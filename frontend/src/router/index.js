@@ -10,9 +10,10 @@ import Register from '../views/RegisterPage'
 import Home from '../views/HomePage'
 import SportsType from '../views/MakingIntroductions/SportsTypePage'
 import SportsTypeEdit from '../views/MakingIntroductions/SportsTypeEditPage'
-import EventSetting from '../views/MakingIntroductions/EventSettingPage'
-import EventSettingList from '../views/MakingIntroductions/EventSettingListPage'
-import EventSettingEdit from '../views/MakingIntroductions/EventSettingEditPage'
+import Event from '../views/EventMaking/EventPage'
+import EventSetting from '../views/EventMaking/EventSettingPage'
+import EventSettingList from '../views/EventMaking/EventSettingListPage'
+import EventSettingEdit from '../views/EventMaking/EventSettingEditPage'
 import SportsDiscipline from '../views/MakingIntroductions/SportsDisciplinePage'
 import SportsDisciplineEdit from '../views/MakingIntroductions/SportsDisciplineEditPage'
 import Prefecture from '../views/MakingIntroductions/PrefecturePage'
@@ -72,6 +73,11 @@ const routes = [
     path: '/sports_type_edit',
     name: 'SportsTypeEditPage',
     component: SportsTypeEdit
+  },
+  {
+    path: '/event/:id',
+    name: 'EventPage',
+    component: Event
   },
   {
     path: '/event_setting',

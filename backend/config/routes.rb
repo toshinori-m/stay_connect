@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   #     registrations: 'auth/registrations'
   #   }
 
-    resources :recruitments do
+    resources :recruitments, defaults: { format: 'json' }  do
       resources :sports_disciplines, only: [:index], controller: 'recruitment_sports_disciplines'
       resources :target_ages, only: [:index], controller: 'recruitment_target_ages'
     end
