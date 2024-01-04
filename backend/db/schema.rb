@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_12_16_004227) do
+ActiveRecord::Schema[7.0].define(version: 2024_01_04_035005) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -96,16 +96,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_16_004227) do
     t.date "start_date", null: false
     t.date "end_date", null: false
     t.text "purpose_body", null: false
-    t.bigint "user_id"
-    t.bigint "sports_type_id"
+    t.bigint "user_id", null: false
+    t.bigint "sports_type_id", null: false
     t.string "image"
     t.text "other_body"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "prefecture_id"
-    t.bigint "sports_discipline_id"
+    t.bigint "prefecture_id", null: false
     t.index ["prefecture_id"], name: "index_recruitments_on_prefecture_id"
-    t.index ["sports_discipline_id"], name: "index_recruitments_on_sports_discipline_id"
     t.index ["sports_type_id"], name: "index_recruitments_on_sports_type_id"
     t.index ["user_id"], name: "index_recruitments_on_user_id"
   end
@@ -191,7 +189,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_16_004227) do
   add_foreign_key "recruitment_sports_disciplines", "recruitments"
   add_foreign_key "recruitment_sports_disciplines", "sports_disciplines"
   add_foreign_key "recruitments", "prefectures"
-  add_foreign_key "recruitments", "sports_disciplines"
   add_foreign_key "team_sports_disciplines", "sports_disciplines"
   add_foreign_key "team_sports_disciplines", "teams"
 end
