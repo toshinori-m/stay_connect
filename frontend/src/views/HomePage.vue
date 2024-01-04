@@ -39,6 +39,10 @@
               <span class="ml-4 text-sm text-gray-600">{{ recruitment.prefecture_name }}</span>
             </div>
             <div class="mt-2">
+              <span class="text-sm font-semibold text-blue-600">競技:</span> <span class="text-sm mr-4">{{ recruitment.sports_type_name }}</span>
+              <span class="text-sm font-semibold text-blue-600" for="discipline" v-if="recruitment.sports_discipline_name.length > 0">種目:</span> <span class="text-sm mr-2">{{ recruitment.sports_discipline_name.map(sd => sd.name).join(', ') }}</span>
+            </div>
+            <div class="mt-2">
               <span class="text-sm font-semibold text-blue-600">イベント目的:</span> <span class="text-sm mr-2">{{ recruitment.purpose_body }}</span>
             </div>
             <div class="mt-2">
