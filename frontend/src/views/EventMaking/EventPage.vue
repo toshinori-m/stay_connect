@@ -27,15 +27,13 @@ export default {
   methods: {
     async fetchEventDetails() {
       try {
+        this.error = null
         const recruitmentId = this.$route.params.id
         const apiClient = getApiClient()
-        this.error = null
         const res = await apiClient.get(`/recruitments/${recruitmentId}`)
-        console.log("res",res)
         this.eventDetails = res.data.data
-        console.log("eventDetails.target_ages",this.eventDetails.target_ages)
       } catch {
-      this.error = '競技名を表示できませんでした。'
+        this.error = '競技名を表示できませんでした。'
       }
     }
   },

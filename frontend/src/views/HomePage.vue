@@ -73,8 +73,8 @@ export default {
   methods: {
     async getSportsType() {
       try {
-        const apiClient = getApiClient()
         this.errors = []
+        const apiClient = getApiClient()
         const res = await apiClient.get('/sports_types')
         this.sports_types = res.data.data
         this.getSportsDiscipline()
@@ -84,8 +84,8 @@ export default {
     },
     async getSportsDiscipline() {
       try {
-        const apiClient = getApiClient()
         this.errors = []
+        const apiClient = getApiClient()
         const res = await apiClient.get('/sports_disciplines', {
           params: {
             sports_type_id: this.sports_type_selected.id
@@ -98,8 +98,8 @@ export default {
     },
     async getPrefectures() {
       try {
-        const apiClient = getApiClient()
         this.errors = []
+        const apiClient = getApiClient()
         const res = await apiClient.get('/prefectures')
         this.prefectures = res.data.data
       } catch {
@@ -108,8 +108,8 @@ export default {
     },
     async getTargetAge() {
       try {
-        const apiClient = getApiClient()
         this.errors = []
+        const apiClient = getApiClient()
         const res = await apiClient.get('/target_ages')
         this.target_ages = res.data.data
       } catch {
@@ -118,8 +118,8 @@ export default {
     },
     async fetchRecruitments() {
       try {
-        const apiClient = getApiClient()
         this.errors = []
+        const apiClient = getApiClient()
         const params = {
           sports_type_name: this.sports_type_selected.name,
           prefecture_name: this.prefecture_selected.name,
@@ -133,8 +133,8 @@ export default {
     },
     async listEvent(recruitmentId) {
       try {
-        const apiClient = getApiClient()
         this.errors = []
+        const apiClient = getApiClient()
         await apiClient.get(`/recruitments/${recruitmentId}`)
         this.$router.push({ name: 'EventPage', params: { id: recruitmentId } })
       } catch (error) {
