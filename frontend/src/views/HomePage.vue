@@ -28,6 +28,7 @@
           </option>
         </select>
         <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700" type="submit">検索</button>
+        <div class="error text-sm text-red-400" v-for="(errMsg, index) in errors" :key="index">{{ errMsg }}</div>
       </form>
     </div>
     <div class="md:mt-0 md:w-full mx-auto p-4 md:flex md:items-start">
