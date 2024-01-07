@@ -1,6 +1,6 @@
 class PrefecturesController < ApplicationController
-  before_action :authenticate_user!, except: [:index]
-  
+  before_action :authenticate, except: [:index]
+
   def create
     prefectures = Prefecture.new(create_params)
     return render json: { message: '成功しました' }, status: 200 if prefectures.save

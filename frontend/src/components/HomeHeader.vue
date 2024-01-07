@@ -38,8 +38,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   data () {
     return {
@@ -49,21 +47,12 @@ export default {
   },
   methods: {
     async logOut() {
-      this.error = null
       try {
-        await axios.delete('http://localhost:3001/auth/sign_out', {
-          headers: {
-            uid: window.localStorage.getItem('uid'),
-            "access-token": window.localStorage.getItem('access-token'),
-            client: window.localStorage.getItem('client')
-          }
-        })
-        window.localStorage.removeItem('access-token')
-        window.localStorage.removeItem('client')
-        window.localStorage.removeItem('uid')
-        window.localStorage.removeItem('name')
+        this.error = null
+        await this.$store.dispatch('logout')
         this.$router.push({ name: 'LoginPage' })
       } catch {
+        this.error = error
         this.$router.push({ name: 'LoginPage' })
       }
     },

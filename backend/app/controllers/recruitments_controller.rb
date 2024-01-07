@@ -1,5 +1,5 @@
 class RecruitmentsController < ApplicationController
-  before_action :authenticate_user!, except: [:show]
+  before_action :authenticate, except: [:show]
   
   def create
     recruitment = Recruitment.new(create_params)

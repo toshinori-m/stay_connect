@@ -106,7 +106,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import getApiClient from '@/lib/apiClient'
 
 export default {
   data() {
@@ -150,10 +150,11 @@ export default {
         return this.target_age_selected_error = '対象年齢を選択して下さい';
       }
       try {
+        const apiClient = getApiClient()
         this.backend_errors = ""
         const disciplineIds = this.sports_discipline_selected.map(discipline => discipline.id);
         const targetAgeIds = this.target_age_selected.map(target => target.id);
-        await axios.post('http://localhost:3001/recruitments', {
+        await apiClient.post('/recruitments', {
           image: this.event_url,
           name: this.event_name,
           area: this.area,
@@ -166,10 +167,7 @@ export default {
           sports_type_id: this.sports_type_selected.id,
           sports_discipline_ids: disciplineIds,
           prefecture_id: this.prefecture_selected,
-          target_age_ids: targetAgeIds,
-          'access-token': localStorage.getItem('access-token'),
-          client: localStorage.getItem('client'),
-          uid: localStorage.getItem('uid')
+          target_age_ids: targetAgeIds
         })
         this.$router.push({ name: 'HomePage' })
       } catch (error) {
@@ -178,66 +176,47 @@ export default {
         }
       }
     },
-    async getSportsType () {
+    async getSportsType() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
-        const res = await axios.get('http://localhost:3001/sports_types', {
-          headers: {
-          uid: window.localStorage.getItem('uid'),
-          "access-token": window.localStorage.getItem('access-token'),
-          client: window.localStorage.getItem('client')
-          }
-        })
+        const res = await apiClient.get('/sports_types')
         this.sports_types = res.data.data
-      } catch (error) {
+      } catch {
         this.errors.push('競技を表示できませんでした。')
       }
     },
-    async getSportsDiscipline () {
+    async getSportsDiscipline() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
-        const res = await axios.get('http://localhost:3001/sports_disciplines', {
+        const res = await apiClient.get('/sports_disciplines', {
           params: {
             sports_type_id: this.sports_type_selected.id
-          },
-          headers: {
-            'access-token': localStorage.getItem('access-token'),
-            client: localStorage.getItem('client'),
-            uid: localStorage.getItem('uid')
           }
         })
         this.sports_disciplines = res.data.data
-      } catch (error) {
+      } catch {
         this.errors.push('種目を表示できませんでした。')
       }
     },
-    async getPrefectures () {
+    async getPrefectures() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
-        const res = await axios.get('http://localhost:3001/prefectures', {
-          headers: {
-          uid: window.localStorage.getItem('uid'),
-          "access-token": window.localStorage.getItem('access-token'),
-          client: window.localStorage.getItem('client')
-          }
-        })
+        const res = await apiClient.get('/prefectures')
         this.prefectures = res.data.data
-      } catch (error) {
+      } catch {
         this.errors.push('都道府県を表示できませんでした。')
       }
     },
-    async getTargetAge () {
+    async getTargetAge() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
-        const res = await axios.get('http://localhost:3001/target_ages', {
-          headers: {
-          uid: window.localStorage.getItem('uid'),
-          "access-token": window.localStorage.getItem('access-token'),
-          client: window.localStorage.getItem('client')
-          }
-        })
+        const res = await apiClient.get('/target_ages')
         this.target_ages = res.data.data
-      } catch (error) {
+      } catch {
         this.errors.push('対象年齢を表示できませんでした。')
       }
     },

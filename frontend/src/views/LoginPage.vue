@@ -11,6 +11,10 @@
           <div class="error text-sm text-red-400">{{ error }}</div>
           <button class="ok_button">ログイン</button>
         </form>
+        <button @click="signInWithGoogle" class="md:w-3/4 mt-6 mb-8 text-blue-600 border-4 border-blue-300 border-double px-3 py-2">
+          <span className="i-tabler-brand-google w-5 h-5 float-left"></span>
+          <i class="px-3 text-base">Googleアカウントでログイン</i>
+        </button>
         <form @submit.prevent="redirectToSignup">
           <button class="text-blue-600 bg-clip-padding p-1 border-4 border-violet-300 border-dashed">アカウントをお持ちでない方はこちら</button>
         </form>
@@ -23,7 +27,9 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { auth } from "@/plugins/firebase"
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 
 export default {
   data () {
@@ -36,18 +42,33 @@ export default {
   methods: {
     async login() {
       try {
-        const res = await axios.post('http://localhost:3001/auth/sign_in', {
-          email: this.email,
-          password: this.password
+        this.error = null
+        const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password)
+        const user = userCredential.user
+        this.$store.commit('setUser', {
+          email: user.email,
+          uid: user.uid
         })
-        window.localStorage.setItem('access-token', res.headers['access-token'])
-        window.localStorage.setItem('client', res.headers.client)
-        window.localStorage.setItem('uid', res.headers.uid)
-        window.localStorage.setItem('name', res.data.data.name)
         this.$router.push({ name: 'HomePage' })
         return res
-      } catch(error) {
+      } catch {
         this.error = 'メールアドレスかパスワードが違います'
+      }
+    },
+    async signInWithGoogle() {
+      try {
+        this.error = null
+        const provider = new GoogleAuthProvider()
+        const result = await signInWithPopup(auth, provider)
+        const user = result.user
+        this.$store.commit('setUser', {
+          name: user.displayName,
+          email: user.email,
+          uid: user.uid
+        })
+        this.$router.push({ name: 'HomePage' })
+      } catch {
+        this.error = "ユーザー登録からGoogleアカウントで登録して下さい"
       }
     },
     redirectToSignup () {

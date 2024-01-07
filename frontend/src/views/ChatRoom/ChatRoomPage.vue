@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import getApiClient from '@/lib/apiClient'
 import { createConsumer } from "@rails/actioncable"
 
 export default {
@@ -40,15 +40,9 @@ export default {
   methods: {
     async getChatMessage() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
-        const res = await axios.get(`http://localhost:3001/chat_rooms/${this.$route.params.id}/chat_messages`, {
-          headers: {
-            uid: window.localStorage.getItem('uid'),
-            "access-token": window.localStorage.getItem('access-token'),
-            client: window.localStorage.getItem('client'),
-            'Accept': 'application/json'
-          }
-        })
+        const res = await apiClient.get(`/chat_rooms/${this.$route.params.id}/chat_messages`)
         this.messages = res.data
       } catch {
         this.errors = 'チャットルームを表示できませんでした。'
@@ -56,18 +50,12 @@ export default {
     },
     async chatMessage() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
-        await axios.post(`http://localhost:3001/chat_rooms/${this.$route.params.id}/chat_messages`, {
+        await apiClient.post(`/chat_rooms/${this.$route.params.id}/chat_messages`, {
           chat_message: { 
             message: this.message
           },
-        }, {
-          headers: {
-            'access-token': localStorage.getItem('access-token'),
-            'client': localStorage.getItem('client'),
-            'uid': localStorage.getItem('uid'),
-            'Accept': 'application/json'
-          }
         })
         this.message = ''
       } catch (errors) {
@@ -81,7 +69,7 @@ export default {
     }
   },
   mounted() {
-    const consumer = createConsumer(`ws://localhost:3001/cable?uid=${localStorage.getItem('uid')}&access-token=${localStorage.getItem('access-token')}&client=${localStorage.getItem('client')}`)
+    const consumer = createConsumer(`ws://localhost:3001/cable?uid=${this.$store.getters['uid']}`)
     this.messageChannel = consumer.subscriptions.create({ channel: "RoomChannel", room_id: this.$route.params.id }, {
       connected: () => {
         this.getChatMessage()

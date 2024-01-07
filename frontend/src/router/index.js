@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '../plugins/firebase'
 import Open from '../views/OpenPage'
 import Login from '../views/LoginPage'
 import Password from '../views/PasswordPage'
@@ -58,7 +60,8 @@ const routes = [
   {
     path: '/home',
     name: 'HomePage',
-    component: Home
+    component: Home,
+    meta: { requiresAuth: true }
   },
   {
     path: '/sports_type',
@@ -150,6 +153,20 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  onAuthStateChanged(auth, (user) => {
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+
+    if (requiresAuth && !user) {
+      next('/login')
+    } else if (!requiresAuth && user) {
+      next()
+    } else {
+      next()
+    }
+  })
 })
 
 export default router

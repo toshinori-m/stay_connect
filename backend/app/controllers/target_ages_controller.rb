@@ -1,5 +1,5 @@
 class TargetAgesController < ApplicationController
-  before_action :authenticate_user!, except: [:index]
+  before_action :authenticate, except: [:index]
   
   def create
     target_ages = TargetAge.new(create_params)

@@ -9,8 +9,7 @@ module ApplicationCable
     private
 
     def find_verified_user
-      user = User.find_by(uid: request.params[:uid])
-      if user && user.valid_token?(request.params[:'access-token'], request.params[:client])
+      if user = User.find_by(uid: request.params[:uid])
         user
       else
         reject_unauthorized_connection
