@@ -25,5 +25,8 @@ Rails.application.routes.draw do
         resources :chat_room_users, only: [:index, :create]
       end
     end
+
+    get 'searches', to: 'searches#index', defaults: { format: 'json' }
+
   end
 end
