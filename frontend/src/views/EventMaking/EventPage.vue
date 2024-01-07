@@ -10,7 +10,7 @@
     <p class="mb-2"><span class="font-semibold">目的:</span> {{ eventDetails.purpose_body }}</p>
     <p class="mb-2"><span class="font-semibold">その他:</span> {{ eventDetails.other_body }}</p>
     <p class="mb-2"><span class="font-semibold">種目:</span> {{ eventDetails.sports_discipline_name }}</p>
-    <p class="mb-2"><span class="font-semibold">対象年齢:</span> {{ eventDetails.target_ages?.length > 0 ? eventDetails.target_ages.map(age => age.name).join(', ') : '' }}</p>
+    <p class="mb-2"><span class="font-semibold">対象年齢:</span> {{ targetAgeNames() }}</p>
   </div>
 </template>
 
@@ -25,6 +25,12 @@ export default {
     }
   },
   methods: {
+    targetAgeNames() {
+      if (!this.eventDetails.target_ages || this.eventDetails.target_ages.length === 0) {
+        return ''
+      }
+      this.eventDetails.target_ages.map(age => age.name).join(', ')
+    },
     async fetchEventDetails() {
       try {
         this.error = null

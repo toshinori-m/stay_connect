@@ -41,14 +41,14 @@
             </div>
             <div class="mt-2">
               <span class="text-sm font-semibold text-blue-600">競技:</span> <span class="text-sm mr-4">{{ recruitment.sports_type_name }}</span>
-              <span class="text-sm font-semibold text-blue-600" for="discipline" v-if="recruitment.sports_discipline_name.length > 0">種目:</span> <span class="text-sm mr-2">{{ recruitment.sports_discipline_name.map(sd => sd.name).join(', ') }}</span>
+              <span class="text-sm font-semibold text-blue-600" for="discipline" v-if="recruitment.sports_discipline_name.length > 0">種目:</span> <span class="text-sm mr-2">{{ sportsDisciplineNames(recruitment.sports_discipline_name) }}</span>
             </div>
             <div class="mt-2">
               <span class="text-sm font-semibold text-blue-600">イベント目的:</span> <span class="text-sm mr-2">{{ recruitment.purpose_body }}</span>
             </div>
             <div class="mt-2">
               <span class="text-sm font-semibold text-blue-600">性別:</span> <span class="text-sm mr-4">{{ recruitment.sex }}</span>
-              <span class="text-sm font-semibold text-blue-600">対象年齢:</span> <span class="text-sm">{{ recruitment.target_age_name.map(age => age.name).join(', ') }}</span>
+              <span class="text-sm font-semibold text-blue-600">対象年齢:</span> <span class="text-sm">{{ targetAgeNames(recruitment.target_age_name) }}</span>
             </div>
           </div>
         </div>
@@ -76,6 +76,12 @@ export default {
     }
   },
   methods: {
+    sportsDisciplineNames(sportsDisciplines) {
+      return sportsDisciplines.map(sd => sd.name).join(', ')
+    },
+    targetAgeNames(targetAges) {
+      return targetAges.map(age => age.name).join(', ');
+    },
     async getSportsType() {
       try {
         this.errors = []
@@ -131,6 +137,7 @@ export default {
           target_age_name: this.target_age_selected.name,
         }
         const res = await apiClient.get('/searches', { params })
+        console.log("res.data",res.data)
         this.recruitments = res.data
       } catch (error) {
         console.error('Search error:', error)
