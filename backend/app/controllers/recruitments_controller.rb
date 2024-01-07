@@ -25,7 +25,7 @@ class RecruitmentsController < ApplicationController
   end
 
   def show
-    render json: { message: '成功しました', data: Recruitment.find(params[:id]) }, status: 200
+    @recruitment = Recruitment.find(params[:id])
   end
 
   def destroy
