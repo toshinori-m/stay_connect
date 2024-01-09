@@ -33,7 +33,6 @@ export default {
         this.error = null
         const apiClient = getApiClient()
         const res = await apiClient.get(`/users/${this.$route.params.userId}`)
-        console.log("res.data.data",res.data.data)
         this.userProfile = res.data.data
       } catch (error) {
         console.error('Error fetching user profile:', error)
