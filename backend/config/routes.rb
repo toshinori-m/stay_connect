@@ -27,6 +27,5 @@ Rails.application.routes.draw do
     end
 
     get 'searches', to: 'searches#index'
-    get 'users_profile/:id', to: 'users_profile#show'
   end
 end

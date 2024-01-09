@@ -32,7 +32,7 @@ export default {
       try {
         this.error = null
         const apiClient = getApiClient()
-        const res = await apiClient.get(`/users_profile/${this.$route.params.userId}`)
+        const res = await apiClient.get(`/users/${this.$route.params.userId}`)
         console.log("res.data.data",res.data.data)
         this.userProfile = res.data.data
       } catch (error) {
