@@ -21,6 +21,7 @@ import PrefectureEdit from '../views/MakingIntroductions/PrefectureEditPage'
 import TargetAge from '../views/MakingIntroductions/TargetAgePage'
 import TargetAgeEdit from '../views/MakingIntroductions/TargetAgeEditPage'
 import BasicSettingEdit from '../views/BasicSetting/BasicSettingEditPage'
+import UserProfilePage from '../views/BasicSetting/UserProfilePage.vue'
 import TeamProfileEdit from '../views/TeamProfile/TeamProfileEditPage'
 import TeamProfileList from '../views/TeamProfile/TeamProfileListPage'
 import TeamProfile from '../views/TeamProfile/TeamProfilePage'
@@ -128,6 +129,11 @@ const routes = [
     path: '/basic_setting_edit',
     name: 'BasicSettingEditPage',
     component: BasicSettingEdit
+  },
+  {
+    path: '/user_profile/:userId',
+    name: 'UserProfilePage',
+    component: UserProfilePage
   },
   {
     path: '/team_profile_edit/:id',

@@ -27,6 +27,5 @@ Rails.application.routes.draw do
     end
 
     get 'searches', to: 'searches#index'
-
   end
 end

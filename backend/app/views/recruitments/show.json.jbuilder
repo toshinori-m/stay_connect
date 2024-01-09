@@ -1,5 +1,6 @@
 json.data do
   json.id @recruitment.id
+  json.user_id @recruitment.user_id
   json.image @recruitment.image
   json.name @recruitment.name
   json.area @recruitment.area
