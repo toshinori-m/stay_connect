@@ -18,6 +18,8 @@ Rails.application.routes.draw do
     resources :sports_types
     resources :sports_disciplines
     resources :prefectures
+    resources :searches, only: [:index]
+    resources :users_profile, only: [:show]
     
     resources :chat_rooms do
       scope module: :chat_rooms do
@@ -25,8 +27,5 @@ Rails.application.routes.draw do
         resources :chat_room_users, only: [:index, :create]
       end
     end
-
-    get 'searches', to: 'searches#index'
-
   end
 end
