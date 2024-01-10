@@ -24,7 +24,7 @@ export default {
   data() {
     return {
       userProfile: {},
-        error: null
+      error: null
     }
   },
   methods: {
@@ -33,10 +33,9 @@ export default {
         this.error = null
         const apiClient = getApiClient()
         const res = await apiClient.get(`/users_profile/${this.$route.params.userId}`)
-        console.log("res.data.data",res.data.data)
         this.userProfile = res.data.data
-      } catch (error) {
-        console.error('Error fetching user profile:', error)
+      } catch {
+        this.errors.push('プロフィールを表示できませんでした。')
       }
     }
   },
