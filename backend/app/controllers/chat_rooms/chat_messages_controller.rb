@@ -7,14 +7,15 @@ module ChatRooms
       @chat_message = @chat_room.chat_messages.new(message_params.merge(user: current_user))
     
       if @chat_message.save
+        chat_room_user = @chat_room.chat_room_users.find_by(user: current_user)
+        chat_room_user.increment_chat_count_and_check_payment if chat_room_user
+        
         RoomChannel.broadcast_to(@chat_room, {
           message: @chat_message.message,
           name: current_user.name,
           created_at: @chat_message.created_at.strftime("%Y-%m-%d %H:%M:%S")
         })
-        (@chat_room.users.where.not(id: current_user.id).distinct).each do |user|
-          UserMailer.with(user_name: @chat_message.user.name, user_message: @chat_message.message, recipient_email: user.email, recipient_name: user.name ).new_message_notification.deliver_later
-        end
+        @chat_room.notify_other_users(@chat_message)
         head :ok
       else
         render json: { errors: @chat_message.errors.full_messages }, status: :unprocessable_entity

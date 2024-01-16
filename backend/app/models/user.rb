@@ -32,7 +32,8 @@ class User < ActiveRecord::Base
       other_user = room.other_user(user_id: id)
       {
         chat_room: room,
-        other_user_name: other_user&.name
+        other_user_name: other_user&.name,
+        other_user_id: other_user&.id
       }
     end
   end
