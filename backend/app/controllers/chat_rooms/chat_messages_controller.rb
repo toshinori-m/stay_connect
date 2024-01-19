@@ -4,24 +4,19 @@ module ChatRooms
     before_action :set_chat_room, only: [:create, :index]
 
     def create
-      @chat_message = @chat_room.chat_messages.new(message_params.merge(user: current_user))
+      @chat_message = ChatMessage.create_with_user_and_room(@chat_room, current_user, message_params)
     
-      if @chat_message.save
-        chat_room_user = @chat_room.chat_room_users.find_by(user: current_user)
-        chat_room_user.increment_chat_count_and_check_payment if chat_room_user
-        
-        RoomChannel.broadcast_to(@chat_room, {
-          message: @chat_message.message,
-          name: current_user.name,
-          created_at: @chat_message.created_at.strftime("%Y-%m-%d %H:%M:%S")
-        })
-        @chat_room.notify_other_users(@chat_message)
-        head :ok
-      else
-        render json: { errors: @chat_message.errors.full_messages }, status: :unprocessable_entity
-      end
+      RoomChannel.broadcast_to(@chat_room, {
+        message: @chat_message.message,
+        name: current_user.name,
+        created_at: @chat_message.created_at.strftime("%Y-%m-%d %H:%M:%S")
+      })
+      @chat_room.notify_other_users(@chat_message)
+      head :ok
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
     end
-
+    
     def index
       @chat_messages = @chat_room.chat_messages.eager_load(:user).order(created_at: :desc)
     end

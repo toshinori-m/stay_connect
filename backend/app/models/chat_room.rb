@@ -18,14 +18,12 @@ class ChatRoom < ApplicationRecord
                           .having('COUNT(chat_room_users.id) = 2')
                           .first
 
-      return chat_room if chat_room.present?
+      break if chat_room.present?
 
       chat_room = ChatRoom.create!
       ChatRoomUser.create!(chat_room: chat_room, user_id: user1_id)
       ChatRoomUser.create!(chat_room: chat_room, user_id: user2_id)
       chat_room
-    rescue => e
-      render json: { error: "Chat room creation failed: #{e.message}" }, status: :unprocessable_entity
     end
   end
   
