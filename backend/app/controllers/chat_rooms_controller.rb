@@ -3,7 +3,7 @@ class ChatRoomsController < ApplicationController
 
   def create
     other_user_id = params[:other_user_id]
-    @chat_room = ChatRoom.find_or_create_by_users(current_user.id, other_user_id)
+    @chat_room = ChatRoom.find_or_create_by_users!(current_user.id, other_user_id)
   rescue => e
     render json: { error: e.message }, status: :unprocessable_entity
   end

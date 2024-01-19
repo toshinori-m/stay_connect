@@ -10,25 +10,25 @@ class ChatRoom < ApplicationRecord
     chat_room_users.where.not(user_id: user_id).first&.user
   end
 
-  def self.find_or_create_by_users(user1_id, user2_id)
-    ChatRoom.transaction do
+  def self.find_or_create_by_users!(user1_id, user2_id)
       chat_room = ChatRoom.joins(:chat_room_users)
                           .where(chat_room_users: { user_id: [user1_id, user2_id] })
                           .group('chat_rooms.id')
                           .having('COUNT(chat_room_users.id) = 2')
                           .first
 
-      break if chat_room.present?
+    chat_room and return if chat_room.present?
 
+    ChatRoom.transaction do
       chat_room = ChatRoom.create!
       ChatRoomUser.create!(chat_room: chat_room, user_id: user1_id)
       ChatRoomUser.create!(chat_room: chat_room, user_id: user2_id)
-      chat_room
     end
+    chat_room
   end
   
-  def make_paid
-    update(paid_or_free: true)
+  def make_paid!
+    update!(paid_or_free: true)
   end
 
   def notify_other_users(chat_message)
