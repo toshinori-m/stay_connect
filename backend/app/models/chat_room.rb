@@ -11,18 +11,19 @@ class ChatRoom < ApplicationRecord
   end
 
   def self.find_or_create_by_users!(user1_id, user2_id)
-      chat_room = ChatRoom.joins(:chat_room_users)
-                          .where(chat_room_users: { user_id: [user1_id, user2_id] })
-                          .group('chat_rooms.id')
-                          .having('COUNT(chat_room_users.id) = 2')
-                          .first
+      chat_room_1_ids = ChatRoom.joins(:chat_room_users)
+                                .where(chat_room_users: { user_id: user1_id }).ids
+      chat_room = ChatRoom.where(id: chat_room_1_ids)
+                          .joins(:chat_room_users)
+                          .where(chat_room_users: { user_id: user2_id })
+                          .distinct.first
 
-    chat_room and return if chat_room.present?
+    return chat_room if chat_room.present?
 
     ChatRoom.transaction do
       chat_room = ChatRoom.create!
-      ChatRoomUser.create!(chat_room: chat_room, user_id: user1_id)
-      ChatRoomUser.create!(chat_room: chat_room, user_id: user2_id)
+      chat_room.chat_room_users.create!(user_id: user1_id)
+      chat_room.chat_room_users.create!(user_id: user2_id)
     end
     chat_room
   end

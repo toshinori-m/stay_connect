@@ -4,7 +4,7 @@ class ChatMessage < ApplicationRecord
 
   validates :message, presence: true
 
-  def self.create_with_user_and_room(chat_room, user, message_params)
+  def self.create_with_user_and_room!(chat_room, user, message_params)
     chat_message = chat_room.chat_messages.new(message_params.merge(user: user))
 
     ActiveRecord::Base.transaction do

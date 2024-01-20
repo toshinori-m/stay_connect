@@ -4,7 +4,7 @@ module ChatRooms
     before_action :set_chat_room, only: [:create, :index]
 
     def create
-      @chat_message = ChatMessage.create_with_user_and_room(@chat_room, current_user, message_params)
+      @chat_message = ChatMessage.create_with_user_and_room!(@chat_room, current_user, message_params)
     
       RoomChannel.broadcast_to(@chat_room, {
         message: @chat_message.message,
