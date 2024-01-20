@@ -148,8 +148,11 @@ export default {
         const apiClient = getApiClient()
         await apiClient.get(`/recruitments/${recruitmentId}`)
         this.$router.push({ name: 'EventPage', params: { id: recruitmentId } })
-      } catch {
-        this.errors.push('イベントを表示できませんでした。')
+      } catch (error) {
+        const message = error.response && error.response.data && error.response.data.message
+          ? error.response.data.message
+          : 'イベントを表示できませんでした。';
+        this.errors.push(message);
       }
     }
   },

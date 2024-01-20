@@ -1,15 +1,11 @@
 class ChatRoomsController < ApplicationController
-  before_action :authenticate, except: [:show]
-  
+  before_action :authenticate
+
   def create
-    ChatRoom.transaction do
-      @chat_room = current_user.chat_rooms.new(create_params)
-      @chat_room.save!
-      chat_room_user = ChatRoomUser.new(user: current_user, chat_room: @chat_room)
-      chat_room_user.save!
-    end
-  rescue ActiveRecord::RecordInvalid => e
-    render json: { errors: e.record.errors.full_messages }, status: 400
+    other_user_id = params[:other_user_id]
+    @chat_room = ChatRoom.find_or_create_by_users!(current_user.id, other_user_id)
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
   end
 
   def update
@@ -20,6 +16,11 @@ class ChatRoomsController < ApplicationController
 
   def index
     @chat_rooms_with_other_user = current_user.chat_rooms_with_other_users
+  end
+
+  def show
+    @chat_room = ChatRoom.find(params[:id])
+    @other_user = @chat_room.other_user(user_id: current_user.id)
   end
 
   def destroy
@@ -33,6 +34,6 @@ class ChatRoomsController < ApplicationController
   def create_params
     params
     .require(:chat_room)
-    .permit(:paid_or_free )
+    .permit(:paid_or_free, :other_user_id )
   end
 end
