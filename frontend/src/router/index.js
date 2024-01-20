@@ -25,6 +25,7 @@ import UserProfilePage from '../views/BasicSetting/UserProfilePage.vue'
 import TeamProfileEdit from '../views/TeamProfile/TeamProfileEditPage'
 import TeamProfileList from '../views/TeamProfile/TeamProfileListPage'
 import TeamProfile from '../views/TeamProfile/TeamProfilePage'
+import TeamProfileIntroduction from '../views/TeamProfile/TeamProfileIntroductionPage'
 import ChatRoomList from '../views/ChatRoom/ChatRoomListPage'
 import ChatRoom from '../views/ChatRoom/ChatRoomPage'
 
@@ -149,6 +150,11 @@ const routes = [
     path: '/team_profile',
     name: 'TeamProfilePage',
     component: TeamProfile
+  },
+  {
+    path: '/team_profile_introduction/:id',
+    name: 'TeamProfileIntroductionPage',
+    component: TeamProfileIntroduction
   },
   {
     path: '/chat_room_list',

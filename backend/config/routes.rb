@@ -13,7 +13,11 @@ Rails.application.routes.draw do
       resources :sports_disciplines, only: [:index], controller: 'team_sports_disciplines'
       resources :target_ages, only: [:index], controller: 'team_target_ages'
     end
-    resources :users
+
+    resources :users do
+      resources :teams_profile, only: [:index, :show]
+    end
+    
     resources :target_ages
     resources :sports_types
     resources :sports_disciplines
