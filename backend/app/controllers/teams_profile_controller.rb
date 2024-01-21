@@ -3,7 +3,7 @@ class TeamsProfileController < ApplicationController
   before_action :set_user, only: [:index, :show]
 
   def index
-    @teams = @user.teams.includes(:sports_disciplines, :target_ages)
+    @teams = @user.teams.preload(:sports_disciplines, :target_ages)
     render json: @teams
   end
 
