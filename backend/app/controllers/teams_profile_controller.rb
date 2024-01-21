@@ -3,8 +3,7 @@ class TeamsProfileController < ApplicationController
   before_action :set_user, only: [:index, :show]
 
   def index
-    user = User.find(params[:user_id])
-    @teams = user.teams
+    @teams = @user.teams.includes(:sports_disciplines, :target_ages)
     render json: @teams
   end
 

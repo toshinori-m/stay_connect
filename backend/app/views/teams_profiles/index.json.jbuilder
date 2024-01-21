@@ -8,6 +8,6 @@ json.array! @teams do |team|
   json.sports_type_id team.sports_type_id
   json.prefecture_id team.prefecture_id
 
-  json.sports_disciplines team.sports_disciplines.ids
-  json.target_ages team.target_ages.ids
+  json.sports_disciplines team.sports_disciplines&.ids || []
+  json.target_ages team.target_ages&.ids || []
 end
