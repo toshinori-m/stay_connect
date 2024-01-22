@@ -14,7 +14,7 @@
     </p>
     <p class="mb-2" v-if="sports_disciplines.length > 0">
       <span class="font-semibold text-blue-600">種目:</span>
-      {{ sports_disciplines_current.length ? sports_disciplines_current.map(sport => sport.name).join(", ") : '' }}
+      {{ sportsDisciplinesNames() }}
     </p>
     <p class="mb-2">
       <span class="font-semibold text-blue-600">活動都道府県:</span>
@@ -30,7 +30,7 @@
     </p>
     <p class="mb-2">
       <span class="font-semibold text-blue-600">対象年齢:</span>
-      {{ target_age_current.length ? target_age_current.map(sport => sport.name).join(", ") : '' }}
+      {{ targetAgeNames() }}
     </p>
     <p class="mb-2">
       <span class="font-semibold text-blue-600">活動実績:</span>
@@ -131,6 +131,12 @@ export default {
     },
     goToUserProfile(userId) {
       this.$router.push({ name: 'UserProfilePage', params: { userId: userId } })
+    },
+    sportsDisciplinesNames() {
+      return this.sports_disciplines_current.length ? this.sports_disciplines_current.map(sport => sport.name).join(", ") : ''
+    },
+    targetAgeNames() {
+      return this.target_age_current.length ? this.target_age_current.map(age => age.name).join(", ") : ''
     }
   },
   mounted() {
