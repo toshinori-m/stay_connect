@@ -1,15 +1,16 @@
 <template>
   <div>
-    <div class="text-center z-40 fixed top-0 bg-sky-200 p-5 w-full h-41 md:pl-32 md:h-16  md:text-left">
-      <form @submit.prevent="redirectToOpen">
-        <button class="font-bold text-3xl text-blue-600 md:-mt-1">stay_connect</button>
-      </form>
-      <div class="mt-2 md:text-right md:-mt-11 md:mr-28">
-        <form @submit.prevent="redirectToSignup">
+    <div class="z-40 fixed top-0 bg-sky-200 p-5 w-full h-41 md:pl-32 md:h-16 md:text-left">
+      <div class="flex justify-center md:justify-start">
+        <div class="float-left">
+          <MouseCharacter />
+        </div>
+        <div class="font-bold text-3xl text-blue-600 md:-mt-1">stay_connect</div>
+      </div>
+      <div class="flex flex-col mt-3 md:-mt-10 md:flex-row justify-center md:justify-end items-center">
+        <form class="mb-2 md:mb-0 md:mr-4" @submit.prevent="redirectToSignup">
           <button class="ok_button">無料登録</button>
         </form>
-      </div>
-      <div class="mt-2 md:text-right md:-mt-10 md:mr-60">
         <form @submit.prevent="redirectToLogin">
           <button class="login_button">ログイン</button>
         </form>
@@ -19,11 +20,13 @@
 </template>
 
 <script>
+import MouseCharacter from './MouseCharacter.vue'
+
 export default {
+  components: {
+    MouseCharacter
+  },
   methods: {
-    redirectToOpen () {
-      this.$router.push({name: 'OpenPage'})
-    },
     redirectToSignup () {
       this.$router.push({name: 'SignupPage'})
     },
