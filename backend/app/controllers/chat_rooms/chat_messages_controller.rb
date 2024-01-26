@@ -5,7 +5,8 @@ module ChatRooms
 
     def create
       @chat_message = ChatMessage.create_with_user_and_room!(@chat_room, current_user, message_params)
-    
+      @requires_payment = chat_room_user.chat_count > 5 && !current_user.payment_completed
+
       RoomChannel.broadcast_to(@chat_room, {
         message: @chat_message.message,
         name: current_user.name,

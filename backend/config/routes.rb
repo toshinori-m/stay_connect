@@ -24,9 +24,10 @@ Rails.application.routes.draw do
     resources :prefectures
     resources :searches, only: [:index]
     resources :users_profile, only: [:show]
- 
-    get 'payments/checkout', to: 'payments#checkout'
-    
+
+    get 'payments/checkout', to: 'payments#create_checkout_session'
+    get 'payments/success', to: 'payments#success'
+
     resources :chat_rooms do
       scope module: :chat_rooms do
         resources :chat_messages

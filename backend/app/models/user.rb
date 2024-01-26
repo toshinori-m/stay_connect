@@ -22,7 +22,8 @@ class User < ActiveRecord::Base
   enum email_notification: { receives: true, not_receive: false }
   validates :email_notification, presence: true
   has_one_attached :image
-  
+  validates :payment_completed, inclusion: [true, false]
+
   def image_url
     image.attached? ? url_for(image) : nil
   end

@@ -5,4 +5,6 @@ json.data do
   json.name @chat_message.user.name
   json.email @chat_message.user.email
   json.created_at @chat_message.created_at
+  
+  json.requires_payment true if @requires_payment
 end

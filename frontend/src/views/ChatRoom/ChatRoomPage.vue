@@ -72,8 +72,9 @@ export default {
             message: this.message
           }
         })
-        if (response.data.requires_payment) {
-          window.location.href = response.data.session_url
+        if (res.data.requires_payment) {
+          await apiClient.post('/path/to/create_checkout_session')
+          window.location.href = res.data.session_url
         }
         this.message = ''
       } catch (errors) {

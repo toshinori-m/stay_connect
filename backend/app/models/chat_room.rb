@@ -31,26 +31,6 @@ class ChatRoom < ApplicationRecord
   def make_paid!
     update!(paid_or_free: true)
   end
-
-  def create_stripe_checkout_session!
-    session = Stripe::Checkout::Session.create!({
-      payment_method_types: ['card'],
-      line_items: [{
-        # ここにStripeのセッション作成に必要なパラメータを設定
-        price_data: {
-          currency: 'jpy',
-          product_data: {
-            name: '商品名やサービス名',
-            # その他の商品情報
-          },
-          unit_amount: 価格,
-        },
-        quantity: 数量,
-      }],
-      mode: 'payment'
-    })
-    session
-  end
   
   def notify_other_users(chat_message)
     users.where.not(id: chat_message.user.id).distinct.each do |user|
