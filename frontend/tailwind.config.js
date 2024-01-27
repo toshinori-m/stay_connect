@@ -24,5 +24,18 @@ module.exports = {
       // https://icones.js.org/
       collections: getIconCollections(["tabler", "lucide"]),
     }),
-  ]
+  ],
+  theme: {
+    extend: {
+      keyframes: {
+        bounce: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+      },
+      animation: {
+        bounce: 'bounce 1s infinite',
+      },
+    },
+  },
 }

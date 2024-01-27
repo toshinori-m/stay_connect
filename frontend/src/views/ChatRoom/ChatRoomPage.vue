@@ -1,7 +1,10 @@
 <template>
   <div class="flex flex-col items-center justify-center mt-12">
     <div class="md:w-2/5 rounded-md shadow-gray-200 bg-sky-100">
-      <h2 class="text-center pt-10 font-bold text-3xl text-blue-600 mt-16 md:mt-1">チャットルーム</h2>
+      <h2 class="text-center pt-16 font-bold text-3xl text-blue-600 mt-16 md:mt-1">チャットルーム</h2>
+      <h3 class="text-center text-xl text-blue-600 md:mt-1">{{ otherUserName }}
+        <span class="text-base text-black">さんとチャット</span>
+      </h3>
       <button class="cancel_button mx-5 float-right" @click="chatRoomCancel">戻る</button>
       <div class="my-14">
         <form class="flex flex-col items-center justify-center">
@@ -26,7 +29,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import getApiClient from '@/lib/apiClient'
 import { createConsumer } from "@rails/actioncable"
 
 export default {
@@ -34,45 +37,45 @@ export default {
     return {
       messages: [],
       message: '',
+      otherUserName: '',
       errors: []
     }
   },
   methods: {
+    async fetchChatRoomData() {
+      try {
+        this.errors = []
+        const apiClient = getApiClient()
+        const res = await apiClient.get(`/chat_rooms/${this.$route.params.id}`)
+        this.chatRoom = res.data.chat_room
+        this.otherUserName = res.data.other_user.name
+      } catch {
+        this.errors.push('チャットルームデータを取得できませんでした。')
+      }
+    },
     async getChatMessage() {
       try {
         this.errors = []
-        const res = await axios.get(`http://localhost:3001/chat_rooms/${this.$route.params.id}/chat_messages`, {
-          headers: {
-            uid: window.localStorage.getItem('uid'),
-            "access-token": window.localStorage.getItem('access-token'),
-            client: window.localStorage.getItem('client'),
-            'Accept': 'application/json'
-          }
-        })
+        const apiClient = getApiClient()
+        const res = await apiClient.get(`/chat_rooms/${this.$route.params.id}/chat_messages`)
         this.messages = res.data
       } catch {
-        this.errors = 'チャットルームを表示できませんでした。'
+        this.errors.push('チャットルームを表示できませんでした。')
       }
     },
     async chatMessage() {
       try {
         this.errors = []
-        await axios.post(`http://localhost:3001/chat_rooms/${this.$route.params.id}/chat_messages`, {
+        const apiClient = getApiClient()
+        await apiClient.post(`/chat_rooms/${this.$route.params.id}/chat_messages`, {
           chat_message: { 
             message: this.message
-          },
-        }, {
-          headers: {
-            'access-token': localStorage.getItem('access-token'),
-            'client': localStorage.getItem('client'),
-            'uid': localStorage.getItem('uid'),
-            'Accept': 'application/json'
           }
         })
         this.message = ''
       } catch (errors) {
         if (errors.response.data.errors) {
-          this.errors = errors.response.data.errors;
+          this.errors.push(errors.response.data.errors)
         }
       }
     },
@@ -81,7 +84,8 @@ export default {
     }
   },
   mounted() {
-    const consumer = createConsumer(`ws://localhost:3001/cable?uid=${localStorage.getItem('uid')}&access-token=${localStorage.getItem('access-token')}&client=${localStorage.getItem('client')}`)
+    this.fetchChatRoomData()
+    const consumer = createConsumer(`ws://localhost:3001/cable?uid=${this.$store.getters['uid']}`)
     this.messageChannel = consumer.subscriptions.create({ channel: "RoomChannel", room_id: this.$route.params.id }, {
       connected: () => {
         this.getChatMessage()

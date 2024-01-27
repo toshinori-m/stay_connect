@@ -32,9 +32,9 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import getApiClient from '@/lib/apiClient'
 import { auth } from "@/plugins/firebase"
+import { createUserWithEmailAndPassword } from 'firebase/auth'
 
 export default {
   data () {
@@ -53,29 +53,31 @@ export default {
         return
       }
       try {
+        const apiClient = getApiClient()
         this.error = null
         const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password)
         const user = userCredential.user
-        const res = await axios.post('http://localhost:3001/auth', {
+        const res = await apiClient.post('/users', {
           user: {
             name: this.name,
-            email: this.email,
-            password: this.password,
-            password_confirmation: this.passwordConfirmation,
+            email: user.email,
             uid: user.uid
           }
         })
-        window.localStorage.setItem('access-token', res.headers['access-token'])
-        window.localStorage.setItem('client', res.headers.client)
-        window.localStorage.setItem('uid', res.headers.uid)
-        window.localStorage.setItem('name', res.data.data.name)
+        this.$store.commit('setUser', {
+          name: this.name,
+          email: user.email,
+          uid: user.uid
+        })
         this.$router.push({ name: 'HomePage' })
         return res
       } catch (error) {
-        if (error.code) {
-          this.error = 'Firebaseエラー: ' + error.message
+        if (error.response && error.response.data) {
+          this.error = error.response.data.error || error.response.data
+        } else if (error.code === 'auth/email-already-in-use') {
+          this.error = 'このメールアドレスは既に使用されています。'
         } else {
-          this.error = 'メールアドレスかパスワードが違います'
+          this.error = '登録中にエラーが発生しました。'
         }
       }
     },

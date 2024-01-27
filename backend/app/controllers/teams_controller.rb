@@ -1,5 +1,5 @@
 class TeamsController < ApplicationController
-  before_action :authenticate_user!, except: [:show, :index]
+  before_action :authenticate, except: [:index]
   
   def create
     @team = current_user.teams.new(create_params)
@@ -12,7 +12,8 @@ class TeamsController < ApplicationController
   end
 
   def index
-    @teams = Team.all
+    @teams = current_user.teams
+    render json: { message: '成功しました', data: @teams }, status: 200
   end
 
   def show

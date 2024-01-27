@@ -1,5 +1,5 @@
 class RecruitmentsController < ApplicationController
-  before_action :authenticate_user!, except: [:show]
+  before_action :authenticate, except: [:show]
   
   def create
     recruitment = Recruitment.new(create_params)
@@ -25,7 +25,7 @@ class RecruitmentsController < ApplicationController
   end
 
   def show
-    render json: { message: '成功しました', data: Recruitment.find(params[:id]) }, status: 200
+    @recruitment = Recruitment.find(params[:id])
   end
 
   def destroy

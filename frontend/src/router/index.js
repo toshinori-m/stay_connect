@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '../plugins/firebase'
 import Open from '../views/OpenPage'
 import Login from '../views/LoginPage'
 import Password from '../views/PasswordPage'
@@ -8,9 +10,10 @@ import Register from '../views/RegisterPage'
 import Home from '../views/HomePage'
 import SportsType from '../views/MakingIntroductions/SportsTypePage'
 import SportsTypeEdit from '../views/MakingIntroductions/SportsTypeEditPage'
-import EventSetting from '../views/MakingIntroductions/EventSettingPage'
-import EventSettingList from '../views/MakingIntroductions/EventSettingListPage'
-import EventSettingEdit from '../views/MakingIntroductions/EventSettingEditPage'
+import Event from '../views/EventMaking/EventPage'
+import EventSetting from '../views/EventMaking/EventSettingPage'
+import EventSettingList from '../views/EventMaking/EventSettingListPage'
+import EventSettingEdit from '../views/EventMaking/EventSettingEditPage'
 import SportsDiscipline from '../views/MakingIntroductions/SportsDisciplinePage'
 import SportsDisciplineEdit from '../views/MakingIntroductions/SportsDisciplineEditPage'
 import Prefecture from '../views/MakingIntroductions/PrefecturePage'
@@ -18,9 +21,11 @@ import PrefectureEdit from '../views/MakingIntroductions/PrefectureEditPage'
 import TargetAge from '../views/MakingIntroductions/TargetAgePage'
 import TargetAgeEdit from '../views/MakingIntroductions/TargetAgeEditPage'
 import BasicSettingEdit from '../views/BasicSetting/BasicSettingEditPage'
+import UserProfilePage from '../views/BasicSetting/UserProfilePage.vue'
 import TeamProfileEdit from '../views/TeamProfile/TeamProfileEditPage'
 import TeamProfileList from '../views/TeamProfile/TeamProfileListPage'
 import TeamProfile from '../views/TeamProfile/TeamProfilePage'
+import TeamProfileIntroduction from '../views/TeamProfile/TeamProfileIntroductionPage'
 import ChatRoomList from '../views/ChatRoom/ChatRoomListPage'
 import ChatRoom from '../views/ChatRoom/ChatRoomPage'
 
@@ -58,7 +63,8 @@ const routes = [
   {
     path: '/home',
     name: 'HomePage',
-    component: Home
+    component: Home,
+    meta: { requiresAuth: true }
   },
   {
     path: '/sports_type',
@@ -69,6 +75,11 @@ const routes = [
     path: '/sports_type_edit',
     name: 'SportsTypeEditPage',
     component: SportsTypeEdit
+  },
+  {
+    path: '/event/:id',
+    name: 'EventPage',
+    component: Event
   },
   {
     path: '/event_setting',
@@ -121,6 +132,11 @@ const routes = [
     component: BasicSettingEdit
   },
   {
+    path: '/user_profile/:userId',
+    name: 'UserProfilePage',
+    component: UserProfilePage
+  },
+  {
     path: '/team_profile_edit/:id',
     name: 'TeamProfileEditPage',
     component: TeamProfileEdit
@@ -134,6 +150,11 @@ const routes = [
     path: '/team_profile',
     name: 'TeamProfilePage',
     component: TeamProfile
+  },
+  {
+    path: '/team_profile_introduction/:id',
+    name: 'TeamProfileIntroductionPage',
+    component: TeamProfileIntroduction
   },
   {
     path: '/chat_room_list',
@@ -150,6 +171,20 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  onAuthStateChanged(auth, (user) => {
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+
+    if (requiresAuth && !user) {
+      next('/login')
+    } else if (!requiresAuth && user) {
+      next()
+    } else {
+      next()
+    }
+  })
 })
 
 export default router

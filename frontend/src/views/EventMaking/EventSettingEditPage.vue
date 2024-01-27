@@ -105,7 +105,8 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
+import getApiClient from '@/lib/apiClient'
+
 export default {
   data() {
     return {
@@ -136,105 +137,84 @@ export default {
   methods: {
     async getEventSettingEdit() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
         const recruitmentId = this.$route.params.id;
-        const res = await axios.get(`http://localhost:3001/recruitments/${recruitmentId}`, {
-          'access-token': localStorage.getItem('access-token'),
-          client: localStorage.getItem('client'),
-          uid: localStorage.getItem('uid')
-        })
+        const res = await apiClient.get(`/recruitments/${recruitmentId}`)
         this.recruitments = res.data.data
-        const rdsRes = await axios.get(`http://localhost:3001/recruitments/${recruitmentId}/sports_disciplines`);
-        this.recruitment_sports_disciplines = rdsRes.data;
-        const rtaRes = await axios.get(`http://localhost:3001/recruitments/${recruitmentId}/target_ages`);
-        this.recruitment_target_ages = rtaRes.data;
+        const rdsRes = await apiClient.get(`/recruitments/${recruitmentId}/sports_disciplines`)
+        this.recruitment_sports_disciplines = rdsRes.data
+        const rtaRes = await apiClient.get(`/recruitments/${recruitmentId}/target_ages`)
+        this.recruitment_target_ages = rtaRes.data
         this.getSportsType()
         this.getPrefectures()
         this.getTargetAge()
-      } catch (error) {
+      } catch {
         this.errors.push('イベントを表示できませんでした。')
       }
     },
-    async getSportsType () {
+    async getSportsType() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
-        const res = await axios.get('http://localhost:3001/sports_types', {
-          headers: {
-          uid: window.localStorage.getItem('uid'),
-          "access-token": window.localStorage.getItem('access-token'),
-          client: window.localStorage.getItem('client')
-          }
-        })
+        const res = await apiClient.get('/sports_types')
         this.sports_types = res.data.data
-        const sportsTypeId = this.recruitments.sports_type_id;
-        this.sports_type_selected = this.sports_types.find(st => st.id === sportsTypeId);
-        this.getSportsDiscipline();
-      } catch (error) {
+        const sportsTypeId = this.recruitments.sports_type_id
+        this.sports_type_selected = this.sports_types.find(st => st.id === sportsTypeId)
+        this.getSportsDiscipline()
+      } catch {
         this.errors.push('競技を表示できませんでした。')
       }
     },
     async getSportsDiscipline() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
-        const res = await axios.get('http://localhost:3001/sports_disciplines', {
+        const res = await apiClient.get('/sports_disciplines', {
           params: {
             sports_type_id: this.sports_type_selected.id
-          },
-          headers: {
-            'access-token': localStorage.getItem('access-token'),
-            client: localStorage.getItem('client'),
-            uid: localStorage.getItem('uid')
           }
         })
         this.sports_disciplines = res.data.data
         this.sports_discipline_selected = this.recruitment_sports_disciplines.map(rsd => 
         this.sports_disciplines.find(sd => sd.id === rsd.sports_discipline_id)).filter(Boolean);
-      } catch (error) {
+      } catch {
         this.errors.push('種目を選択していません。')
       }
     },
     async getPrefectures () {
       try {
+        const apiClient = getApiClient()
         this.errors = []
-        const res = await axios.get('http://localhost:3001/prefectures', {
-          headers: {
-            uid: window.localStorage.getItem('uid'),
-            "access-token": window.localStorage.getItem('access-token'),
-            client: window.localStorage.getItem('client')
-          }
-        })
+        const res = await apiClient.get('/prefectures')
         this.prefectures = res.data.data
         this.prefecture_selected = this.recruitments.prefecture_id;
-      } catch (error) {
+      } catch {
         this.errors.push('都道府県を表示できませんでした。')
       }
     },
-    async getTargetAge () {
+    async getTargetAge() {
       try {
+        const apiClient = getApiClient()
         this.errors = []
-        const res = await axios.get('http://localhost:3001/target_ages', {
-          headers: {
-            uid: window.localStorage.getItem('uid'),
-            "access-token": window.localStorage.getItem('access-token'),
-            client: window.localStorage.getItem('client')
-          }
-        })
+        const res = await apiClient.get('/target_ages')
         this.target_ages = res.data.data
         this.target_age_selected = this.recruitment_target_ages.map(rta => 
         this.target_ages.find(ta => ta.id === rta.target_age_id)).filter(Boolean);
-      } catch (error) {
+      } catch {
         this.errors.push('対象年齢を表示できませんでした。')
       }
     },
     async editEventSetting(recruitmentId) {
       try {
+        const apiClient = getApiClient()
         this.errors = []
         const disciplineIds = this.sports_discipline_selected.map(discipline => discipline.id);
         const targetAgeIds = this.target_age_selected.map(target => target.id);
         const recruitment = this.recruitments;
         if (!recruitment) return;
         if (recruitment.id !== recruitmentId) return;
-        await axios.patch(`http://localhost:3001/recruitments/${recruitmentId}`, {
+        await apiClient.patch(`/recruitments/${recruitmentId}`, {
           image: this.recruitments.event_url,
           name: this.recruitments.name,
           area: this.recruitments.area,
@@ -247,36 +227,25 @@ export default {
           sports_type_id: this.sports_type_selected.id,
           sports_discipline_ids: disciplineIds,
           prefecture_id: this.prefecture_selected,
-          target_age_ids: targetAgeIds,
-        }, {
-          headers: {
-            'access-token': localStorage.getItem('access-token'),
-            client: localStorage.getItem('client'),
-            uid: localStorage.getItem('uid')
-          }
+          target_age_ids: targetAgeIds
         })
         this.$router.push({ name: 'EventSettingListPage' })
       } catch (error) {
         if (error.response && error.response.data && error.response.data.errors) {
-          this.errors.push(...Object.values(error.response.data.errors));
+          this.errors.push(...Object.values(error.response.data.errors))
         } else {
-          this.errors.push('イベントに誤りがあります。');
+          this.errors.push('イベントに誤りがあります。')
         }
       }
     },
     async deleteEventSetting(recruitmentId) {
       try {
+        const apiClient = getApiClient()
         this.errors = []
-        if (this.recruitments.id !== recruitmentId) return;
-        await axios.delete(`http://localhost:3001/recruitments/${recruitmentId}`, {
-          data: {
-            'access-token': localStorage.getItem('access-token'),
-            client: localStorage.getItem('client'),
-            uid: localStorage.getItem('uid')
-          }
-        })
+        if (this.recruitments.id !== recruitmentId) return
+        await apiClient.delete(`/recruitments/${recruitmentId}`)
         this.$router.push({ name: 'EventSettingListPage' })
-      } catch (error) {
+      } catch {
         this.errors.push('イベントを削除出来ませんでした。')
       }
     },
