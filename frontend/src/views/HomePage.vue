@@ -152,7 +152,7 @@ export default {
         const message = error.response && error.response.data && error.response.data.message
           ? error.response.data.message
           : 'イベントを表示できませんでした。';
-        this.errors.push(message);
+        this.errors.push(message)
       }
     }
   },
