@@ -16,5 +16,7 @@ module Myapp
     end
     config.action_controller.raise_on_open_redirects = false
     config.active_job.queue_adapter = :async
+    config.i18n.fallbacks = [:en]
+    config.i18n.default_locale = :ja
   end
 end
