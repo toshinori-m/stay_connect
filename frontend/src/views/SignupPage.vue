@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-center mt-20 md:mt-32">
+  <div class="flex items-center justify-center mt-4 md:mt-12">
     <div class="md:w-2/5 rounded-md bg-sky-100">
       <h2 class="text-center pt-10 font-bold text-3xl text-blue-600">ユーザー登録</h2>
       <div class="text-center my-5 text-blue-600">

@@ -15,7 +15,7 @@ class User < ActiveRecord::Base
   has_many :chat_room_users, dependent: :destroy
   has_many :chat_rooms,  through: :chat_room_users
 
-  validates :name, presence: true, length: { minimum: 2 }
+  validates :name, presence: true, length: { minimum: 2, maximum: 100 }
   enum sex: { man: 0, woman: 1 }
   validates :email, presence: true
   validates :email, uniqueness: true
