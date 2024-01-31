@@ -139,12 +139,14 @@ export default {
         const res = await apiClient.get('/searches', { params })
         this.recruitments = res.data
       } catch (error) {
-        let message = '予期せぬエラーが発生しました。'
+        let message
         const statusCode = error.response ? error.response.status : null
         if (statusCode === 401) {
           message = 'ユーザー登録出来ていません。Googleアカウントで登録して下さい。'
         } else if (error.message) {
           message = error.message
+        } else {
+          message = '予期せぬエラーが発生しました。'
         }
         this.errors.push(message)
       }
