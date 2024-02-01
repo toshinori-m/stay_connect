@@ -36,18 +36,22 @@
         <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md mb-4" v-for="recruitment in recruitments" :key="recruitment.id">
           <div class="cursor-pointer" @click="listEvent(recruitment.id)">
             <div class="flex items-center justify-between"> 
-              <h3 class="text-lg font-bold text-blue-600">{{ recruitment.name }}</h3>
               <span class="ml-4 text-sm text-gray-600">{{ recruitment.prefecture_name }}</span>
             </div>
+            <h3 class="text-lg font-bold text-blue-600 break-words w-full md:w-3/4">{{ recruitment.name }}</h3>
             <div class="mt-2">
               <span class="text-sm font-semibold text-blue-600">競技:</span> <span class="text-sm mr-4">{{ recruitment.sports_type_name }}</span>
-              <span class="text-sm font-semibold text-blue-600" for="discipline" v-if="recruitment.sports_discipline_name.length > 0">種目:</span> <span class="text-sm mr-2">{{ sportsDisciplineNames(recruitment.sports_discipline_name) }}</span>
             </div>
-            <div class="mt-2">
+            <div class="mt-2" v-if="recruitment.sports_discipline_name.length > 0">
+              <span class="text-sm font-semibold text-blue-600" for="discipline">種目:</span> <span class="text-sm mr-2">{{ sportsDisciplineNames(recruitment.sports_discipline_name) }}</span>
+            </div>
+            <div class="mt-2 break-words w-full md:w-3/4">
               <span class="text-sm font-semibold text-blue-600">イベント目的:</span> <span class="text-sm mr-2">{{ recruitment.purpose_body }}</span>
             </div>
             <div class="mt-2">
               <span class="text-sm font-semibold text-blue-600">性別:</span> <span class="text-sm mr-4">{{ recruitment.sex }}</span>
+            </div>
+            <div class="mt-2">
               <span class="text-sm font-semibold text-blue-600">対象年齢:</span> <span class="text-sm">{{ targetAgeNames(recruitment.target_age_name) }}</span>
             </div>
           </div>
