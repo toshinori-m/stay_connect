@@ -1,6 +1,6 @@
 <template>
   <div class="mt-32 md:mt-20 mx-auto p-4 md:flex md:items-start">
-    <div class="rounded-lg bg-sky-100 drop-shadow-lg mb-4 md:w-1/4 md:mb-0 md:mr-4 pb-3 px-3"> 
+    <div class="rounded-lg bg-sky-100 drop-shadow-lg mb-4 md:w-1/4 md:mb-0 pb-3 px-3"> 
       <h2 class="mb-5 text-center pt-10 font-bold text-2xl text-blue-600">カテゴリー別検索</h2>
       <form @submit.prevent="fetchRecruitments" class="flex flex-col gap-2">
         <select class="ring-offset-2 ring-2 hover:bg-blue-200 my-3 py-2 px-1 rounded-md" v-model="sports_type_selected" @change="getSportsDiscipline">
@@ -31,21 +31,21 @@
         <div class="error text-sm text-red-400" v-for="(errMsg, index) in errors" :key="index">{{ errMsg }}</div>
       </form>
     </div>
-    <div class="md:mt-0 md:w-full mx-auto p-4 md:flex md:items-start">
-      <div class="md:w-full mx-auto">
-        <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md mb-4" v-for="recruitment in recruitments" :key="recruitment.id">
+    <div class="md:mt-0 md:w-5/6 md:ml-2 md:flex md:items-start">
+      <div class="md:w-5/6 md:ml-2">
+        <div class="max-w-4xl md:ml-2 bg-white p-6 rounded-lg shadow-md mb-4" v-for="recruitment in recruitments" :key="recruitment.id">
           <div class="cursor-pointer" @click="listEvent(recruitment.id)">
             <div class="flex items-center justify-between"> 
               <span class="ml-4 text-sm text-gray-600">{{ recruitment.prefecture_name }}</span>
             </div>
-            <h3 class="text-lg font-bold text-blue-600 break-words w-full md:w-3/4">{{ recruitment.name }}</h3>
+            <h3 class="text-lg font-bold text-blue-600 break-words w-full md:w-11/12">{{ recruitment.name }}</h3>
             <div class="mt-2">
               <span class="text-sm font-semibold text-blue-600">競技:</span> <span class="text-sm mr-4">{{ recruitment.sports_type_name }}</span>
             </div>
             <div class="mt-2" v-if="recruitment.sports_discipline_name.length > 0">
               <span class="text-sm font-semibold text-blue-600" for="discipline">種目:</span> <span class="text-sm mr-2">{{ sportsDisciplineNames(recruitment.sports_discipline_name) }}</span>
             </div>
-            <div class="mt-2 break-words w-full md:w-3/4">
+            <div class="mt-2 break-words w-full md:w-11/12">
               <span class="text-sm font-semibold text-blue-600">イベント目的:</span> <span class="text-sm mr-2">{{ recruitment.purpose_body }}</span>
             </div>
             <div class="mt-2">
