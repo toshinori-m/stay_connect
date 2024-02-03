@@ -1,7 +1,9 @@
 ja:
   errors:
     messages:
+      blank: "を入力してください。"
       too_short: "が短すぎます。最小は%{count}文字です。"
+      too_long: "が長すぎます。最大は%{count}文字です。"
 
   activerecord:
     errors:
@@ -11,3 +13,11 @@ ja:
             name:
               too_short: "が短すぎます。最小は%{count}文字です。"
               too_long: "は%{count}文字以下で入力してください"
+        recruitment:
+          attributes:
+            end_date:
+              greater_than_or_equal_to: "%{count} より大きいか等しくなければなりません"
+            sex:
+              blank: "性別を選択してください"
+            area:
+              too_long: "地域欄は%{count}文字以下で入力してください"
