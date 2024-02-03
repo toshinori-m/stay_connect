@@ -52,12 +52,19 @@
               <label class="md:col-span-4 text-left px-3 py-2" for="event_name">イベント名</label>
               <div class="md:col-span-8">
                 <input class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="event_name" type="text" required placeholder="イベント名" v-model="event_name">
+                <div v-if="remainingCharactersEventName <= 5" class="text-red-500">
+                  地域はあと{{ remainingCharactersEventName }}文字までです。
+                </div>
               </div>
             </li>
+            <div v-if="backend_errors.name" class="error">{{ backend_errors.name }}</div>
             <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <label class="md:col-span-4 text-left px-3 py-2" for="area">地域</label>
               <div class="md:col-span-8">
                 <textarea class="w-full h-32 py-2 px-3 border-2 border-gray-200 box-border" id="area" name="textarea" required placeholder="地域" v-model="area"></textarea>
+                <div v-if="remainingCharactersArea <= 5" class="text-red-500">
+                  地域はあと{{ remainingCharactersArea }}文字までです。
+                </div>
               </div>
             </li>
             <div v-if="backend_errors.area" class="error">{{ backend_errors.area }}</div>
@@ -174,6 +181,16 @@ export default {
       backend_errors: ""
     }
   },
+  computed: {
+    remainingCharactersEventName() {
+      const maxChars = 255;
+      return maxChars - this.event_name.length;
+    },
+    remainingCharactersArea() {
+      const maxChars = 255;
+      return maxChars - this.area.length;
+    }
+  },
   methods: {
     async EventSetting() {
       this.sports_type_selected_error = ""
@@ -210,9 +227,7 @@ export default {
         })
         this.$router.push({ name: 'HomePage' })
       } catch (error) {
-        if (error.response.data.error) {
-          this.backend_errors = error.response.data.error
-        }
+        this.backend_errors = error.response.data.error
       }
     },
     async getSportsType() {
