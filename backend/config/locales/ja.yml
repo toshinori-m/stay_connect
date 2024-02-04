@@ -18,7 +18,7 @@ ja:
             name:
               too_long: "イベント名は%{count}文字以下で入力してください"
             end_date:
-              greater_than_or_equal_to: "%{count} より大きいか等しくなければなりません"
+              greater_than_or_equal_to: "%{count} 以降の日付を入力してください"
             sex:
               blank: "性別を選択してください"
             area:

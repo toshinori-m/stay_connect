@@ -45,7 +45,7 @@
             <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <label class="md:col-span-4 text-left px-3 py-2" for="event_url">イベントURL</label>
               <div class="md:col-span-8">
-                <input class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="event_url" type="url" placeholder="http://" v-model="event_url">
+                <input class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="event_url" type="url" placeholder="https://www.example.com/images/example.jpg" v-model="event_url">
               </div>
             </li>
             <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
@@ -57,7 +57,7 @@
                 </div>
               </div>
             </li>
-            <div v-if="backend_errors.name" class="error">{{ backend_errors.name }}</div>
+            <div class="error" v-for="(errMsg, index) in backend_errors.name" :key="index">{{ errMsg }}</div>
             <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <label class="md:col-span-4 text-left px-3 py-2" for="area">地域</label>
               <div class="md:col-span-8">
@@ -67,33 +67,33 @@
                 </div>
               </div>
             </li>
-            <div v-if="backend_errors.area" class="error">{{ backend_errors.area }}</div>
+            <div class="error" v-for="(errMsg, index) in backend_errors.area" :key="index">{{ errMsg }}</div>
             <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <label class="md:col-span-4 text-left px-3 py-2">性別</label>
               <div class="md:col-span-8 grid grid-cols-4 gap-4">
                 <div class="md:-mx-3">
                   <label for="man">
-                    <input type="radio" id="man" value="man" name="sex" v-model="sex" />男
+                    <input type="radio" value="man" name="sex" v-model="sex" />男
                   </label>
                 </div>
                 <div class="md:-mx-3">
                   <label for="woman">
-                    <input type="radio" id="woman" value="woman" name="sex" v-model="sex" />女
+                    <input type="radio" value="woman" name="sex" v-model="sex" />女
                   </label>
                 </div>
                 <div class="md:-mx-1">
                   <label for="mix">
-                    <input type="radio" id="mix" value="mix" name="sex" v-model="sex" />男女
+                    <input type="radio" value="mix" name="sex" v-model="sex" />男女
                   </label>
                 </div>
                 <div class="md:-ml-2">
                   <label for="man_and_woman">
-                    <input type="radio" id="man_and_woman" value="man_and_woman" name="sex" v-model="sex" />混合
+                    <input type="radio" value="man_and_woman" name="sex" v-model="sex" />混合
                   </label>
                 </div>
               </div>
             </li>
-            <div v-if="backend_errors.sex" class="error">{{ backend_errors.sex[0] }}</div>
+            <div class="error" v-for="(errMsg, index) in backend_errors.sex" :key="index">{{ errMsg }}</div>
             <div class="md:-mb-16">
               <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
                 <label class="md:col-span-4 text-left px-3 py-2" for="target_age">対象年齢</label>
@@ -107,7 +107,7 @@
                 </div>
               </li>
               <div class="error">{{ target_age_selected_error }}</div>
-              <div class="mb-5 mx-5 bg-white rounded-md">{{ target_age_selected.length ? target_age_selected.map(age => age.name).join(", ") : '' }}</div>
+              <div class="mb-5 mx-5 bg-white rounded-md">{{ targetAges() }}</div>
             </div>
             <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <label class="md:col-span-4 text-left px-3 py-2" for="start_date">開始日付</label>
@@ -115,14 +115,14 @@
                 <input class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="start_date" type="date" v-model="start_date">
               </div>
             </li>
-            <div v-if="backend_errors.start_date" class="error">{{ backend_errors.start_date[0] }}</div>
+            <div class="error" v-for="(errMsg, index) in backend_errors.start_date" :key="index">{{ errMsg }}</div>
             <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <label class="md:col-span-4 text-left px-3 py-2" for="end_date">終了日付</label>
               <div class="md:col-span-8">
                 <input class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="end_date" type="date" v-model="end_date">
               </div>
             </li>
-            <div v-if="backend_errors.end_date" class="error">{{ backend_errors.end_date[0] }}</div>
+            <div class="error" v-for="(errMsg, index) in backend_errors.end_date" :key="index">{{ errMsg }}</div>
             <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <label class="md:col-span-4 text-left px-3 py-2" for="number">募集チーム数</label>
               <div class="md:col-span-8">
@@ -132,13 +132,13 @@
             <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <label class="md:col-span-4 text-left px-3 py-2" for="Purpose">イベント目的</label>
               <div class="md:col-span-8">
-                <textarea class="w-full h-40 py-2 px-3 border-2 border-gray-200 box-border" name="textarea" v-model="purpose_body" id="Purpose" required placeholder="Event Purpose"></textarea>
+                <textarea class="w-full h-40 py-2 px-3 border-2 border-gray-200 box-border" name="textarea" v-model="purpose_body" id="Purpose" required placeholder="イベント目的"></textarea>
               </div>
             </li>
             <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <label class="md:col-span-4 text-left px-3 py-2" for="Other">その他</label>
               <div class="md:col-span-8">
-                <textarea  class="w-full h-40 py-2 px-3 border-2 border-gray-200 box-border" name="textarea" v-model="other_body" id="Other" placeholder="Other"></textarea>
+                <textarea  class="w-full h-40 py-2 px-3 border-2 border-gray-200 box-border" name="textarea" v-model="other_body" id="Other" placeholder="その他"></textarea>
               </div>
             </li>
           </ul>
@@ -192,6 +192,9 @@ export default {
     }
   },
   methods: {
+    targetAges(){
+      return this.target_age_selected.length ? this.target_age_selected.map(age => age.name).join(", ") : ''
+    },
     async EventSetting() {
       this.sports_type_selected_error = ""
       this.prefecture_selected_error = ""
