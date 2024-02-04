@@ -16,6 +16,7 @@ ja:
         recruitment:
           attributes:
             name:
+              blank: "イベント名を入力してください"
               too_long: "イベント名は%{count}文字以下で入力してください"
             end_date:
               greater_than_or_equal_to: "%{count} 以降の日付を入力してください"
