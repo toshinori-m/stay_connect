@@ -8,8 +8,8 @@ class Recruitment < ApplicationRecord
   has_many :recruitment_sports_disciplines, dependent: :destroy
   has_many :sports_disciplines, through: :recruitment_sports_disciplines
 
-  validates :name, presence: true
-  validates :area, presence: true
+  validates :name, presence: true, length: { maximum: 255 }
+  validates :area, presence: true, length: { maximum: 255 }
   enum sex: { man: 0, woman: 1, mix: 2, man_and_woman: 3 }
   validates :sex, presence: true
   validates :number, presence: true, numericality: { greater_than: 0 }
