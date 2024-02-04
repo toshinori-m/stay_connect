@@ -26,9 +26,8 @@ class RecruitmentsController < ApplicationController
 
   def destroy
     recruitment = Recruitment.find(params[:id])
-    return render json: { message: '削除に成功しました' }, status: 200 if recruitment.destroy
-    
-    render json: { message: '削除に失敗しました' }, status: 400
+    recruitment.destroy
+    render json: {}, status: 200
   end
 
   private

@@ -8,6 +8,7 @@
         <div class="text-left my-3 sm:ml-4 sm:mr-6 w-72 pt-3 ring-offset-2 ring-2 rounded-lg" type="text" v-for="recruitment in recruitments" :key="recruitment.id">イベント名:{{ recruitment.name }}
           <div class="flex justify-center">
             <button class="update_button" @click="editRecruitment(recruitment.id)">更新</button>
+            <button class="delete_button mx-5" @click="deleteRecruitment(recruitment.id)">削除</button>
           </div>
         </div>
       </div>
@@ -28,8 +29,8 @@ export default {
   methods: {
     async getRecruitment() {
       try {
-        const apiClient = getApiClient()
         this.error = null
+        const apiClient = getApiClient()
         const res = await apiClient.get('/recruitments')
         this.recruitments = res.data.data
       } catch {
@@ -38,6 +39,17 @@ export default {
     },
     async editRecruitment(recruitmentId) {
       this.$router.push({name: 'EventSettingEditPage', params: {id: recruitmentId} });
+    },
+    async deleteRecruitment(recruitmentId) {
+      try {
+        this.error = null
+        const apiClient = getApiClient()
+        await apiClient.delete(`/recruitments/${recruitmentId}`)
+        this.recruitments = this.recruitments.filter(rr => rr.id !== recruitmentId)
+        this.$router.push({ name: 'EventSettingListPage' })
+      } catch {
+        this.error = 'イベントを削除出来ませんでした。'
+      }
     },
     EventSettingCancel() {
       this.$router.push({name: 'HomePage'})
