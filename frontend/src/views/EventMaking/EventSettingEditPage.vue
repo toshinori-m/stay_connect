@@ -18,16 +18,16 @@
               </div>
             </li>
             <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
-              <label class="md:col-span-4 text-left px-3 py-2" for="discipline" v-if="sports_disciplines.length > 0">種目</label>
+              <label class="md:col-span-4 text-left px-3 py-2" for="discipline" v-if="sports_disciplines.length">種目</label>
               <div class="md:col-span-8">
-                <select class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="discipline"  v-model="sports_discipline_selected" multiple v-if="sports_disciplines.length > 0">
+                <select class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="discipline"  v-model="sports_discipline_selected" multiple v-if="sports_disciplines.length">
                   <option v-for="sports_discipline in sports_disciplines" :key="sports_discipline.id" :value="sports_discipline">
                     {{ sports_discipline.name }}
                   </option>
                 </select>
               </div>
             </li>
-            <div class="mb-5 mx-5 bg-white rounded-md">{{ sports_discipline_selected.length ? sports_discipline_selected.map(sport => sport.name).join(", ") : '' }}</div>
+            <div class="mb-5 mx-5 bg-white rounded-md">{{ selectedSports() }}</div>
             <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <label class="md:col-span-4 text-left px-3 py-2" for="prefecture">都道府県</label>
               <div class="md:col-span-8">
@@ -191,6 +191,9 @@ export default {
     }
   },
   methods: {
+    selectedSports(){
+      return this.sports_discipline_selected.length ? this.sports_discipline_selected.map(sport => sport.name).join(", ") : ''
+    },
     targetAges(){
       return this.target_age_selected.length ? this.target_age_selected.map(age => age.name).join(", ") : ''
     },

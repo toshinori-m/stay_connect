@@ -27,7 +27,7 @@
                 </select>
               </div>
             </li>
-            <div class="mb-5 mx-5 bg-white rounded-md">{{ sports_discipline_selected.length ? sports_discipline_selected.map(sport => sport.name).join(", ") : '' }}</div>
+            <div class="mb-5 mx-5 bg-white rounded-md">{{ selectedSports() }}</div>
             <div class="md:-mb-16">
               <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
                 <label class="md:col-span-4 text-left px-3 py-2" for="prefecture">都道府県</label>
@@ -192,6 +192,9 @@ export default {
     }
   },
   methods: {
+    selectedSports(){
+      return this.sports_discipline_selected.length ? this.sports_discipline_selected.map(sport => sport.name).join(", ") : ''
+    },
     targetAges(){
       return this.target_age_selected.length ? this.target_age_selected.map(age => age.name).join(", ") : ''
     },
