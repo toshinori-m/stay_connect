@@ -1,6 +1,8 @@
 <template>
-  <div class="mt-36 md:mt-14 max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-    <h1 class="text-2xl font-light mb-4"><span class="font-bold mr-3 text-blue-600">イベント名:</span>{{ eventDetails.name }}</h1>
+  <div class="mt-36 md:mt-14 max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg break-words">
+    <h1 class="text-2xl font-light mb-4"><span class="font-bold mr-3 text-blue-600">イベント名:</span>
+      {{ eventDetails.name }}
+    </h1>
     <img :src="eventDetails.image" alt="Event Image" class="w-full h-auto mb-4">
     <div class="text-right">
       <button class="ok_button mt-4 md:mt-0 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="goToUserProfile(eventDetails.user_id)">代表紹介</button>
@@ -15,7 +17,7 @@
     <p class="mb-2"><span class="font-semibold text-blue-600">開始日:</span> {{ eventDetails.start_date }}</p>
     <p class="mb-2"><span class="font-semibold text-blue-600">終了日:</span> {{ eventDetails.end_date }}</p>
     <p class="mb-2"><span class="font-semibold text-blue-600">性別:</span> {{ eventDetails.sex }}</p>
-    <p class="mb-2"><span class="font-semibold text-blue-600">人数:</span> {{ eventDetails.number }}</p>
+    <p class="mb-2"><span class="font-semibold text-blue-600">チーム数:</span> {{ eventDetails.number }}</p>
     <p class="mb-2"><span class="font-semibold text-blue-600">その他:</span> {{ eventDetails.other_body }}</p>
   </div>
 </template>
