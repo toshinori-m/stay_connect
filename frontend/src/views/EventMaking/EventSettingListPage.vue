@@ -5,7 +5,8 @@
       <button class="cancel_button mx-5 float-right" @click="EventSettingCancel">戻る</button>
       <div class="my-14">
         <div class="error text-sm text-red-400">{{ error }}</div>
-        <div class="text-left my-3 sm:ml-4 sm:mr-6 w-72 pt-3 ring-offset-2 ring-2 rounded-lg" type="text" v-for="recruitment in recruitments" :key="recruitment.id">イベント名:{{ recruitment.name }}
+        <div class="text-left my-3 sm:ml-4 sm:mr-6 w-72 pt-3 ring-offset-2 ring-2 rounded-lg break-words" type="text" v-for="recruitment in recruitments" :key="recruitment.id">イベント名:
+          {{ recruitment.name }}
           <div class="flex justify-center">
             <button class="update_button" @click="editRecruitment(recruitment.id)">更新</button>
           </div>
