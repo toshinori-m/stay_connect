@@ -44,8 +44,8 @@ export default {
       try {
         this.error = null
         const apiClient = getApiClient()
-        await apiClient.delete(`/recruitments/${recruitmentId}`)
-        this.recruitments = this.recruitments.filter(rr => rr.id !== recruitmentId)
+        const res = await apiClient.delete(`/recruitments/${recruitmentId}`)
+        this.recruitments = res.data
         this.$router.push({ name: 'EventSettingListPage' })
       } catch {
         this.error = 'イベントを削除出来ませんでした。'

@@ -26,9 +26,9 @@ class RecruitmentsController < ApplicationController
 
   def destroy
     recruitment = Recruitment.find(params[:id])
-
     recruitment.destroy!
-    head :ok
+    @recruitments = Recruitment.eager_load(:sports_disciplines, :target_ages).where(user_id: current_user.id)
+    render json: @recruitments
   rescue ActiveRecord::RecordNotFound => e
     render json: { error: '対象の募集が見つかりません。' }, status: :not_found
   rescue ActiveRecord::RecordNotDestroyed => e
