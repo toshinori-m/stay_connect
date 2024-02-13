@@ -32,9 +32,12 @@ class RecruitmentsController < ApplicationController
 
   def destroy
     recruitment = Recruitment.find(params[:id])
-    return render json: { message: '削除に成功しました' }, status: 200 if recruitment.destroy
-    
-    render json: { message: '削除に失敗しました' }, status: 400
+    recruitment.destroy!
+    @recruitments = Recruitment.eager_load(:sports_disciplines, :target_ages).where(user_id: current_user.id)
+  rescue ActiveRecord::RecordNotFound => e
+    render json: { error: '対象の募集が見つかりません。' }, status: :not_found
+  rescue ActiveRecord::RecordNotDestroyed => e
+    render json: { error: '削除に失敗しました。', errors: recruitment.errors.messages }, status: :internal_server_error
   end
 
   private

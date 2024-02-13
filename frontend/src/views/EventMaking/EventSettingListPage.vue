@@ -9,6 +9,7 @@
           {{ recruitment.name }}
           <div class="flex justify-center">
             <button class="update_button" @click="editRecruitment(recruitment.id)">更新</button>
+            <button class="delete_button mx-5" @click="deleteRecruitment(recruitment.id)">削除</button>
           </div>
         </div>
       </div>
@@ -29,8 +30,8 @@ export default {
   methods: {
     async getRecruitment() {
       try {
-        const apiClient = getApiClient()
         this.error = null
+        const apiClient = getApiClient()
         const res = await apiClient.get('/recruitments')
         this.recruitments = res.data.data
       } catch {
@@ -39,6 +40,17 @@ export default {
     },
     async editRecruitment(recruitmentId) {
       this.$router.push({name: 'EventSettingEditPage', params: {id: recruitmentId} });
+    },
+    async deleteRecruitment(recruitmentId) {
+      try {
+        this.error = null
+        const apiClient = getApiClient()
+        const res = await apiClient.delete(`/recruitments/${recruitmentId}`)
+        this.recruitments = res.data
+        this.$router.push({ name: 'EventSettingListPage' })
+      } catch {
+        this.error = 'イベントを削除出来ませんでした。'
+      }
     },
     EventSettingCancel() {
       this.$router.push({name: 'HomePage'})
