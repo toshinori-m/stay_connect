@@ -5,14 +5,20 @@ class RecruitmentsController < ApplicationController
     recruitment = Recruitment.new(create_params)
     recruitment.sports_discipline_ids = params[:sports_discipline_ids]
     recruitment.target_age_ids = params[:target_age_ids]
-    render json: { error: recruitment.errors.messages }, status: :unprocessable_entity and return unless recruitment.save
+    
+    recruitment.save!
+    head :ok
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: recruitment.errors.messages }, status: :unprocessable_entity 
   end
 
   def update
     recruitment = Recruitment.find(params[:id])
-    return render json: { message: '成功しました' }, status: 200 if recruitment.update(create_params)
-
-    render json: { message: '保存出来ませんでした', errors: recruitment.errors.messages }, status: 400
+  
+    recruitment.update!(create_params)
+    head :ok
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: recruitment.errors.messages }, status: :unprocessable_entity
   end
 
   def index

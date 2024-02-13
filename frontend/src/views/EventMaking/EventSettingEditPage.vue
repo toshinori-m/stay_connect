@@ -1,99 +1,143 @@
 <template>
-  <div class="flex items-center justify-center mt-32 xl:mt-20">
-    <div class="xl:w-2/5 rounded-md shadow-gray-200 bg-sky-100">
-      <h2 class="text-center pt-10 font-bold text-3xl text-blue-600">イベント編集</h2>
-      <button class="cancel_button mx-5 float-right" @click="EventSettingEditCancel">戻る</button>
-      <div class="my-10">
-        <div class="error text-sm text-red-400" v-for="(errMsg, index) in errors" :key="index">{{ errMsg }}</div>
+  <div class="flex items-center justify-center mt-32 md:mt-20">
+    <div class="w-full md:w-3/5 xl:w-2/5 rounded-md shadow-gray-200 bg-sky-100">
+      <button class="cancel_button mx-5 mt-8 float-right" @click="EventSettingEditCancel">戻る</button>
+      <h2 class="text-center mb-10 pt-10 font-bold text-3xl text-blue-600">イベント編集</h2>
+      <div class="px-4 md:px-0">
         <form class= "text-center" @submit.prevent="editEventSetting(recruitments.id)">
-          <ul>
-            <li class="xl:grid grid-cols-3 gap-4">
-              <label class="xl:place-self-start float-center xl:mt-3 ml-28 sm:ml-4" for="sports_type">競技名</label>
-              <select class="xl:place-self-center float-center sm:ml-20 py-1 px-1 my-2 w-72 sm:w-52 xl:w-72 xl:ml-28 border-2 border-gray-200 box-border" id="sports_type" v-model="sports_type_selected"  @change="getSportsDiscipline">
-                <option disabled value="競技">1つを選択して下さい</option>
-                <option v-for="sports_type in sports_types" :key="sports_type.id" :value="sports_type">
-                  {{ sports_type.name }}
-                </option>
-              </select>
+          <ul class="space-y-4">
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="sports_type">競技名</label>
+              <div class="md:col-span-8">
+                <select class="w-full py-2 px-3 border-2 border-gray-200 box-border md:-mb-52" id="sports_type" v-model="sports_type_selected"  @change="getSportsDiscipline">
+                  <option disabled value="競技">1つを選択して下さい</option>
+                  <option v-for="sports_type in sports_types" :key="sports_type.id" :value="sports_type">
+                    {{ sports_type.name }}
+                  </option>
+                </select>
+              </div>
             </li>
-            <li class="xl:grid grid-cols-3 gap-4">
-              <label class="xl:place-self-start xl:mt-3 mx-4" for="discipline" v-if="sports_disciplines.length > 0">種目</label>
-              <select class="xl:place-self-center mx-10 py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="discipline"  v-model="sports_discipline_selected" multiple v-if="sports_disciplines.length > 0">
-                <option v-for="sports_discipline in sports_disciplines" :key="sports_discipline.id" :value="sports_discipline">
-                  {{ sports_discipline.name }}
-                </option>
-              </select>
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="discipline" v-if="sports_disciplines.length">種目</label>
+              <div class="md:col-span-8">
+                <select class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="discipline"  v-model="sports_discipline_selected" multiple v-if="sports_disciplines.length">
+                  <option v-for="sports_discipline in sports_disciplines" :key="sports_discipline.id" :value="sports_discipline">
+                    {{ sports_discipline.name }}
+                  </option>
+                </select>
+              </div>
             </li>
-            <div class="mb-5 mx-5 bg-white rounded-md">{{ sports_discipline_selected.length ? sports_discipline_selected.map(sport => sport.name).join(", ") : '' }}</div>
-            <li class="xl:grid grid-cols-3 gap-4">
-              <label class="xl:place-self-start xl:mt-3 mx-4" for="prefecture">都道府県</label>
-              <select class="xl:place-self-center mx-10 py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="prefecture"  v-model="prefecture_selected">
-                <option disabled value="">1つを選択して下さい</option>
-                <option v-for="prefecture in prefectures" :key="prefecture.id" :value="prefecture.id" >
-                  {{ prefecture.name }}
-                </option>
-              </select>
+            <div class="mb-5 mx-5 bg-white rounded-md">{{ selectedSports() }}</div>
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="prefecture">都道府県</label>
+              <div class="md:col-span-8">
+                <select class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="prefecture"  v-model="prefecture_selected">
+                  <option disabled value="">1つを選択して下さい</option>
+                  <option v-for="prefecture in prefectures" :key="prefecture.id" :value="prefecture.id" >
+                    {{ prefecture.name }}
+                  </option>
+                </select>
+              </div>
             </li>
-            <li class="xl:grid grid-cols-3 gap-4">
-              <label class="xl:place-self-start xl:mt-3 xl:mr-4 xl:ml-3" for="event_url">イベントURL</label>
-              <input class="xl:place-self-center mx-6 py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="event_url" type="url" placeholder="http://" v-model="recruitments.event_url">
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="event_url">イベントURL</label>
+              <div class="md:col-span-8">
+                <input class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="event_url" type="url" placeholder="https://www.example.com/images/example.jpg" v-model="recruitments.event_url">
+              </div>
             </li>
-            <li class="xl:grid grid-cols-3 gap-4">
-              <label class="xl:place-self-start xl:mt-3 ml-4" for="name">イベント名</label>
-              <input class="xl:place-self-center mx-10 py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="name" type="text" v-model="recruitments.name">
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="name">イベント名</label>
+              <div class="md:col-span-8">
+                <input class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="name" type="text" v-model="recruitments.name">
+                <div v-if="remainingCharactersEventName <= 5" class="text-red-500">
+                  地域はあと{{ remainingCharactersEventName }}文字までです。
+                </div>
+              </div>
             </li>
-            <li class="xl:grid grid-cols-3 gap-4 sm:flex sm:items-center">
-              <label class="xl:place-self-start xl:mt-3 ml-6 mr-8" for="area">地域</label>
-              <textarea class="xl:place-self-center mx-10 text-start py-1 px-1 my-2 w-72 h-40 border-2 border-gray-200 box-border" id="area" name="textarea" required placeholder="地域" v-model="recruitments.area"></textarea>
+            <div class="error" v-for="(errMsg, index) in backend_errors.name" :key="index">{{ errMsg }}</div>
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="area">地域</label>
+              <div class="md:col-span-8">
+                <textarea class="w-full h-32 py-2 px-3 border-2 border-gray-200 box-border" id="area" name="textarea" required placeholder="地域" v-model="recruitments.area"></textarea>
+                <div v-if="remainingCharactersArea <= 5" class="text-red-500">
+                  地域はあと{{ remainingCharactersArea }}文字までです。
+                </div>
+              </div>
             </li>
-            <li class="xl:grid grid-cols-6 gap-6 items-end mb-2.5 items-center xl:my-4">
-              <label class="xl:place-self-start  xl:mt-1 xl:mr-1 mx-4">性別</label>
-              <label for="man">
-                <input type="radio" id="man" value="man" name="sex" v-model="recruitments.sex" />男
-              </label>
-              <label for="woman">
-                <input type="radio" id="woman" value="woman" name="sex" v-model="recruitments.sex" />女
-              </label>
-              <label for="mix">
-                <input type="radio" id="mix" value="mix" name="sex" v-model="recruitments.sex" />男女
-              </label>
-              <label for="man_and_woman">
-                <input type="radio" id="man_and_woman" value="man_and_woman" name="sex" v-model="recruitments.sex" />混合
-              </label>
+            <div class="error" v-for="(errMsg, index) in backend_errors.area" :key="index">{{ errMsg }}</div>
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2">性別</label>
+              <div class="md:col-span-8 grid grid-cols-4 gap-4">
+                <div class="md:-mx-3">
+                  <label for="man">
+                    <input type="radio" value="man" name="sex" v-model="recruitments.sex" />男
+                  </label>
+                </div>
+                <div class="md:-mx-3">
+                  <label for="woman">
+                    <input type="radio" value="woman" name="sex" v-model="recruitments.sex" />女
+                  </label>
+                </div>
+                <div class="md:-mx-1">
+                  <label for="mix">
+                    <input type="radio" value="mix" name="sex" v-model="recruitments.sex" />男女
+                  </label>
+                </div>
+                <div class="md:-ml-2">
+                  <label for="man_and_woman">
+                    <input type="radio" value="man_and_woman" name="sex" v-model="recruitments.sex" />混合
+                  </label>
+                </div>
+              </div>
             </li>
             <div class="mb-5 mx-5 bg-white rounded-md" type="text">{{ recruitments.sex }}</div>
-            <div v-if="backend_errors.sex" class="error">{{ backend_errors.sex[0] }}</div>
-            <li class="xl:grid grid-cols-3 gap-4">
-              <label class="xl:place-self-start xl:mt-3 mx-4" for="target_age">対象年齢</label>
-              <select class="xl:place-self-center mx-10 py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="target_age" v-model="target_age_selected" multiple>
-                <option disabled value="">選択して下さい</option>
-                <option v-for="target_age in target_ages" :key="target_age.id" :value="target_age">
-                  {{ target_age.name }}
-                </option>
-              </select>
+            <div class="error" v-for="(errMsg, index) in backend_errors.sex" :key="index">{{ errMsg }}</div>
+            <div class="md:-mb-16">
+              <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+                <label class="md:col-span-4 text-left px-3 py-2" for="target_age">対象年齢</label>
+                <div class="md:col-span-8">
+                  <select class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="target_age" v-model="target_age_selected" multiple>
+                    <option disabled value="">選択して下さい</option>
+                    <option v-for="target_age in target_ages" :key="target_age.id" :value="target_age">
+                      {{ target_age.name }}
+                    </option>
+                  </select>
+                </div>
+              </li>
+            </div>
+            <div class="error">{{ target_age_selected_error }}</div>
+            <div class="mb-5 mx-5 bg-white rounded-md">{{ targetAges() }}</div>
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="start_date">開始日付</label>
+              <div class="md:col-span-8">
+                <input v-if="recruitments" class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="start_date" type="date" v-model="recruitments.start_date">
+              </div>
             </li>
-            <div class="mb-5 mx-5 bg-white rounded-md">{{ target_age_selected.length ? target_age_selected.map(sport => sport.name).join(", ") : '' }}</div>
-            <li class="xl:grid grid-cols-3 gap-4">
-              <label class="xl:place-self-start  xl:mt-3 mx-4" for="start_date">開始日付</label>
-              <input v-if="recruitments" class="xl:place-self-center mx-10 py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="start_date" type="date" v-model="recruitments.start_date">
-              <div v-if="backend_errors.start_date" class="error">{{ backend_errors.start_date[0] }}</div>
+            <div class="error" v-for="(errMsg, index) in backend_errors.start_date" :key="index">{{ errMsg }}</div>
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="end_date">終了日付</label>
+              <div class="md:col-span-8">
+                <input class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="end_date" type="date" v-model="recruitments.end_date">
+              </div>
             </li>
-            <li class="xl:grid grid-cols-3 gap-4">
-              <label class="xl:place-self-start  xl:mt-3 mx-4" for="end_date">終了日付</label>
-              <input class="xl:place-self-center mx-10 py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="end_date" type="date" v-model="recruitments.end_date">
-              <div v-if="backend_errors.end_date" class="error">{{ backend_errors.end_date[0] }}</div>
+            <div class="error" v-for="(errMsg, index) in backend_errors.end_date" :key="index">{{ errMsg }}</div>
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="number">募集チーム数</label>
+              <div class="md:col-span-8">
+                <input class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="number" type="number" required placeholder="募集チーム数" v-model="recruitments.number">
+              </div>
             </li>
-            <li class="xl:grid grid-cols-3 gap-4">
-              <label class="xl:place-self-start  xl:mt-3 mx-4" for="number">募集チーム数</label>
-              <input class="xl:place-self-center sm:mr-10 sm:ml-3 xl:mr-4 xl:ml-3 py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="number" type="number" required placeholder="募集チーム数" v-model="recruitments.number">
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="Purpose">イベント目的</label>
+              <div class="md:col-span-8">
+                <textarea class="w-full h-32 py-2 px-3 border-2 border-gray-200 box-border" name="textarea" v-model="recruitments.purpose_body" id="Purpose" required placeholder="イベント目的"></textarea>
+              </div>
             </li>
-            <li class="xl:grid grid-cols-3 gap-4 sm:flex sm:items-center">
-              <label class="xl:place-self-start  xl:mt-3 mx-4" for="Purpose">イベント目的</label>
-              <textarea class="xl:place-self-center text-start py-1 px-1 my-2 w-72 h-40 border-2 border-gray-200 box-border" name="textarea" v-model="recruitments.purpose_body" id="Purpose" required placeholder="Event Purpose"></textarea>
-            </li>
-            <li class="xl:grid grid-cols-3 gap-4 sm:flex sm:items-center">
-              <label class="xl:place-self-start  xl:mt-3 mx-5" for="Other">その他</label>
-              <textarea  class="xl:place-self-center mx-10 text-start py-1 px-1 my-2 w-72 h-40 border-2 border-gray-200 box-border" name="textarea" v-model="recruitments.other_body" id="Other" placeholder="Other"></textarea>
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="Other">その他</label>
+              <div class="md:col-span-8">
+                <textarea  class="w-full h-32 py-2 px-3 border-2 border-gray-200 box-border" name="textarea" v-model="recruitments.other_body" id="Other" placeholder="その他"></textarea>
+              </div>
             </li>
             <div class="error text-sm text-red-400" v-for="(errMsg, index) in errors" :key="index">{{ errMsg }}</div>
             <button class="update_button mx-5">更新</button>
@@ -134,7 +178,25 @@ export default {
       backend_errors: ""
     }
   },
+  computed: {
+    remainingCharactersEventName() {
+      const maxChars = 255
+      const nameLength = this.recruitments.name?.length ?? 0
+      return maxChars - nameLength
+    },
+    remainingCharactersArea() {
+      const maxChars = 255
+      const areaLength = this.recruitments.area?.length ?? 0
+      return maxChars - areaLength
+    }
+  },
   methods: {
+    selectedSports(){
+      return this.sports_discipline_selected.length ? this.sports_discipline_selected.map(sport => sport.name).join(", ") : ''
+    },
+    targetAges(){
+      return this.target_age_selected.length ? this.target_age_selected.map(age => age.name).join(", ") : ''
+    },
     async getEventSettingEdit() {
       try {
         const apiClient = getApiClient()
@@ -231,11 +293,7 @@ export default {
         })
         this.$router.push({ name: 'EventSettingListPage' })
       } catch (error) {
-        if (error.response && error.response.data && error.response.data.errors) {
-          this.errors.push(...Object.values(error.response.data.errors))
-        } else {
-          this.errors.push('イベントに誤りがあります。')
-        }
+        this.backend_errors = error.response.data.error
       }
     },
     async deleteEventSetting(recruitmentId) {
