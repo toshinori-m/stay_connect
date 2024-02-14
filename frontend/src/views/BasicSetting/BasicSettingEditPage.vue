@@ -1,54 +1,70 @@
 <template>
-  <div class="flex items-center justify-center mt-32 xl:mt-20">
-    <div class="xl:w-2/5 rounded-md shadow-gray-200 bg-sky-100">
-      <h2 class="text-center pt-10 font-bold text-3xl text-blue-600">基本設定編集</h2>
-      <button class="cancel_button mx-5 float-right" @click="BasicSettingEditCancel">戻る</button>
-      <div class="my-10">
+  <div class="flex items-center justify-center mt-32 md:mt-20">
+    <div class="w-full md:w-3/5 xl:w-2/5 rounded-md shadow-gray-200 bg-sky-100">
+      <div class="relative text-center pt-10 pb-10 flex flex-col items-center">
+        <h2 class="inline-block font-bold text-3xl text-blue-600">基本設定編集</h2>
+        <button class="cancel_button sm:absolute sm:right-0 sm:top-0 sm:mt-10 sm:mr-6 relative mt-4 mx-auto" @click="BasicSettingEditCancel">戻る</button>
+      </div>
+      <div class="px-4 md:px-0">
         <form class= "text-center" @submit.prevent="basicSettingEdit">
-          <ul>
-            <li class="xl:grid grid-cols-3 gap-4">
-              <label class="sm:float-left xl:mt-3 ml-28 sm:ml-6 sm:mt-3 xl:mr-20 xl:-ml-2" for="name">名前</label>
-              <input class="xl:place-self-center float-center py-1 px-1 my-2 w-72 xl:ml-28 border-2 border-gray-200 box-border" id="name" type="text" required placeholder="名前" v-model="user.name">
+          <ul class="space-y-8 mb-3">
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="name">名前</label>
+              <div class="md:col-span-8">
+                <input class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="name" type="text" required placeholder="名前" v-model="user.name">
+              </div>
             </li>
-            <li class="xl:grid grid-cols-3 gap-4 mt-2">
-              <label class="xl:place-self-start xl:mt-3 xl:mr-4 xl:ml-3" for="icon">アイコン</label>
-              <input class="xl:place-self-center mx-6 py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="icon" type="file" @change="setImage($event)">
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center mt-28">
+              <label class="md:col-span-4 text-left px-3 py-2" for="icon">アイコン</label>
+              <div class="md:col-span-8">
+                <input class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="icon" type="file" @change="setImage($event)">
+              </div>
             </li>
-            <img class="text-gray-400" :src="user.image_url" alt="アイコンのイメージ">
-            <li class="xl:grid grid-cols-3 gap-4 mt-5">
-              <label class="sm:float-left sm:mt-4 sm:ml-7 sm:-mr-4 xl:mt-3 xl:mr-20 xl:ml-1 xl:mr-24 mx-2" for="birthday">誕生日</label>
-              <input class="xl:place-self-center mx-6 py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="birthday" type="date" required placeholder="誕生日" v-model="user.birthday">
+            <img class="mx-auto w-72 text-gray-400" :src="user.image_url" alt="アイコンのイメージ">
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center mt-40">
+              <label class="md:col-span-4 text-left px-3 py-2" for="birthday">誕生日</label>
+              <div class="md:col-span-8">
+                <input class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="birthday" type="date" required placeholder="誕生日" v-model="user.birthday">
+              </div>
             </li>
-            <li class="xl:grid grid-cols-4 gap-4 items-end mb-2.5 items-center my-4">
-              <label class="float-left ml-4 sm:ml-7 xl:ml-1 xl:mr-16 mt-1">性別</label>
-              <label class="mx-3" for="man">
-                <input class="mx-3" type="radio" id="man" value="man" name="sex" v-model="user.sex" />男
-              </label>
-              <label class="mx-3" for="woman">
-                <input class="mx-3" type="radio" id="woman" value="woman" name="sex" v-model="user.sex" />女
-              </label>
-              <label v-if="user.sex" class="px-2 py-1 mx-5 bg-white rounded-md" type="text">{{ user.sex }}
-              </label>
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2">性別</label>
+              <div class="md:col-span-8">
+                <label class="mx-3" for="man">
+                  <input class="mx-3" type="radio" id="man" value="man" name="sex" v-model="user.sex" />男
+                </label>
+                <label class="mx-3" for="woman">
+                  <input class="mx-3" type="radio" id="woman" value="woman" name="sex" v-model="user.sex" />女
+                </label>
+              </div>
             </li>
-            <li class="xl:grid grid-cols-3 gap-4 mt-6">
-              <label class="xl:place-self-start xl:mt-3 xl:mr-4 xl:ml-5" for="email">メールアドレス</label>
-              <input class="xl:place-self-center py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="email" type="email" required placeholder="メールアドレス" v-model="user.email">
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="email">メールアドレス</label>
+              <div class="md:col-span-8">
+                <input class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="email" type="email" required placeholder="メールアドレス" v-model="user.email">
+              </div>
             </li>
-            <li class="grid grid-cols-3 gap-4 mt-6">
-              <label class="place-self-start mt-3 ml-5" for="email">パスワード</label>
-              <button class="place-self-center  py-1 px-1 my-2 bg-sky-500 hover:bg-sky-700 text-white rounded-lg" @click="redirectToSendEmail">（変更する）</button>
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="email">パスワード</label>
+              <div class="md:col-span-8">
+                <button class="xl:place-self-center py-1 px-1 my-2 bg-sky-500 hover:bg-sky-700 text-white rounded-lg" @click="redirectToSendEmail">（変更する）</button>
+              </div>
             </li>
-            <li class="xl:grid grid-cols-3 gap-4 mt-6">
-              <label class="xl:place-self-start xl:mt-5 sm:ml-5" for="self_introduction">自己紹介</label>
-              <textarea class="xl:place-self-center mx-6 py-1 px-1 my-2 w-72 border-2 border-gray-200 box-border" id="self_introduction" type="text" required placeholder="自己紹介" v-model="user.self_introduction"></textarea>
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="self_introduction">自己紹介</label>
+              <div class="md:col-span-8">
+                <textarea class="w-full h-40 py-2 px-3 border-2 border-gray-200 box-border" id="self_introduction" type="text" required placeholder="自己紹介" v-model="user.self_introduction"></textarea>
+              </div>
             </li>
-            <li class="xl:grid grid-cols-3 gap-4 mt-6">
-              <label class="xl:place-self-start -ml-32 sm:-ml-36 sm:mr-20 mr-12 xl:mr-6 xl:ml-5" for="email_notification">メール通知</label>
-              <input class="xl:place-self-center border-gray-200 box-border" id="email_notification" type="checkbox" :checked="user.email_notification === 'receives'" @change="toggleEmailNotification">
-              <label class="xl:mr-36 xl:-ml-36 mt-1" for="email_notification">{{ user.email_notification ? '受信する' : '受信しない' }}</label>
+            <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <label class="md:col-span-4 text-left px-3 py-2" for="email_notification">メール通知</label>
+              <div class="md:col-span-8">
+                <input class="xl:place-self-center border-gray-200 box-border" id="email_notification" type="checkbox" :checked="user.email_notification === 'receives'" @change="toggleEmailNotification">
+                <label class="xl:ml-5 mt-1" for="email_notification">{{ getEmailNotificationStatus() }}</label>
+              </div>
             </li>
             <div class="error text-sm text-red-400">{{ error }}</div>
-            <button class="update_button mx-5 mt-7">更新</button>
+            <button class="update_button mx-5">更新</button>
           </ul>
         </form>
       </div>
@@ -72,6 +88,9 @@ export default {
     ...mapGetters("posts", ["posts"])
   },
   methods: {
+    getEmailNotificationStatus() {
+      return this.user.email_notification === 'receives' ? '受信する' : '受信しない';
+    },
     async getBasicSettingEdit() {
       try {
         const apiClient = getApiClient()
