@@ -60,7 +60,7 @@
               <label class="md:col-span-4 text-left px-3 py-2" for="email_notification">メール通知</label>
               <div class="md:col-span-8">
                 <input class="xl:place-self-center border-gray-200 box-border" id="email_notification" type="checkbox" :checked="user.email_notification === 'receives'" @change="toggleEmailNotification">
-                <label class="xl:ml-5 mt-1" for="email_notification">{{ user.email_notification ? '受信する' : '受信しない' }}</label>
+                <label class="xl:ml-5 mt-1" for="email_notification">{{ getEmailNotificationStatus() }}</label>
               </div>
             </li>
             <div class="error text-sm text-red-400">{{ error }}</div>
@@ -88,6 +88,9 @@ export default {
     ...mapGetters("posts", ["posts"])
   },
   methods: {
+    getEmailNotificationStatus() {
+      return this.user.email_notification === 'receives' ? '受信する' : '受信しない';
+    },
     async getBasicSettingEdit() {
       try {
         const apiClient = getApiClient()
