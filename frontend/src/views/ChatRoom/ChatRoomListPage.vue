@@ -10,6 +10,7 @@
             {{ chat_room.other_user_name }}
             <div class="flex justify-center">
               <button class="update_button" @click="editChatRoom(chat_room.id)">連絡</button>
+              <button class="delete_button mx-5" @click="deleteChatRoom(chat_room.id)">削除</button>
             </div>
           </div>
         </div>
@@ -37,6 +38,18 @@ export default {
         this.chat_rooms = res.data
       } catch (error) {
         this.error = error.response ? error.response.data :'チャットルームを表示できませんでした。'
+      }
+    },
+    async deleteChatRoom(chatRoomId) {
+      try {
+        this.error = null
+        const apiClient = getApiClient()
+        const res = await apiClient.delete(`/chat_rooms/${chatRoomId}`)
+        console.log("delete_res",res)
+        this.chat_rooms = res.data
+        this.$router.push({ name: 'ChatRoomListPage' })
+      } catch {
+        this.error = 'チャットルームを削除出来ませんでした。'
       }
     },
     editChatRoom(chatRoomId) {
