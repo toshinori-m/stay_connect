@@ -6,7 +6,7 @@
         <img :src="userProfile.image_url" alt="User Image" class="object-cover w-full h-full">
       </div>
       <div class="ml-4">
-        <button class="mt-2 mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300" @click="goToChatRoom(userProfile.id)" v-if="showChatButton(userProfile.id)">チーム代表とチャット開始</button>
+        <button class="mt-2 mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300" @click="goToChatRoom()" v-if="showChatButton()">チーム代表とチャット開始</button>
       </div>
     </div>
     <p class="mt-4 font-semibold text-blue-600">所属チーム紹介:</p>
@@ -44,8 +44,8 @@ export default {
     }
   },
   methods: {
-    showChatButton(profileId) {
-      return profileId !== this.currentUser.id;
+    showChatButton() {
+      return this.userProfile.id !== this.currentUser.id;
     },
     async fetchUserProfile() {
       try {
@@ -58,12 +58,12 @@ export default {
         this.errors.push('自己紹介を表示できませんでした。')
       }
     },
-    async goToChatRoom(otherUserId) {
+    async goToChatRoom() {
       try {
         this.errors = []
         const apiClient = getApiClient()
         const res = await apiClient.post('/chat_rooms', {
-          other_user_id: otherUserId
+          other_user_id: this.userProfile.id
         })
         this.$router.push({ name: 'ChatRoomPage', params: { id: res.data.data.id } })
       } catch {
