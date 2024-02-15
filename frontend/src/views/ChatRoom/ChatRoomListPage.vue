@@ -45,7 +45,6 @@ export default {
         this.error = null
         const apiClient = getApiClient()
         const res = await apiClient.delete(`/chat_rooms/${chatRoomId}`)
-        console.log("delete_res",res)
         this.chat_rooms = res.data
         this.$router.push({ name: 'ChatRoomListPage' })
       } catch {
