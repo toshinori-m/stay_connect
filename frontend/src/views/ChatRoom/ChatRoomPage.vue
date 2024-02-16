@@ -23,7 +23,7 @@
           <ul class="text-left my-2 sm:mx-6 w-full px-2 ring-offset-2 ring-2 rounded-lg" type="text" v-for="message in messages" :key="message.id">
             <li class="text-sm break-words">{{ message.name }}</li>
             <li class="text-xs text-gray-400">{{ message.created_at }}</li>
-            <li class="text-xs text-gray-400" v-if="message.read === 'already_read'">既読</li>
+            <li class="text-xs text-gray-400" v-if="message.read">既読</li>
             <li class="pt-3">{{ message.message }}</li>
           </ul>
         </div>
