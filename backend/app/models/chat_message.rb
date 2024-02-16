@@ -2,7 +2,9 @@ class ChatMessage < ApplicationRecord
   belongs_to :chat_room
   belongs_to :user
 
-  validates :message, presence: true
+  validates :message, presence: true, length: { maximum: 255 }
+  enum read: { already_read: true, unread: false }
+  validates :read, presence: true
 
   def self.create_with_user_and_room!(chat_room, user, message_params)
     chat_message = chat_room.chat_messages.new(message_params.merge(user: user))

@@ -9,7 +9,8 @@ module ChatRooms
       RoomChannel.broadcast_to(@chat_room, {
         message: @chat_message.message,
         name: current_user.name,
-        created_at: @chat_message.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        created_at: @chat_message.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+        read: @chat_message.read
       })
       @chat_room.notify_other_users(@chat_message)
       head :ok
@@ -19,6 +20,7 @@ module ChatRooms
     
     def index
       @chat_messages = @chat_room.chat_messages.eager_load(:user).order(created_at: :desc)
+      @chat_room.chat_messages.where.not(user: current_user).update_all(read: true)
     end
 
     private
@@ -30,7 +32,7 @@ module ChatRooms
     end
 
     def message_params
-      params.require(:chat_message).permit(:message)
+      params.require(:chat_message).permit(:message, :read)
     end
   end
 end
