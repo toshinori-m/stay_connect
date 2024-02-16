@@ -67,11 +67,15 @@ export default {
       try {
         this.errors = []
         const apiClient = getApiClient()
-        await apiClient.post(`/chat_rooms/${this.$route.params.id}/chat_messages`, {
+        const res = await apiClient.post(`/chat_rooms/${this.$route.params.id}/chat_messages`, {
           chat_message: { 
             message: this.message
           }
         })
+        if (res.data.requires_payment) {
+          await apiClient.post('/path/to/create_checkout_session')
+          window.location.href = res.data.session_url
+        }
         this.message = ''
       } catch (errors) {
         if (errors.response.data.errors) {

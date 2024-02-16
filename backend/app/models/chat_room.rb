@@ -31,7 +31,7 @@ class ChatRoom < ApplicationRecord
   def make_paid!
     update!(paid_or_free: true)
   end
-
+  
   def notify_other_users(chat_message)
     users.where.not(id: chat_message.user.id).distinct.each do |user|
       UserMailer.with(user_name: chat_message.user.name, user_message: chat_message.message, recipient_email: user.email, recipient_name: user.name).new_message_notification.deliver_later
