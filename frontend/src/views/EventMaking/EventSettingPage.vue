@@ -53,7 +53,7 @@
               <div class="md:col-span-8">
                 <input class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="event_name" type="text" required placeholder="イベント名" v-model="event_name">
                 <div v-if="remainingCharactersEventName <= 5" class="text-red-500">
-                  地域はあと{{ remainingCharactersEventName }}文字までです。
+                  イベント名はあと{{ remainingCharactersEventName }}文字までです。
                 </div>
               </div>
             </li>

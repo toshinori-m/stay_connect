@@ -24,3 +24,12 @@ ja:
               blank: "性別を選択してください"
             area:
               too_long: "地域欄は%{count}文字以下で入力してください"
+        team:
+          attributes:
+            name:
+              blank: "チーム名を入力してください"
+              too_long: "チーム名は%{count}文字以下で入力してください"
+            sex:
+              blank: "性別を選択してください"
+            area:
+              too_long: "地域欄は%{count}文字以下で入力してください"
