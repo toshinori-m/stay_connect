@@ -9,7 +9,7 @@ class RecruitmentsController < ApplicationController
     recruitment.save!
     head :ok
   rescue ActiveRecord::RecordInvalid => e
-    render json: { error: recruitment.errors.messages }, status: :unprocessable_entity 
+    render json: { error: e.record.errors.messages }, status: :unprocessable_entity 
   end
 
   def update
@@ -18,7 +18,7 @@ class RecruitmentsController < ApplicationController
     recruitment.update!(create_params)
     head :ok
   rescue ActiveRecord::RecordInvalid => e
-    render json: { error: recruitment.errors.messages }, status: :unprocessable_entity
+    render json: { error: e.record.errors.messages }, status: :unprocessable_entity
   end
 
   def index
