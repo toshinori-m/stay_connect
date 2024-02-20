@@ -18,7 +18,7 @@
             </li>
             <div class="error">{{ sports_type_selected_error }}</div>
             <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
-              <label class="md:col-span-4 text-left px-3 py-2" for="discipline" v-if="sports_disciplines.length > 0">種目</label>
+              <label class="md:col-span-4 text-left px-3 py-2" for="discipline" v-if="sports_disciplines.length">種目</label>
               <div class="md:col-span-8">
                 <select class="w-full py-2 px-3 border-2 border-gray-200 box-border" id="discipline"  v-model="sports_discipline_selected" multiple v-if="sports_disciplines.length > 0">
                   <option v-for="sports_discipline in sports_disciplines" :key="sports_discipline.id" :value="sports_discipline">
