@@ -13,8 +13,12 @@ class TeamsController < ApplicationController
   end
 
   def update
-    @team = current_user.teams.find(params[:id])
-    return render json: { errors: @team.errors.full_messages }, status: 400 unless @team.update(create_params)
+    team = Team.find(params[:id])
+  
+    team.update!(create_params)
+    head :ok
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: e.record.errors.messages }, status: :unprocessable_entity
   end
 
   def index
