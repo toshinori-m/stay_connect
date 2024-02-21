@@ -30,7 +30,7 @@ class ChatRoomsController < ApplicationController
   rescue ActiveRecord::RecordNotFound => e
     render json: { error: '対象のチャットルームが見つかりません。' }, status: :not_found
   rescue ActiveRecord::RecordNotDestroyed => e
-    render json: { error: '削除に失敗しました。', errors: chat_room.errors.messages }, status: :internal_server_error
+    render json: { error: '削除に失敗しました。', errors: e.record.errors.messages }, status: :internal_server_error
   end
 
   private
