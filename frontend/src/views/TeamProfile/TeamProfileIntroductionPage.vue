@@ -1,8 +1,8 @@
 <template>
-  <div class="mt-36 md:mt-14 max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+  <div class="mt-36 md:mt-14 max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg break-words">
     <div class="error text-sm text-red-400" v-for="(errMsg, index) in errors" :key="index">{{ errMsg }}</div>
     <div class="text-right">
-      <button class="ok_button mt-4 md:mt-0 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="goToUserProfile(teamProfile.user_id)">代表紹介</button>
+      <button class="ok_button mt-4 md:mt-0 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="goToUserProfile()">代表紹介</button>
     </div>
     <p class="mb-2">
       <span class="font-semibold text-blue-600">チーム名:</span>
@@ -129,8 +129,8 @@ export default {
         this.errors.push('対象年齢を表示できませんでした。')
       }
     },
-    goToUserProfile(userId) {
-      this.$router.push({ name: 'UserProfilePage', params: { userId: userId } })
+    goToUserProfile() {
+      this.$router.push({ name: 'UserProfilePage', params: { userId: this.teamProfile.user_id } })
     },
     sportsDisciplinesNames() {
       return this.sports_disciplines_current.length ? this.sports_disciplines_current.map(sport => sport.name).join(", ") : ''
