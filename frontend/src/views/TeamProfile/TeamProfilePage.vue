@@ -199,7 +199,7 @@ export default {
         })
         this.$router.push({ name: 'HomePage' })
       } catch (errors) {
-        this.backend_errors = errors.response.data.error
+        this.backend_errors = errors.response.data.errors
       }
     },
     async getSportsType () {

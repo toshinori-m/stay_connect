@@ -257,7 +257,7 @@ export default {
         })
         this.$router.push({ name: 'TeamProfileListPage' })
       } catch (error) {
-        this.backend_errors = error.response.data.error
+        this.backend_errors = error.response.data.errors
       }
     },
     async deleteTeamProfile() {

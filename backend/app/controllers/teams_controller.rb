@@ -9,7 +9,7 @@ class TeamsController < ApplicationController
     team.save!
     head :ok
   rescue ActiveRecord::RecordInvalid => e
-    render json: { error: e.record.errors.messages }, status: :unprocessable_entity 
+    render json: { errors: e.record.errors.messages }, status: :unprocessable_entity 
   end
 
   def update
@@ -18,7 +18,7 @@ class TeamsController < ApplicationController
     team.update!(create_params)
     head :ok
   rescue ActiveRecord::RecordInvalid => e
-    render json: { error: e.record.errors.messages }, status: :unprocessable_entity
+    render json: { errors: e.record.errors.messages }, status: :unprocessable_entity
   end
 
   def index
