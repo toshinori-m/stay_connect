@@ -217,19 +217,21 @@ export default {
         const disciplineIds = this.sports_discipline_selected.map(discipline => discipline.id);
         const targetAgeIds = this.target_age_selected.map(target => target.id);
         await apiClient.post('/recruitments', {
-          image: this.event_url,
-          name: this.event_name,
-          area: this.area,
-          sex: this.sex,
-          number: this.number,
-          start_date: this.start_date,
-          end_date: this.end_date,
-          purpose_body: this.purpose_body,
-          other_body: this.other_body,
-          sports_type_id: this.sports_type_selected.id,
-          sports_discipline_ids: disciplineIds,
-          prefecture_id: this.prefecture_selected,
-          target_age_ids: targetAgeIds
+          recruitment: {
+            image: this.event_url,
+            name: this.event_name,
+            area: this.area,
+            sex: this.sex,
+            number: this.number,
+            start_date: this.start_date,
+            end_date: this.end_date,
+            purpose_body: this.purpose_body,
+            other_body: this.other_body,
+            sports_type_id: this.sports_type_selected.id,
+            sports_discipline_ids: disciplineIds,
+            prefecture_id: this.prefecture_selected,
+            target_age_ids: targetAgeIds
+          }
         })
         this.$router.push({ name: 'HomePage' })
       } catch (error) {

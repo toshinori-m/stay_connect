@@ -2,10 +2,7 @@ class TeamsController < ApplicationController
   before_action :authenticate, except: [:index]
   
   def create
-    team_params = create_params
-    team = current_user.teams.new(team_params)
-    team.sports_discipline_ids = team_params[:sports_discipline_ids]
-    team.target_age_ids = team_params[:target_age_ids]
+    team = current_user.teams.new(create_params)
     
     team.save!
     head :ok

@@ -2,9 +2,7 @@ class RecruitmentsController < ApplicationController
   before_action :authenticate, except: [:show]
   
   def create
-    recruitment = Recruitment.new(create_params)
-    recruitment.sports_discipline_ids = params[:sports_discipline_ids]
-    recruitment.target_age_ids = params[:target_age_ids]
+    recruitment = current_user.recruitments.new(create_params)
     
     recruitment.save!
     head :ok
@@ -44,10 +42,10 @@ class RecruitmentsController < ApplicationController
 
   def create_params
     params
+    .require(:recruitment)
     .permit(:image, :name, :area, :sex, :number, :start_date, :end_date,
       :purpose_body, :other_body, :sports_type_id, :prefecture_id, 
       sports_discipline_ids: [], target_age_ids: []
     )
-    .merge(user_id: current_user.id)
   end
 end

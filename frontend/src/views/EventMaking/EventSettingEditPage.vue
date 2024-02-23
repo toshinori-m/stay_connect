@@ -277,19 +277,21 @@ export default {
         if (!recruitment) return;
         if (recruitment.id !== recruitmentId) return;
         await apiClient.patch(`/recruitments/${recruitmentId}`, {
-          image: this.recruitments.event_url,
-          name: this.recruitments.name,
-          area: this.recruitments.area,
-          sex: this.recruitments.sex,
-          number: this.recruitments.number,
-          start_date: this.recruitments.start_date,
-          end_date: this.recruitments.end_date,
-          purpose_body: this.recruitments.purpose_body,
-          other_body: this.recruitments.other_body,
-          sports_type_id: this.sports_type_selected.id,
-          sports_discipline_ids: disciplineIds,
-          prefecture_id: this.prefecture_selected,
-          target_age_ids: targetAgeIds
+          recruitment:{
+            image: this.recruitments.event_url,
+            name: this.recruitments.name,
+            area: this.recruitments.area,
+            sex: this.recruitments.sex,
+            number: this.recruitments.number,
+            start_date: this.recruitments.start_date,
+            end_date: this.recruitments.end_date,
+            purpose_body: this.recruitments.purpose_body,
+            other_body: this.recruitments.other_body,
+            sports_type_id: this.sports_type_selected.id,
+            sports_discipline_ids: disciplineIds,
+            prefecture_id: this.prefecture_selected,
+            target_age_ids: targetAgeIds
+          }
         })
         this.$router.push({ name: 'EventSettingListPage' })
       } catch (error) {
