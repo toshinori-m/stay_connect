@@ -173,7 +173,6 @@ export default {
         const apiClient = getApiClient()
         const teamId = this.$route.params.id;
         const res = await apiClient.get(`/teams/${teamId}`)
-        console.log("res.data.data",res.data.data)
         this.team = res.data.data
         const rdsRes = await apiClient.get(`/teams/${teamId}/sports_disciplines`)
         this.team_sports_disciplines = rdsRes.data

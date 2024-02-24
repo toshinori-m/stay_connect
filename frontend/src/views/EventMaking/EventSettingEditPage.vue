@@ -105,7 +105,6 @@
                 </div>
               </li>
             </div>
-            <div class="error">{{ target_age_selected_error }}</div>
             <div class="mb-5 mx-5 bg-white rounded-md">{{ targetAges() }}</div>
             <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <label class="md:col-span-4 text-left px-3 py-2" for="start_date">開始日付</label>
@@ -180,15 +179,15 @@ export default {
   },
   computed: {
     remainingCharactersEventName() {
-      if(!this.team.name) return 0
+      if(!this.recruitments.name) return 0
       const maxChars = 255
-      const nameLength = this.team.name.length ?? 0
+      const nameLength = this.recruitments.name.length ?? 0
       return maxChars - nameLength
     },
     remainingCharactersArea() {
-      if(!this.team.area) return 0
+      if(!this.recruitments.area) return 0
       const maxChars = 255
-      const areaLength = this.team.area.length ?? 0
+      const areaLength = this.recruitments.area.length ?? 0
       return maxChars - areaLength
     }
   },
