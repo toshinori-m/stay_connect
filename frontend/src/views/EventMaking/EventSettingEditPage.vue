@@ -105,7 +105,6 @@
                 </div>
               </li>
             </div>
-            <div class="error">{{ target_age_selected_error }}</div>
             <div class="mb-5 mx-5 bg-white rounded-md">{{ targetAges() }}</div>
             <li class="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <label class="md:col-span-4 text-left px-3 py-2" for="start_date">開始日付</label>
@@ -180,13 +179,15 @@ export default {
   },
   computed: {
     remainingCharactersEventName() {
+      if(!this.recruitments.name) return 0
       const maxChars = 255
-      const nameLength = this.recruitments.name?.length ?? 0
+      const nameLength = this.recruitments.name.length ?? 0
       return maxChars - nameLength
     },
     remainingCharactersArea() {
+      if(!this.recruitments.area) return 0
       const maxChars = 255
-      const areaLength = this.recruitments.area?.length ?? 0
+      const areaLength = this.recruitments.area.length ?? 0
       return maxChars - areaLength
     }
   },
@@ -277,19 +278,21 @@ export default {
         if (!recruitment) return;
         if (recruitment.id !== recruitmentId) return;
         await apiClient.patch(`/recruitments/${recruitmentId}`, {
-          image: this.recruitments.event_url,
-          name: this.recruitments.name,
-          area: this.recruitments.area,
-          sex: this.recruitments.sex,
-          number: this.recruitments.number,
-          start_date: this.recruitments.start_date,
-          end_date: this.recruitments.end_date,
-          purpose_body: this.recruitments.purpose_body,
-          other_body: this.recruitments.other_body,
-          sports_type_id: this.sports_type_selected.id,
-          sports_discipline_ids: disciplineIds,
-          prefecture_id: this.prefecture_selected,
-          target_age_ids: targetAgeIds
+          recruitment:{
+            image: this.recruitments.event_url,
+            name: this.recruitments.name,
+            area: this.recruitments.area,
+            sex: this.recruitments.sex,
+            number: this.recruitments.number,
+            start_date: this.recruitments.start_date,
+            end_date: this.recruitments.end_date,
+            purpose_body: this.recruitments.purpose_body,
+            other_body: this.recruitments.other_body,
+            sports_type_id: this.sports_type_selected.id,
+            sports_discipline_ids: disciplineIds,
+            prefecture_id: this.prefecture_selected,
+            target_age_ids: targetAgeIds
+          }
         })
         this.$router.push({ name: 'EventSettingListPage' })
       } catch (error) {

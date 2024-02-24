@@ -3,18 +3,20 @@ class TeamsController < ApplicationController
   
   def create
     team = current_user.teams.new(create_params)
-    team.sports_discipline_ids = params[:sports_discipline_ids]
-    team.target_age_ids = params[:target_age_ids]
     
     team.save!
     head :ok
   rescue ActiveRecord::RecordInvalid => e
-    render json: { error: e.record.errors.messages }, status: :unprocessable_entity 
+    render json: { errors: e.record.errors.messages }, status: :unprocessable_entity 
   end
 
   def update
-    @team = current_user.teams.find(params[:id])
-    return render json: { errors: @team.errors.full_messages }, status: 400 unless @team.update(create_params)
+    team = Team.find(params[:id])
+  
+    team.update!(create_params)
+    head :ok
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { errors: e.record.errors.messages }, status: :unprocessable_entity
   end
 
   def index
