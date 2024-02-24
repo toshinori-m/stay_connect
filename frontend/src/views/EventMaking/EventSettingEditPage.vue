@@ -180,13 +180,15 @@ export default {
   },
   computed: {
     remainingCharactersEventName() {
+      if(!this.team.name) return 0
       const maxChars = 255
-      const nameLength = this.recruitments.name?.length ?? 0
+      const nameLength = this.team.name.length ?? 0
       return maxChars - nameLength
     },
     remainingCharactersArea() {
+      if(!this.team.area) return 0
       const maxChars = 255
-      const areaLength = this.recruitments.area?.length ?? 0
+      const areaLength = this.team.area.length ?? 0
       return maxChars - areaLength
     }
   },

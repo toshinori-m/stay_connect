@@ -148,13 +148,15 @@ export default {
   },
   computed: {
     remainingCharactersTeamtName() {
+      if(!this.team.name) return 0
       const maxChars = 255
-      const nameLength = this.team.name?.length ?? 0
+      const nameLength = this.team.name.length ?? 0
       return maxChars - nameLength
     },
     remainingCharactersArea() {
+      if(!this.team.area) return 0
       const maxChars = 255
-      const areaLength = this.team.area?.length ?? 0
+      const areaLength = this.team.area.length ?? 0
       return maxChars - areaLength
     }
   },
@@ -171,6 +173,7 @@ export default {
         const apiClient = getApiClient()
         const teamId = this.$route.params.id;
         const res = await apiClient.get(`/teams/${teamId}`)
+        console.log("res.data.data",res.data.data)
         this.team = res.data.data
         const rdsRes = await apiClient.get(`/teams/${teamId}/sports_disciplines`)
         this.team_sports_disciplines = rdsRes.data
