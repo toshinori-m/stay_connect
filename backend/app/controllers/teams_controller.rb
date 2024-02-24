@@ -29,8 +29,13 @@ class TeamsController < ApplicationController
   end
 
   def destroy
-    @team = Team.find(params[:id])
-    @team.destroy
+    team = Team.find(params[:id])
+    team.destroy!
+    @teams = current_user.teams.preload(:sports_disciplines, :target_ages)
+  rescue ActiveRecord::RecordNotFound => e
+    render json: { error: '対象のチームが見つかりません。' }, status: :not_found
+  rescue ActiveRecord::RecordNotDestroyed => e
+    render json: { error: '削除に失敗しました。', errors: e.record.errors.messages }, status: :internal_server_error
   end
 
   private

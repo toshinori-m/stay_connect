@@ -17,6 +17,7 @@
             {{ team.name }}
             <div class="flex justify-center">
               <button class="update_button" @click="editTeamProfile(team.id)">更新</button>
+              <button class="delete_button mx-5" @click="deleteTeamProfile(team.id)">削除</button>
             </div>
           </div>
         </div>
@@ -49,6 +50,17 @@ export default {
     },
     async editTeamProfile(teamId) {
       this.$router.push({name: 'TeamProfileEditPage', params: {id: teamId} });
+    },
+    async deleteTeamProfile(teamId) {
+      try {
+        this.error = null
+        const apiClient = getApiClient()
+        const res = await apiClient.delete(`/teams/${teamId}`)
+        this.teams = res.data
+        this.$router.push({ name: 'TeamProfileListPage' })
+      } catch {
+        this.error = 'チーム紹介を削除出来ませんでした。'
+      }
     },
     teamProfileListCancel() {
       this.$router.push({name: 'HomePage'})
