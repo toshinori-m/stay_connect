@@ -17,7 +17,7 @@ class User < ActiveRecord::Base
 
   validates :name, presence: true, length: { minimum: 2, maximum: 100 }
   enum sex: { man: 0, woman: 1 }
-  validates :email, presence: true
+  validates :email, presence: true, format: { with: /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i }
   validates :email, uniqueness: true
   enum email_notification: { receives: true, not_receive: false }
   validates :email_notification, presence: true
