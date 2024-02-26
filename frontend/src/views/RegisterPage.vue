@@ -64,7 +64,7 @@ export default {
   computed: {
     remainingCharactersRegistertName() {
       const maxChars = 100
-      const nameLength = this.name?.length
+      const nameLength = this.name.length
       return maxChars - nameLength
     }
   },

@@ -174,11 +174,11 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  let init = false
+  let firstAuthCheck = false
   onAuthStateChanged(auth, (user) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-    if (init) return
-    init = true
+    if (firstAuthCheck) return
+    firstAuthCheck = true
     if (requiresAuth && !user) {
       next('/login')
     } else if (!requiresAuth && user) {

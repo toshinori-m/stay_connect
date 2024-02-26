@@ -15,7 +15,7 @@ class User < ActiveRecord::Base
   has_many :chat_room_users, dependent: :destroy
   has_many :chat_rooms,  through: :chat_room_users
 
-  validates :name, presence: true, length: { minimum: 2, maximum: 100 }
+  validate :validate_name_length
   enum sex: { man: 0, woman: 1 }
   validates :email, presence: true, format: { with: /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i }
   validates :email, uniqueness: true
@@ -35,6 +35,18 @@ class User < ActiveRecord::Base
         other_user_name: other_user&.name,
         other_user_id: other_user&.id
       }
+    end
+  end
+
+  private
+
+  def validate_name_length
+    if name.blank?
+      errors.add(:name, 'nameを入力してください。')
+    elsif name.length < 2
+      errors.add(:name, 'nameは最小は2文字必要です')
+    elsif name.length > 100
+      errors.add(:name, 'nameは最大100文字です')
     end
   end
 end
