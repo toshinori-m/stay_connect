@@ -10,9 +10,11 @@ ja:
       models:
         user:
           attributes:
-            name:
-              too_short: "が短すぎます。最小は%{count}文字です。"
-              too_long: "は%{count}文字以下で入力してください"
+            email:
+              taken: "このメールアドレスは既に存在します。"
+            password:
+              too_short: "passwordが短すぎます。最小は%{count}文字です。"
+              too_long: "passwordは%{count}文字以下で入力してください"
         recruitment:
           attributes:
             name:

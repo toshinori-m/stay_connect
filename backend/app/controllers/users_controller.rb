@@ -2,11 +2,10 @@ class UsersController < ApplicationController
   before_action :authenticate, except: [:create]
   
   def create
-    existing_user = User.find_by(email: user_params[:email])
-    return head :ok if existing_user
-    
     @user = User.new(user_params)
-    render json: { error: @user.errors.full_messages }, status: :unprocessable_entity and return unless @user.save
+    @user.save!
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { errors: e.record.errors.messages }, status: :unprocessable_entity 
   end
 
   def update
