@@ -52,7 +52,6 @@ import { deleteUser } from "firebase/auth"
 export default {
   data () {
     return {
-      user: null,
       name: '',
       email: '',
       password: '',
@@ -70,7 +69,7 @@ export default {
   },
   methods: {
     async signUp() {
-      this.user = null
+      let user = null
       if (this.password !== this.passwordConfirmation) {
         this.error = "パスワードとパスワード確認が一致していません" 
         return
@@ -80,18 +79,18 @@ export default {
         this.errors = []
         const apiClient = getApiClient()
         const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password)
-        this.user = userCredential.user
+        user = userCredential.user
         const res = await apiClient.post('/users', {
           user: {
             name: this.name,
-            email: this.user.email,
-            uid: this.user.uid
+            email: user.email,
+            uid: user.uid
           }
         })
         this.$store.commit('setUser', {
           name: this.name,
-          email: this.user.email,
-          uid: this.user.uid
+          email: user.email,
+          uid: user.uid
         })
         this.$router.push({ name: 'HomePage' })
         return res
@@ -104,9 +103,9 @@ export default {
         const errorCode = error.code
         this.error = firebaseErrorCodes[errorCode] || "firebase登録中にエラーが発生しました。"
         this.errors = error.response?.data?.errors ? error.response.data.errors : ["データベース登録中にエラーが発生しました。"]
-        if (this.user) {
+        if (user) {
           try {
-            await deleteUser(this.user)
+            await deleteUser(user)
           } catch (deleteError) {
             this.errors = ["Firebaseユーザーの削除に失敗しました。"]
           }
