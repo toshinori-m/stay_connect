@@ -129,7 +129,10 @@ GEM
     nio4r (2.5.9)
     nokogiri (1.15.4-aarch64-linux)
       racc (~> 1.4)
+    nokogiri (1.15.4-x86_64-linux)
+      racc (~> 1.4)
     orm_adapter (0.5.0)
+    pg (1.5.6)
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -191,6 +194,7 @@ GEM
 
 PLATFORMS
   aarch64-linux
+  x86_64-linux
 
 DEPENDENCIES
   bootsnap
@@ -200,6 +204,7 @@ DEPENDENCIES
   dotenv-rails
   jbuilder (~> 2.10)
   mysql2 (~> 0.5)
+  pg
   pry-byebug
   puma (~> 5.0)
   rack-cors

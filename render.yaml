@@ -1,0 +1,24 @@
+databases:
+  - name: databases_stay_connect
+    databaseName: stay_connect_db
+    user: stay_connect_user
+    region: singapore
+    plan: free
+
+services:
+  - type: web
+    name: backend_stay_connect
+    runtime: ruby
+    region: singapore
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: databases_stay_connect
+          property: connectionString
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: WEB_CONCURRENCY
+        value: 2 
+      - key: RAILS_ENV
+        value: "production"

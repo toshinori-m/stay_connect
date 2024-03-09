@@ -18,5 +18,6 @@ module Myapp
     config.active_job.queue_adapter = :async
     config.i18n.fallbacks = [:en]
     config.i18n.default_locale = :ja
+    config.hosts << "stay-connect.onrender.com"
   end
 end
