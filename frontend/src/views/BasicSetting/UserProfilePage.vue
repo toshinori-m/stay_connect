@@ -88,23 +88,6 @@ export default {
         this.errors.push('チームIDが指定されていません。')
       }
     },
-    async fetchTeams() {
-      try {
-        this.errors = []
-        const apiClient = getApiClient()
-        const res = await apiClient.get(`/users/${this.userProfile.id}/teams_profile`)
-        this.teams = res.data
-      } catch {
-        this.errors.push('チーム情報を取得できませんでした。')
-      }
-    },
-    async goToTeamIntroduction(teamId) {
-      try {
-        this.$router.push({ name: 'TeamProfileIntroductionPage', params: { id: teamId } })
-      } catch {
-        this.errors.push('チームIDが指定されていません。')
-      }
-    },
     async getCurrentUser() {
       try {
         this.errors = []

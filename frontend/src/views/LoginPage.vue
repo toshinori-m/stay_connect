@@ -50,7 +50,6 @@ export default {
           uid: user.uid
         })
         this.$router.push({ name: 'HomePage' })
-        return res
       } catch {
         this.error = 'メールアドレスかパスワードが違います'
       }

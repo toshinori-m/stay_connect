@@ -13,19 +13,6 @@ module.exports = {
       lg: '976px',
       xl: '1440px',
     },
-    extend: {},
-  },
-  variants: {
-    extend: {},
-  },
-  plugins: [
-    iconsPlugin({
-      // 利用したい icon collection を利用する
-      // https://icones.js.org/
-      collections: getIconCollections(["tabler", "lucide"]),
-    }),
-  ],
-  theme: {
     extend: {
       keyframes: {
         bounce: {
@@ -38,4 +25,14 @@ module.exports = {
       },
     },
   },
+  variants: {
+    extend: {},
+  },
+  plugins: [
+    iconsPlugin({
+      // 利用したい icon collection を利用する
+      // https://icones.js.org/
+      collections: getIconCollections(["tabler", "lucide"]),
+    })
+  ]
 }
