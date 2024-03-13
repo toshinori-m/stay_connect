@@ -1,0 +1,13 @@
+databases:
+  - name: databases_stay_connect
+    databaseName: stay_connect_db
+    user: stay_connect_user
+    region: singapore
+    plan: free
+
+services:
+  - type: web
+    name: backend_stay_connect
+    runtime: ruby
+    region: singapore
+    plan: free
