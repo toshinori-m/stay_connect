@@ -63,7 +63,7 @@ export default {
         await this.$store.dispatch('logout')
         this.$router.push({ name: 'LoginPage' })
       } catch {
-        this.error = error
+        this.error = "ログアウト出来ませんでした" 
         this.$router.push({ name: 'LoginPage' })
       }
     },
