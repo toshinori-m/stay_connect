@@ -42,6 +42,9 @@
    ```bash
    git clone https://github.com/toshinori-m/stay_connect.git
    cd stay_connect
+   cd frontend
+   yarn install
+   cd ../
    ```
 2. **Dockerを使用してアプリケーションを起動**
 DockerおよびDocker Composeがインストールされていることを確認し、以下のコマンドを実行します。
@@ -54,7 +57,13 @@ DockerおよびDocker Composeがインストールされていることを確認
    docker-compose build   # イメージをビルド
    docker-compose up -d   # コンテナをバックグラウンドで起動
    ```
-3. **動作確認**
+3. **データベースのセットアップ**
+   ```bash
+   docker compose exec backend bash
+   bundle exec rails db:create
+   bundle exec rails db:migrate
+   ```
+4. **動作確認**
 下のURLにアクセスします
 - **Frontend（フロントエンド）**: [http://localhost:81/](http://localhost:81/)
 - **Backend（バックエンド）**: [http://localhost:3001/](http://localhost:3001/)
@@ -81,3 +90,9 @@ VUE_APP_AUTH_DOMAIN="YOUR_FIREBASE_AUTH_DOMAIN"
 # Firebase プロジェクトID
 VUE_APP_PROJECT_ID="YOUR_FIREBASE_PROJECT_ID"
 ```
+4. **FirebaseからAuthenticationの設定**
+   1. 「Authentication」を開く
+   - 左側メニューの「構築」セクション内の「Authentication」を選択
+   2. Googleサインインを有効化
+   - 「サインイン方法（Sign-in method）」タブを開く
+   - 「Google」をクリックし、設定画面で「有効にする」スイッチをオン
