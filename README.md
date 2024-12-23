@@ -46,13 +46,7 @@
    yarn install
    cd ../
    ```
-2. **データベースのセットアップ**
-   ```bash
-   docker compose exec backend bash
-   bundle exec rails db:create
-   bundle exec rails db:migrate
-   ```
-3. **Dockerを使用してアプリケーションを起動**
+2. **Dockerを使用してアプリケーションを起動**
 DockerおよびDocker Composeがインストールされていることを確認し、以下のコマンドを実行します。
    ```bash
    docker compose build   # Dockerイメージをビルド
@@ -63,7 +57,7 @@ DockerおよびDocker Composeがインストールされていることを確認
    docker-compose build   # イメージをビルド
    docker-compose up -d   # コンテナをバックグラウンドで起動
    ```
-4. **動作確認**
+3. **動作確認**
 下のURLにアクセスします
 - **Frontend（フロントエンド）**: [http://localhost:81/](http://localhost:81/)
 - **Backend（バックエンド）**: [http://localhost:3001/](http://localhost:3001/)
