@@ -11,7 +11,10 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.0].define(version: 2024_02_15_085828) do
-  create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
     t.bigint "record_id", null: false
@@ -21,7 +24,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_15_085828) do
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
-  create_table "active_storage_blobs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "active_storage_blobs", force: :cascade do |t|
     t.string "key", null: false
     t.string "filename", null: false
     t.string "content_type"
@@ -33,13 +36,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_15_085828) do
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
-  create_table "active_storage_variant_records", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "active_storage_variant_records", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "chat_messages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "chat_messages", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "chat_room_id"
     t.string "message"
@@ -50,7 +53,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_15_085828) do
     t.index ["user_id"], name: "index_chat_messages_on_user_id"
   end
 
-  create_table "chat_room_users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "chat_room_users", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "chat_room_id"
     t.datetime "created_at", null: false
@@ -60,19 +63,19 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_15_085828) do
     t.index ["user_id"], name: "index_chat_room_users_on_user_id"
   end
 
-  create_table "chat_rooms", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "chat_rooms", force: :cascade do |t|
     t.boolean "paid_or_free", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "prefectures", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "prefectures", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "recruitment_sports_disciplines", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "recruitment_sports_disciplines", force: :cascade do |t|
     t.bigint "recruitment_id"
     t.bigint "sports_discipline_id"
     t.datetime "created_at", null: false
@@ -81,7 +84,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_15_085828) do
     t.index ["sports_discipline_id"], name: "index_recruitment_sports_disciplines_on_sports_discipline_id"
   end
 
-  create_table "recruitment_target_ages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "recruitment_target_ages", force: :cascade do |t|
     t.bigint "target_age_id"
     t.bigint "recruitment_id"
     t.datetime "created_at", null: false
@@ -90,7 +93,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_15_085828) do
     t.index ["target_age_id"], name: "index_recruitment_target_ages_on_target_age_id"
   end
 
-  create_table "recruitments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "recruitments", force: :cascade do |t|
     t.string "name", null: false
     t.string "area", null: false
     t.integer "sex", default: 0, null: false
@@ -110,7 +113,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_15_085828) do
     t.index ["user_id"], name: "index_recruitments_on_user_id"
   end
 
-  create_table "sports_disciplines", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "sports_disciplines", force: :cascade do |t|
     t.bigint "sports_type_id"
     t.string "name"
     t.datetime "created_at", null: false
@@ -118,19 +121,19 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_15_085828) do
     t.index ["sports_type_id"], name: "index_sports_disciplines_on_sports_type_id"
   end
 
-  create_table "sports_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "sports_types", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "target_ages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "target_ages", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "team_sports_disciplines", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "team_sports_disciplines", force: :cascade do |t|
     t.bigint "sports_discipline_id"
     t.bigint "team_id"
     t.datetime "created_at", null: false
@@ -139,7 +142,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_15_085828) do
     t.index ["team_id"], name: "index_team_sports_disciplines_on_team_id"
   end
 
-  create_table "team_target_ages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "team_target_ages", force: :cascade do |t|
     t.bigint "target_age_id"
     t.bigint "team_id"
     t.datetime "created_at", null: false
@@ -148,7 +151,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_15_085828) do
     t.index ["team_id"], name: "index_team_target_ages_on_team_id"
   end
 
-  create_table "teams", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "teams", force: :cascade do |t|
     t.string "name", null: false
     t.string "area", null: false
     t.integer "sex", default: 0, null: false
@@ -164,7 +167,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_15_085828) do
     t.index ["user_id"], name: "index_teams_on_user_id"
   end
 
-  create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "users", force: :cascade do |t|
     t.string "provider"
     t.string "uid", default: "", null: false
     t.string "name", null: false
@@ -181,7 +184,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_15_085828) do
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.boolean "allow_password_change"
-    t.boolean "payment_completed", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
