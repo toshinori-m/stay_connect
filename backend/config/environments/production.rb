@@ -35,8 +35,13 @@ Rails.application.configure do
 
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil
-  # config.action_cable.url = "wss://example.com/cable"
-  # config.action_cable.allowed_request_origins = [ "http://example.com", /http:\/\/example.*/ ]
+  config.action_cable.url = "wss://stay-connect.onrender.com/cable"
+  config.action_cable.allowed_request_origins = [
+  'https://www.stay-connect.click', # カスタムドメイン
+  'https://stay-connect-p5yxvbsqw-toshinori-ms-projects.vercel.app', # デフォルトドメイン
+  %r{\Ahttps://stay-connect-git-.*\.vercel\.app\z}, # プレビューデプロイの動的なオリジン許可
+  'https://stay-connect.onrender.com' # RenderのバックエンドURL
+]
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
