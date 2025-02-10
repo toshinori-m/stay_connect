@@ -35,13 +35,12 @@ Rails.application.configure do
 
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil
-  config.action_cable.url = "wss://stay-connect.onrender.com/cable"
+  config.action_cable.url = ENV['BACKEND_CABLE_URL']
   config.action_cable.allowed_request_origins = [
-  'https://www.stay-connect.click', # カスタムドメイン
-  'https://stay-connect-p5yxvbsqw-toshinori-ms-projects.vercel.app', # デフォルトドメイン
-  %r{\Ahttps://stay-connect-git-.*\.vercel\.app\z}, # プレビューデプロイの動的なオリジン許可
-  'https://stay-connect.onrender.com' # RenderのバックエンドURL
-]
+    ENV['CORS_ORIGINS'],
+    ENV['FRONTEND_URL'],
+    ENV['BACKEND_URL'],
+  ]
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
@@ -89,7 +88,7 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  config.action_mailer.default_url_options = { host: 'www.stay-connect.click' }
+  config.action_mailer.default_url_options = ENV['MAILER_HOST']
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     address: 'smtp.gmail.com',
