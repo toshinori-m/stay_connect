@@ -95,7 +95,9 @@ export default {
   },
   mounted() {
     this.fetchChatRoomData()
-    const consumer = createConsumer(`ws://localhost:3001/cable?uid=${this.$store.getters['uid']}`)
+    const apiBaseUrl = process.env.VUE_APP_API_BASE_URL || 'http://localhost:3001'
+    const wsProtocol = apiBaseUrl.startsWith('https') ? 'wss' : 'ws'
+    const consumer = createConsumer(`${wsProtocol}://${new URL(apiBaseUrl).host}/cable?uid=${this.$store.getters['uid']}`)
     this.messageChannel = consumer.subscriptions.create({ channel: "RoomChannel", room_id: this.$route.params.id }, {
       connected: () => {
         this.getChatMessage()
