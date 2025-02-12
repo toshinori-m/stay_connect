@@ -37,9 +37,8 @@ Rails.application.configure do
   # config.action_cable.mount_path = nil
   config.action_cable.url = ENV['BACKEND_CABLE_URL']
   config.action_cable.allowed_request_origins = [
-    ENV['CORS_ORIGINS'],
-    ENV['FRONTEND_URL'],
-    ENV['BACKEND_URL'],
+    ENV['BRANCH_ORIGIN'],
+    ENV['FRONTEND_ORIGIN']
   ]
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
@@ -88,7 +87,7 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  config.action_mailer.default_url_options = ENV['MAILER_HOST']
+  config.action_mailer.default_url_options = ENV['FRONTEND_ORIGIN']
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     address: 'smtp.gmail.com',
