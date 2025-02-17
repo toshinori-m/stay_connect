@@ -30,15 +30,29 @@ services:
     stdin_open: true
     tty: true
 
-  frontend:
-    build: 
-      context: ./frontend/
+  # frontend:
+  #   build: 
+  #     context: ./frontend/
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./frontend:/frontend
+  #   command: yarn run serve
+  #   ports:
+  #     - 81:8080
+  #   depends_on:
+  #     - backend
+  #   stdin_open: true
+  #   tty: true
+    
+  frontend-react:
+    build:
+      context: ./frontend-react
       dockerfile: Dockerfile
     volumes:
-      - ./frontend:/frontend
-    command: yarn run serve
+      - ./frontend-react:/frontend-react
+    command: yarn run dev
     ports:
-      - 81:8080
+      - "5173:5173"
     depends_on:
       - backend
     stdin_open: true
