@@ -1,3 +1,8 @@
+const {
+  iconsPlugin,
+  getIconCollections,
+} = require("@egoist/tailwindcss-icons")
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: "class",
@@ -6,7 +11,27 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    screens: {
+      sm: "500px",
+      md: "846px",
+      lg: "976px",
+      xl: "1440px",
+    },
+    extend: {
+      keyframes: {
+        bounce: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-20px)" },
+        },
+      },
+      animation: {
+        bounce: "bounce 1s infinite",
+      },
+    },
   },
-  plugins: [],
+  plugins: [
+    iconsPlugin({
+      collections: getIconCollections(["tabler", "lucide"]),
+    }),
+  ],
 }
