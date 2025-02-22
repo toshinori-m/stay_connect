@@ -22,10 +22,10 @@ export default function OpenHeader() {
       </div>
 
       <div className="flex flex-col mt-3 md:-mt-10 md:flex-row justify-center md:justify-end items-center">
-        <button className="ok_button mb-2 md:mb-0 md:mr-4" onClick={redirectToSignup}>
+        <button className="btn-ok mb-2 md:mb-0 md:mr-4" onClick={redirectToSignup}>
           無料登録
         </button>
-        <button className="login_button" onClick={redirectToLogin}>
+        <button className="btn-login" onClick={redirectToLogin}>
           ログイン
         </button>
       </div>

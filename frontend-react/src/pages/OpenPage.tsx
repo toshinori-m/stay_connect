@@ -21,7 +21,7 @@ export default function UpgradeTeam() {
               <li>チームの繋がり：開催者へ連絡出来る</li>
             </ul>
             <div className="mt-60 md:-px-16 md:text-left md:mt-20">
-              <button className="signup" onClick={redirectToSignup}>
+              <button className="btn-signup" onClick={redirectToSignup}>
                 会員登録（無料）
               </button>
             </div>

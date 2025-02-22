@@ -5,64 +5,45 @@
 body {
   @apply bg-white;
 }
-.signup {
-  border: 0;
-  line-height: 2;
-  padding: 20px 60px;
-  font-size: 18px;
-  text-align: center;
-  color: #fff;
-  border-radius: 10px;
-  background-color: blue;
-  box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
-              inset -2px -2px 3px rgba(0, 0, 0, .6);
-  cursor: pointer;
-}
-.signup:hover {
-  background-color: #0066FF;
-}
-.signup:active {
-  box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
-              inset 2px 2px 3px rgba(0, 0, 0, .6);
-}
-.ok_button {
-  border: 0;
-  line-height: 2;
-  padding: 5px 20px;
-  font-size: 16px;
-  text-align: center;
-  color: #fff;
-  border-radius: 10px;
-  background-color: blue;
-  box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
-              inset -2px -2px 3px rgba(0, 0, 0, .6);
-  cursor: pointer;
-}
-.ok_button:hover {
-  background-color: #0066FF;
-}
-.ok_button:active {
-  box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
-              inset 2px 2px 3px rgba(0, 0, 0, .6);
-}
-.login_button {
-  border: 0;
-  line-height: 2;
-  padding: 5px 20px;
-  font-size: 16px;
-  text-align: center;
-  color: brack;
-  border-radius: 10px;
-  background-color: white;
-  box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
-              inset -2px -2px 3px rgba(0, 0, 0, .6);
-  cursor: pointer;
-}
-.login_button:hover {
-  background-color: gray;
-  color: white;
-}
-.login_button:active {
-  box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
-              inset 2px 2px 3px rgba(0, 0, 0, .6);
+
+@layer components {
+  /* 追加: 共通のボタンスタイル */
+  .btn {
+    @apply border-0 text-center rounded-lg cursor-pointer;
+  }
+  /* Sign Up ボタン（大） */
+  .btn-signup {
+    @apply btn px-16 py-5 text-lg text-white bg-blue-700 leading-[2] 
+           shadow-[inset_2px_2px_3px_rgba(255,255,255,0.6),inset_-2px_-2px_3px_rgba(0,0,0,0.6)];
+  }
+  .btn-signup:hover {
+    @apply bg-blue-500;
+  }
+  .btn-signup:active {
+    @apply shadow-[inset_-2px_-2px_3px_rgba(255,255,255,0.6),inset_2px_2px_3px_rgba(0,0,0,0.6)];
+  }
+
+  /* Sign Up ボタン（小） */
+  .btn-ok {
+    @apply btn px-5 py-1 text-base text-white bg-blue-700 leading-[2]
+           shadow-[inset_2px_2px_3px_rgba(255,255,255,0.6),inset_-2px_-2px_3px_rgba(0,0,0,0.6)];
+  }
+  .btn-ok:hover {
+    @apply bg-blue-500  text-white;
+  }
+  .btn-ok:active {
+    @apply shadow-[inset_-2px_-2px_3px_rgba(255,255,255,0.6),inset_2px_2px_3px_rgba(0,0,0,0.6)];
+  }
+
+  /* Login ボタン */
+  .btn-login {
+    @apply btn px-5 py-1 text-base text-black bg-white leading-[2]
+           shadow-[inset_2px_2px_3px_rgba(255,255,255,0.6),inset_-2px_-2px_3px_rgba(0,0,0,0.6)];
+  }
+  .btn-login:hover {
+    @apply bg-gray-500 text-white;
+  }
+  .btn-login:active {
+    @apply shadow-[inset_-2px_-2px_3px_rgba(255,255,255,0.6),inset_2px_2px_3px_rgba(0,0,0,0.6)];
+  }
 }
