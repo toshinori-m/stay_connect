@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import MouseCharacter from "./MouseCharacter"
+import MouseCharacter from "@/components/layout/MouseCharacter"
 
 export default function OpenHeader() {
   const navigate = useNavigate()

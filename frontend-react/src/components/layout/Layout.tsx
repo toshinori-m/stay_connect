@@ -1,5 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
-import OpenHeader from "./OpenHeader";
+import OpenHeader from "@/components/layout/OpenHeader";
 // import HomeHeader from "../components/layout/HomeHeader"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
