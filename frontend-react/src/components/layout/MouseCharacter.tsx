@@ -26,5 +26,5 @@ export default function MouseCharacter() {
         <path d="M 75,75 q 15,-10 25,5" stroke="#38BDF8" strokeWidth="2" fill="none" />
       </svg>
     </div>
-  );
+  )
 }

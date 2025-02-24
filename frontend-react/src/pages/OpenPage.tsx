@@ -30,7 +30,7 @@ export default function UpgradeTeam() {
       </div>
 
       <div className="absolute top-96 z-10 md:top-32 md:right-0 md:mr-32">
-        <img src="@/../public/sports.jpeg" alt="スポーツ画像" className="object-cover" />
+        <img src="/sports.jpeg" alt="スポーツ画像" className="object-cover" />
       </div>
     </div>
   )
