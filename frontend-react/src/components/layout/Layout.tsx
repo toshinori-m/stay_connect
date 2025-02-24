@@ -1,9 +1,9 @@
-import { useAuth } from "@/contexts/AuthContext";
-import OpenHeader from "@/components/layout/OpenHeader";
+import { useAuth } from "@/contexts/AuthContext"
+import OpenHeader from "@/components/layout/OpenHeader"
 // import HomeHeader from "../components/layout/HomeHeader"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user } = useAuth()
 
   return (
     <div>

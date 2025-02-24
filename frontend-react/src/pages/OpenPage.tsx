@@ -5,7 +5,7 @@ export default function UpgradeTeam() {
 
   const redirectToSignup = () => {
     navigate("/signup")
-  };
+  }
 
   return (
     <div>
