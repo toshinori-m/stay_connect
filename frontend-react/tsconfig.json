@@ -1,12 +1,37 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" }
-  ],
   "compilerOptions": {
+    // エイリアス設定
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"]
-    }
-  }
+    },
+    // ビルド情報をキャッシュするファイル
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+
+    // JavaScript のターゲット環境設定
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    // Vite/Webpack など向けの設定
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    // JSX/React の設定
+    "jsx": "react-jsx",
+
+    // 型チェックのための設定
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+    // プロジェクト内の TypeScript ファイルの対象範囲 
+  "include": ["src"]
 }
