@@ -1,6 +1,24 @@
 import { ButtonProps } from "@/types"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { ApiError } from "@/types"
+import { auth } from "@/firebase/firebase"
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
+import { useApiClient } from "@/hooks/apiClient"
+import { useAuth } from "@/context/useAuth"
 
 const RegisterPage = () => {
+  const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate()
+  const { setUser } = useAuth()
+  const apiClient = useApiClient()
+
+  const getErrorMessage = (error: unknown): string => {
+    return isApiError(error)
+      ? "認証に失敗しました。もう一度お試しください。"
+      : "予期しないエラーが発生しました。"
+  }
+
   const handleRegisterClick = () => {
     console.log("次のissueで作成予定！")
   }
@@ -9,8 +27,38 @@ const RegisterPage = () => {
     console.log("次のissueで作成予定！")
   }
 
-  const handleGoogleSignIn = () => {
-    console.log("次のissueで作成予定！")
+  const handleGoogleSignIn = async () => {
+    try {
+      setError(null)
+      const provider = new GoogleAuthProvider()
+      const result = await signInWithPopup(auth, provider)
+      const user = result.user
+      setUser(user)
+      
+      await apiClient.post("/users", {
+        user: {
+          name: user.displayName,
+          email: user.email,
+          uid: user.uid
+        }
+      })
+
+      navigate("/")
+    } catch (error: unknown) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("Google認証エラー:", error)
+      }
+      setError(getErrorMessage(error))
+    }
+  }
+
+  function isApiError(error: unknown): error is ApiError {
+    return (
+      typeof error === "object" &&
+      error !== null &&
+      "response" in error &&
+      typeof (error as ApiError).response?.data?.error === "string"
+    )
   }
 
   return (
@@ -29,6 +77,8 @@ const RegisterPage = () => {
           <Button onClick={handleLoginClick} className="border-violet-300 border-dashed px-0">
             アカウントをお持ちの方はこちら
           </Button>
+
+          {error && <div className="error text-red-500">{error}</div>}
         </div>
       </div>
     </div>
