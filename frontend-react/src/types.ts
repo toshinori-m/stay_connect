@@ -11,10 +11,16 @@ export type ButtonProps = {
 // API のエラー型
 export interface ApiError {
   response?: {
+    status?: number
     data?: {
-      error?: string;
+      error?: string
     }
   }
+}
+
+// firebase のエラー型
+export interface FirebaseError {
+  code: string;
 }
 
 // 認証コンテキストの型
