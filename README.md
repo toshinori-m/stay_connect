@@ -15,11 +15,20 @@
 - Action Cable を使用したリアルタイム通信
 
 ### 使用技術
-#### フロントエンド
+#### フロントエンド（Vue.js）
 - Vue.js `3.3.10`
+- Vue Router `4.0.3`
 - Tailwind CSS `3.3.6`
 - Action Cable
-- Firebase（Google認証）
+- Firebase `10.6.0`（Google認証）
+
+#### フロントエンド（React + TypeScript）
+- React `19.0.0`（開発中）
+- TypeScript `5.7.2`
+- Vite `6.1.0`
+- React Router `7.2.0`
+- Tailwind CSS `3`
+- Firebase `11.3.1`（Google認証）
 
 #### バックエンド
 - Ruby `3.2.2`
@@ -42,7 +51,13 @@
    ```bash
    git clone https://github.com/toshinori-m/stay_connect.git
    cd stay_connect
+   # Vue フロントエンドのセットアップ
    cd frontend
+   yarn install
+   cd ../
+
+   # React フロントエンドのセットアップ（開発中）
+   cd frontend-react
    yarn install
    cd ../
    ```
@@ -63,9 +78,10 @@ DockerおよびDocker Composeがインストールされていることを確認
    ```
 4. **動作確認**
 下のURLにアクセスします
-- **Frontend（フロントエンド）**: [http://localhost:81/](http://localhost:81/)
-- **Backend（バックエンド）**: [http://localhost:3001/](http://localhost:3001/)
-- **MySQLデータベース**: `localhost:3307` （ユーザー: `root`, パスワード: `password`）
+- **Frontend（Vue.js）**: [http://localhost:81/](http://localhost:81/)
+- **Frontend（React + TypeScript）**: [http://localhost:5173/](http://localhost:5173/)
+- **Backend（Ruby on Rails）**: [http://localhost:3001/](http://localhost:3001/)
+- **Database（PostgreSQL）**: `localhost:3307` （ユーザー: `root`, パスワード: `password`）
 
 ---
 
