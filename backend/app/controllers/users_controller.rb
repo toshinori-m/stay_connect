@@ -3,6 +3,9 @@ class UsersController < ApplicationController
   
   def create
     @user = User.new(user_params)
+
+    render json: { error_type: "duplicate" }, status: :unprocessable_entity and return if User.exists?(uid: @user.uid)
+
     @user.save!
   rescue ActiveRecord::RecordInvalid => e
     render json: { errors: e.record.errors.messages }, status: :unprocessable_entity 

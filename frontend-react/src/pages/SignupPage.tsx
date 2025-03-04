@@ -1,11 +1,20 @@
 import { ButtonProps } from "@/types"
 import { useState } from "react"
-import { RailsApiError } from "@/types"
 import { auth } from "@/lib/firebase"
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { useApiClient } from "@/hooks/useApiClient"
 import { useSetAuth } from "@/context/useAuthContext"
 import { FirebaseError } from "firebase/app"
+
+interface RailsUserRegistrationError {
+  response?: {
+    status?: number
+    data?: {
+      error_type?: string
+      message?: string 
+    }
+  }
+}
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof FirebaseError) {
@@ -52,7 +61,6 @@ const RegisterPage = () => {
       const provider = new GoogleAuthProvider()
       const result = await signInWithPopup(auth, provider)
       const firebaseUser = result.user
-      setUser(result.user)
 
       await apiClient.post("/users", {
         user: {
@@ -61,20 +69,33 @@ const RegisterPage = () => {
           uid: firebaseUser.uid
         }
       })
+
+      setUser(result.user)
       // TODO: 後続タスクで処理を追加する
       console.log("home画面は次のissueで作成予定！")
     } catch (error: unknown) {
       if (error instanceof FirebaseError) {
         setError(getErrorMessage(error))
-        return
-      }
+      } else if ((error as RailsUserRegistrationError).response?.status === 422) {
+        const errorData = (error as RailsUserRegistrationError).response?.data
+        
+        if (errorData?.error_type === "duplicate") {
+          setError("このメールアドレスは既に登録されています。ログイン画面からGoogleアカウントでログインして下さい。");
+        } else {
+          setError("googleアカウントで登録できませんでした。再度登録して下さい。");
+
+          const user = auth.currentUser;
+          if (user) {
+            await user.delete().catch((deleteError) => {
+              console.error("Firebase ユーザーの削除に失敗しました:", deleteError);
+            });
+          }
     
-      if ((error as RailsApiError).response?.status === 422) {
-        setError("このメールアドレスは既に登録されています。ログイン画面からGoogleアカウントでログインして下さい。")
-        return
+          setUser(null);
+        }
+      } else {
+        setError("予期しないエラーが発生しました。");
       }
-    
-      setError("予期しないエラーが発生しました。")
     }
   }
 
