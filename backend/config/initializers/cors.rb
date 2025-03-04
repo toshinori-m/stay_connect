@@ -10,8 +10,8 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     origins [
       ENV['BRANCH_ORIGIN'],
       ENV['FRONTEND_ORIGIN'],
-      'http://localhost:81',
-      'http://localhost:5173'
+      'http://localhost:81', # vue front用
+      'http://localhost:5173' # react front用
     ].compact
 
     resource "*",

@@ -3,7 +3,7 @@ import { useState } from "react"
 import { RailsApiError } from "@/types"
 import { auth } from "@/lib/firebase"
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
-import { useApiClient } from "@/lib/apiClient"
+import { useApiClient } from "@/hooks/useApiClient"
 import { useSetAuth } from "@/context/useAuthContext"
 import { FirebaseError } from "firebase/app"
 
@@ -70,7 +70,7 @@ const RegisterPage = () => {
       }
     
       if ((error as RailsApiError).response?.status === 422) {
-        setError("このメールアドレスは既に登録されています。ログイン画面からGoogleアカウントでログインして下さい");
+        setError("このメールアドレスは既に登録されています。ログイン画面からGoogleアカウントでログインして下さい。")
         return
       }
     
