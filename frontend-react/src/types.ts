@@ -1,7 +1,6 @@
-import { User as FirebaseUser } from "firebase/auth"
 
 // ボタンのプロパティ型
-export type ButtonProps = {
+export interface ButtonProps {
   onClick?: () => void
   children: React.ReactNode
   icon?: string
@@ -9,28 +8,11 @@ export type ButtonProps = {
 }
 
 // API のエラー型
-export interface ApiError {
+export interface RailsApiError {
   response?: {
     status?: number
     data?: {
       error?: string
     }
   }
-}
-
-// firebase のエラー型
-export interface FirebaseError {
-  code: string;
-}
-
-// 認証コンテキストの型
-export interface AuthContextType {
-  user: FirebaseUser | null
-  setUser: (user: FirebaseUser | null) => void
-}
-
-export interface User {
-  name: string
-  email: string
-  uid: string
 }
