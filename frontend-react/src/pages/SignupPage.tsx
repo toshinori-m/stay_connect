@@ -1,4 +1,4 @@
-import { ButtonProps } from "@/types"
+import { ButtonProps, RailsApiError } from "@/types"
 import { useState } from "react"
 import { auth } from "@/lib/firebase"
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
@@ -6,23 +6,13 @@ import { useApiClient } from "@/hooks/useApiClient"
 import { useSetAuth } from "@/context/useAuthContext"
 import { FirebaseError } from "firebase/app"
 
-interface RailsUserRegistrationError {
-  response?: {
-    status?: number
-    data?: {
-      error_type?: string
-      message?: string 
-    }
-  }
-}
-
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof FirebaseError) {
     switch (error.code) {
       case "auth/account-exists-with-different-credential":
         return "このメールアドレスは別の認証方法で登録されています。元の認証方法でログインしてください。"
       case "auth/popup-closed-by-user":
-        return "ポップアップが閉じられました。もう一度試してください。";
+        return "ポップアップが閉じられました。もう一度試してください。"
       case "auth/cancelled-popup-request":
         return "複数の認証リクエストが行われました。しばらくしてから再試行してください。"
       case "auth/popup-blocked":
@@ -46,21 +36,23 @@ const RegisterPage = () => {
   const apiClient = useApiClient()
 
   const handleRegisterClick = () => {
-    // TODO: 後続タスクで処理を追加する
+    // TODO: 後続タスクでメールアドレス画面を追加する際修正
     console.log("メールアドレス画面は次のissueで作成予定！")
   }
 
   const handleLoginClick = () => {
-    // TODO: 後続タスクで処理を追加する
+    // TODO: 後続タスクでlogIn画面を追加する際修正
     console.log("logIn画面は次のissueで作成予定！")
   }
 
   const handleGoogleSignIn = async () => {
+    let firebaseUser
+
     try {
       setError(null)
       const provider = new GoogleAuthProvider()
       const result = await signInWithPopup(auth, provider)
-      const firebaseUser = result.user
+      firebaseUser = result.user
 
       await apiClient.post("/users", {
         user: {
@@ -70,31 +62,40 @@ const RegisterPage = () => {
         }
       })
 
-      setUser(result.user)
-      // TODO: 後続タスクで処理を追加する
+      setUser(firebaseUser)
+      // TODO: 後続タスクでhome画面を追加する際修正
       console.log("home画面は次のissueで作成予定！")
     } catch (error: unknown) {
       if (error instanceof FirebaseError) {
         setError(getErrorMessage(error))
-      } else if ((error as RailsUserRegistrationError).response?.status === 422) {
-        const errorData = (error as RailsUserRegistrationError).response?.data
-        
-        if (errorData?.error_type === "duplicate") {
-          setError("このメールアドレスは既に登録されています。ログイン画面からGoogleアカウントでログインして下さい。");
-        } else {
-          setError("googleアカウントで登録できませんでした。再度登録して下さい。");
+        setUser(null)
+        return
+      }  
 
-          const user = auth.currentUser;
-          if (user) {
-            await user.delete().catch((deleteError) => {
-              console.error("Firebase ユーザーの削除に失敗しました:", deleteError);
-            });
+      const responseError = error as RailsApiError
+      if (responseError.response?.status === 422) {
+        const errorData = responseError.response?.data
+
+        if (errorData?.errors?.email?.includes("このメールアドレスは既に存在します。")) {
+          setUser(firebaseUser ?? null)
+          // TODO: 後続タスクでhome画面を追加する際修正
+          console.log("home画面は次のissueで作成予定！")
+          return
+        } else {
+          setError("googleアカウントで登録できませんでした。再試行してください。")
+
+          if (firebaseUser) {
+            await firebaseUser.delete().catch((deleteError) => {
+              console.error("Firebase ユーザーの削除に失敗しました:", deleteError)
+            })
           }
-    
-          setUser(null);
+
+          setUser(null)
+          return
         }
       } else {
-        setError("予期しないエラーが発生しました。");
+        setError("予期しないエラーが発生しました。")
+        setUser(null)
       }
     }
   }
@@ -105,14 +106,14 @@ const RegisterPage = () => {
         <h2 className="text-center pt-10 font-bold text-3xl text-blue-600">
           ユーザー登録
         </h2>
-        <div className="text-center my-5 text-blue-600">
+        <div className="text-center my-7 text-blue-600">
           <Button onClick={handleRegisterClick} icon="i-lucide-mail">
             メールアドレスで登録
           </Button>
           <Button onClick={handleGoogleSignIn} icon="i-tabler-brand-google">
             Googleアカウントで登録
           </Button>
-          <Button onClick={handleLoginClick} className="border-violet-300 border-dashed px-0">
+          <Button onClick={handleLoginClick} className="border-4 border-violet-400 border-dashed outline-dashed px-0">
             アカウントをお持ちの方はこちら
           </Button>
 
@@ -127,7 +128,7 @@ const Button = ({ onClick, children, icon, className = "" }: ButtonProps) => {
   return (
     <button
       onClick={onClick}
-      className={`md:w-3/4 w-80 my-3 text-blue-600 border-4 border-blue-300 border-double px-3 py-2 ${className}`}
+      className={`md:w-3/4 w-80 my-7 text-blue-600 border-4 border-blue-400 border-double px-3 py-2 ${className}`}
     >
       {icon && <span className={`${icon} w-5 h-5 float-left`}></span>}
       <span className="px-3">{children}</span>

@@ -13,6 +13,7 @@ export interface RailsApiError {
     status?: number
     data?: {
       error?: string
+      errors?: { [key: string]: string[] }
     }
   }
 }
