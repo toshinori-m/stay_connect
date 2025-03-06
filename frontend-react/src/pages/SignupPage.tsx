@@ -1,7 +1,7 @@
 import { ButtonProps, RailsApiError } from "@/types"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { auth } from "@/lib/firebase"
-import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth"
+import { GoogleAuthProvider, signInWithPopup, User, signOut } from "firebase/auth"
 import { useApiClient } from "@/hooks/useApiClient"
 import { useSetAuth } from "@/context/useAuthContext"
 import { FirebaseError } from "firebase/app"
@@ -34,6 +34,18 @@ const RegisterPage = () => {
   const [error, setError] = useState<string | null>(null)
   const { setUser } = useSetAuth()
   const apiClient = useApiClient()
+
+  useEffect(() => {
+    signOut(auth)
+      .then(() => setUser(null))
+      .catch((error) => {
+        if (error instanceof FirebaseError) {
+          setError(getErrorMessage(error))
+        } else {
+          setError("予期しないエラーが発生しました。")
+        }
+      })
+  })
 
   const handleRegisterClick = () => {
     // TODO: 後続タスクでメールアドレス画面を追加する際修正
