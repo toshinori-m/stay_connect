@@ -1,7 +1,7 @@
 import { ButtonProps, RailsApiError } from "@/types"
 import { useState } from "react"
 import { auth } from "@/lib/firebase"
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
+import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth"
 import { useApiClient } from "@/hooks/useApiClient"
 import { useSetAuth } from "@/context/useAuthContext"
 import { FirebaseError } from "firebase/app"
@@ -46,7 +46,7 @@ const RegisterPage = () => {
   }
 
   const handleGoogleSignIn = async () => {
-    let firebaseUser
+    let firebaseUser: User | null = null
 
     try {
       setError(null)
@@ -68,7 +68,6 @@ const RegisterPage = () => {
     } catch (error: unknown) {
       if (error instanceof FirebaseError) {
         setError(getErrorMessage(error))
-        setUser(null)
         return
       }  
 
@@ -77,7 +76,7 @@ const RegisterPage = () => {
         const errorData = responseError.response?.data
 
         if (errorData?.errors?.email?.includes("このメールアドレスは既に存在します。")) {
-          setUser(firebaseUser ?? null)
+          setUser(firebaseUser)
           // TODO: 後続タスクでhome画面を追加する際修正
           console.log("home画面は次のissueで作成予定！")
           return
@@ -89,8 +88,6 @@ const RegisterPage = () => {
               console.error("Firebase ユーザーの削除に失敗しました:", deleteError)
             })
           }
-
-          setUser(null)
           return
         }
       } else {
@@ -101,7 +98,7 @@ const RegisterPage = () => {
   }
 
   return (
-    <div className="flex items-center justify-center mt-40 md:mt-32">
+    <div className="flex items-center justify-center mt-16 md:mt-20">
       <div className="w-80 md:w-2/5 rounded-md bg-sky-100">
         <h2 className="text-center pt-10 font-bold text-3xl text-blue-600">
           ユーザー登録
