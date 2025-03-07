@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import MouseCharacter from "@/components/layout/MouseCharacter"
 
-export default function OpenHeader() {
+export default function LoginHeader() {
   const navigate = useNavigate()
 
   const redirectToOpen = () => {
