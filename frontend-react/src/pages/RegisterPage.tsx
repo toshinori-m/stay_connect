@@ -1,10 +1,11 @@
-import { RailsApiError } from "@/types"
-import { useState, useMemo, ReactNode } from "react"
+import { RailsApiError, InputFieldProps } from "@/types"
+import { useState, useMemo } from "react"
 import { auth } from "@/lib/firebase"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { useApiClient } from "@/hooks/useApiClient"
 import { FirebaseError } from "firebase/app"
 import { useSetAuth } from "@/context/useAuthContext"
+import { useNavigate } from "react-router-dom"
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof FirebaseError) {
@@ -39,14 +40,14 @@ const RegisterPage = () => {
   const MIN_PASSWORD_LENGTH = 6
   const MAX_PASSWORD_LENGTH = 100
   const NAME_WARNING_THRESHOLD = 10
+  const navigate = useNavigate()
 
   const remainingCharactersRegisterName = useMemo(() => {
     return MAX_NAME_LENGTH - name.length
   }, [name])
 
   const handleLoginClick = () => {
-    // TODO: 後続タスクでlogIn画面を追加する際修正
-    console.log("logIn画面は次のissueで作成予定！")
+    navigate("/login")
   }
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -69,6 +70,7 @@ const RegisterPage = () => {
         setError("パスワードを入力してください。")
         return
       }
+
       if (password.length < MIN_PASSWORD_LENGTH) {
         setError(`パスワードは${MIN_PASSWORD_LENGTH}文字以上にしてください。`)
         return
@@ -180,14 +182,6 @@ const RegisterPage = () => {
       </div>
     </div>
   )
-}
-
-interface InputFieldProps {
-  label: ReactNode
-  type: "text" | "email" | "password"
-  placeholder: string
-  value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 const InputField = ({ label, type, placeholder, value, onChange }: InputFieldProps) => {
