@@ -6,7 +6,6 @@ import { useApiClient } from "@/hooks/useApiClient"
 import { useSetAuth } from "@/context/useAuthContext"
 import { FirebaseError } from "firebase/app"
 import { useNavigate } from "react-router-dom"
-import useAuthReset from "@/hooks/useAuthReset"
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof FirebaseError) {
@@ -37,8 +36,6 @@ const SignupPage = () => {
   const { setUser } = useSetAuth()
   const apiClient = useApiClient()
   const navigate = useNavigate()
-
-  useAuthReset(setError)
 
   const handleRegisterClick = () => {
     navigate("/register")

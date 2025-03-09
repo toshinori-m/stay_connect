@@ -5,7 +5,6 @@ import { createUserWithEmailAndPassword } from "firebase/auth"
 import { useApiClient } from "@/hooks/useApiClient"
 import { FirebaseError } from "firebase/app"
 import { useSetAuth } from "@/context/useAuthContext"
-import useAuthReset from "@/hooks/useAuthReset"
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof FirebaseError) {
@@ -47,8 +46,6 @@ const RegisterPage = () => {
     console.log("logIn画面は次のissueで作成予定！")
   }
 
-  useAuthReset(setError)
-  
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
 
