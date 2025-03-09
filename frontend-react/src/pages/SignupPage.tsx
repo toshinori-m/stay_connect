@@ -1,10 +1,11 @@
 import { ButtonProps, RailsApiError } from "@/types"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { auth } from "@/lib/firebase"
-import { GoogleAuthProvider, signInWithPopup, User, signOut } from "firebase/auth"
+import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth"
 import { useApiClient } from "@/hooks/useApiClient"
 import { useSetAuth } from "@/context/useAuthContext"
 import { FirebaseError } from "firebase/app"
+import { useNavigate } from "react-router-dom"
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof FirebaseError) {
@@ -30,26 +31,14 @@ const getErrorMessage = (error: unknown): string => {
   return "予期しないエラーが発生しました。"
 }
 
-const RegisterPage = () => {
+const SignupPage = () => {
   const [error, setError] = useState<string | null>(null)
   const { setUser } = useSetAuth()
   const apiClient = useApiClient()
-
-  useEffect(() => {
-    signOut(auth)
-      .then(() => setUser(null))
-      .catch((error) => {
-        if (error instanceof FirebaseError) {
-          setError(getErrorMessage(error))
-        } else {
-          setError("予期しないエラーが発生しました。")
-        }
-      })
-  })
+  const navigate = useNavigate()
 
   const handleRegisterClick = () => {
-    // TODO: 後続タスクでメールアドレス画面を追加する際修正
-    console.log("メールアドレス画面は次のissueで作成予定！")
+    navigate("/register")
   }
 
   const handleLoginClick = () => {
@@ -145,4 +134,4 @@ const Button = ({ onClick, children, icon, className = "" }: ButtonProps) => {
   )
 }
 
-export default RegisterPage
+export default SignupPage

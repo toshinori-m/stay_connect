@@ -1,6 +1,7 @@
 import { Routes, Route, Outlet } from "react-router-dom"
 import OpenPage from "@/pages/OpenPage"
 import SignupPage from "@/pages/SignupPage"
+import RegisterPage from "@/pages/RegisterPage"
 import OpenHeader from "@/components/layout/OpenHeader"
 import LoginHeader from "@/components/layout/LoginHeader"
 
@@ -29,8 +30,9 @@ export default function AppRouter() {
         <Route index element={<OpenPage />} />
       </Route>
 
-      <Route path="/signup" element={<SignupLayout />}>
-        <Route index element={<SignupPage />} />
+      <Route element={<SignupLayout />}>
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/register" element={<RegisterPage />} />
       </Route>
     </Routes>
   )

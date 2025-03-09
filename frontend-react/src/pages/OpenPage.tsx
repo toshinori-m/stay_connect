@@ -1,7 +1,20 @@
+import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import { auth } from "@/lib/firebase"
 
 export default function UpgradeTeam() {
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+      if (firebaseUser) {
+        // TODO: 後続タスクでhome画面を追加する際修正
+        console.log("home画面は次のissueで作成予定！")
+      }
+    })
+
+    return () => unsubscribe()
+  }, [navigate])
 
   const redirectToSignup = () => {
     navigate("/signup")
