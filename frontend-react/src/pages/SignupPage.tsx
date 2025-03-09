@@ -42,8 +42,7 @@ const SignupPage = () => {
   }
 
   const handleLoginClick = () => {
-    // TODO: 後続タスクでlogIn画面を追加する際修正
-    console.log("logIn画面は次のissueで作成予定！")
+    navigate("/login")
   }
 
   const handleGoogleSignIn = async () => {
