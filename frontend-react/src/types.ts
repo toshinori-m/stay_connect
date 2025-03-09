@@ -1,4 +1,3 @@
-import { ReactNode } from "react" 
 
 // ボタンのプロパティ型
 export interface ButtonProps {
@@ -6,15 +5,6 @@ export interface ButtonProps {
   children: React.ReactNode
   icon?: string
   className?: string
-}
-
-// インプットのプロパティ型
-export interface InputFieldProps {
-  label: ReactNode
-  type: "text" | "email" | "password"
-  placeholder: string
-  value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 // API のエラー型

@@ -1,7 +1,7 @@
-import { RailsApiError, InputFieldProps } from "@/types"
-import { useState, useMemo } from "react"
+import { RailsApiError } from "@/types"
+import { useState, useMemo, ReactNode } from "react"
 import { auth } from "@/lib/firebase"
-import { createUserWithEmailAndPassword, User } from "firebase/auth"
+import { createUserWithEmailAndPassword } from "firebase/auth"
 import { useApiClient } from "@/hooks/useApiClient"
 import { FirebaseError } from "firebase/app"
 import { useSetAuth } from "@/context/useAuthContext"
@@ -35,12 +35,11 @@ const RegisterPage = () => {
   const [error, setError] = useState<string | null>(null)
   const apiClient = useApiClient()
   const { setUser } = useSetAuth()
+  const MIN_NAME_LENGTH = 2
+  const MAX_NAME_LENGTH = 100
 
-  useAuthReset(setError)
-
-  // 名前の残り文字数を計算
   const remainingCharactersRegisterName = useMemo(() => {
-    return 100 - name.length
+    return MAX_NAME_LENGTH - name.length
   }, [name])
 
   const handleLoginClick = () => {
@@ -48,14 +47,15 @@ const RegisterPage = () => {
     console.log("logIn画面は次のissueで作成予定！")
   }
 
+  useAuthReset(setError)
+  
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
-    let user: User | null = null
 
     try {
       setError(null)
 
-      if (name.length < 2 || name.length > 100) {
+      if (name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) {
         setError("名前は2文字以上100文字以内で入力してください。")
         return
       }
@@ -80,7 +80,7 @@ const RegisterPage = () => {
       }
 
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-      user = userCredential.user
+      const user = userCredential.user
 
       await apiClient.post("/users", {
         user: {
@@ -180,6 +180,14 @@ const RegisterPage = () => {
       </div>
     </div>
   )
+}
+
+interface InputFieldProps {
+  label: ReactNode
+  type: "text" | "email" | "password"
+  placeholder: string
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 const InputField = ({ label, type, placeholder, value, onChange }: InputFieldProps) => {
