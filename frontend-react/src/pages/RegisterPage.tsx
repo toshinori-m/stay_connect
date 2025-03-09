@@ -36,6 +36,9 @@ const RegisterPage = () => {
   const { setUser } = useSetAuth()
   const MIN_NAME_LENGTH = 2
   const MAX_NAME_LENGTH = 100
+  const MIN_PASSWORD_LENGTH = 6
+  const MAX_PASSWORD_LENGTH = 100
+  const NAME_WARNING_THRESHOLD = 10
 
   const remainingCharactersRegisterName = useMemo(() => {
     return MAX_NAME_LENGTH - name.length
@@ -53,7 +56,7 @@ const RegisterPage = () => {
       setError(null)
 
       if (name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) {
-        setError("名前は2文字以上100文字以内で入力してください。")
+        setError(`名前は${MIN_NAME_LENGTH}文字以上${MAX_NAME_LENGTH}文字以内で入力してください。`)
         return
       }
 
@@ -66,8 +69,8 @@ const RegisterPage = () => {
         setError("パスワードを入力してください。")
         return
       }
-      if (password.length < 6) {
-        setError("パスワードは6文字以上にしてください。")
+      if (password.length < MIN_PASSWORD_LENGTH) {
+        setError(`パスワードは${MIN_PASSWORD_LENGTH}文字以上にしてください。`)
         return
       }
 
@@ -116,15 +119,15 @@ const RegisterPage = () => {
               <>
                 名前
                 <br />
-                (2文字〜100文字)
+                {`(${MIN_NAME_LENGTH}文字〜${MAX_NAME_LENGTH}文字)`}
               </>
             }
             type="text"
-            placeholder="名前（2文字〜100文字）"
+            placeholder={`名前（${MIN_NAME_LENGTH}文字〜${MAX_NAME_LENGTH}文字）`}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
-          {remainingCharactersRegisterName <= 10 && (
+          {remainingCharactersRegisterName <= NAME_WARNING_THRESHOLD && (
             <div className="text-red-500">
               名前はあと {remainingCharactersRegisterName} 文字までです。
             </div>
@@ -142,11 +145,11 @@ const RegisterPage = () => {
               <>
                 パスワード
                 <br />
-                (6文字〜100文字)
+                {`(${MIN_PASSWORD_LENGTH}文字〜${MAX_PASSWORD_LENGTH}文字)`}
               </>
             }
             type="password"
-            placeholder="パスワード（6文字〜100文字）"
+            placeholder={`パスワード(${MIN_PASSWORD_LENGTH}文字〜${MAX_PASSWORD_LENGTH}文字)`}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
