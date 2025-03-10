@@ -15,6 +15,9 @@ Rails.application.routes.draw do
     end
 
     resources :users do
+      collection do
+        get 'me', to: 'users#me'
+      end
       resources :teams_profile, only: [:index, :show]
     end
     
