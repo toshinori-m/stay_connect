@@ -23,8 +23,7 @@ export default function LoginPage() {
   }
 
   const redirectToSendEmail = () => {
-    // TODO: 後続タスクでSendEmailPage画面を追加する際修正
-    console.log("SendEmailPage画面は次のissueで作成予定！")
+    navigate("/send-email")
   }
 
   const handleLogin = async (e: React.FormEvent) => {
