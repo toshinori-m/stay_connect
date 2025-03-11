@@ -5,7 +5,7 @@ interface ButtonProps {
   className?: string
 }
 
-const Button = ({ onClick, children, icon, className = "" }: ButtonProps) => {
+export default function CustomButton({ onClick, children, icon, className = "" }: ButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -16,5 +16,3 @@ const Button = ({ onClick, children, icon, className = "" }: ButtonProps) => {
     </button>
   )
 }
-
-export default Button

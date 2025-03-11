@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { auth } from "@/lib/firebase"
 
-export default function UpgradeTeam() {
+export default function OpenPage() {
   const navigate = useNavigate()
 
   useEffect(() => {

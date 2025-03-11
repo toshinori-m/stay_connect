@@ -8,7 +8,7 @@ interface InputFieldProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const InputField = ({ label, type, placeholder, value, onChange }: InputFieldProps) => {
+export default function InputField({ label, type, placeholder, value, onChange }: InputFieldProps) {
   return (
     <div className="w-full md:flex md:px-8 items-center">
       <p className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm">{label}</p>
@@ -23,5 +23,3 @@ const InputField = ({ label, type, placeholder, value, onChange }: InputFieldPro
     </div>
   )
 }
-
-export default InputField

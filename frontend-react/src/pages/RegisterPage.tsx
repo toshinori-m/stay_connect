@@ -7,9 +7,9 @@ import { useApiClient } from "@/hooks/useApiClient"
 import { FirebaseError } from "firebase/app"
 import { useSetAuth } from "@/context/useAuthContext"
 import { useNavigate } from "react-router-dom"
-import { getFirebaseErrorMessage } from "@/lib/firebaseErrorHandler"
+import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
 
-const RegisterPage = () => {
+export default function RegisterPage() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -161,5 +161,3 @@ const RegisterPage = () => {
     </div>
   )
 }
-
-export default RegisterPage

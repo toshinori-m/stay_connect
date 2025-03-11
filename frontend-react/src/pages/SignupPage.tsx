@@ -1,4 +1,4 @@
-import Button from "@/components/CustomButton"
+import CustomButton from "@/components/CustomButton"
 import { RailsApiError } from "@/types"
 import { useState } from "react"
 import { auth } from "@/lib/firebase"
@@ -7,9 +7,9 @@ import { useApiClient } from "@/hooks/useApiClient"
 import { useSetAuth } from "@/context/useAuthContext"
 import { FirebaseError } from "firebase/app"
 import { useNavigate } from "react-router-dom"
-import { getFirebaseErrorMessage } from "@/lib/firebaseErrorHandler"
+import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
 
-const SignupPage = () => {
+export default function SignupPage() {
   const [error, setError] = useState<string | null>(null)
   const { setUser } = useSetAuth()
   const apiClient = useApiClient()
@@ -82,15 +82,15 @@ const SignupPage = () => {
           ユーザー登録
         </h2>
         <div className="text-center my-7 text-blue-600">
-          <Button onClick={handleRegisterClick} icon="i-lucide-mail">
+          <CustomButton onClick={handleRegisterClick} icon="i-lucide-mail">
             メールアドレスで登録
-          </Button>
-          <Button onClick={handleGoogleSignIn} icon="i-tabler-brand-google">
+          </CustomButton>
+          <CustomButton onClick={handleGoogleSignIn} icon="i-tabler-brand-google">
             Googleアカウントで登録
-          </Button>
-          <Button onClick={handleLoginClick} className="border-4 border-violet-400 border-dashed outline-dashed px-0">
+          </CustomButton>
+          <CustomButton onClick={handleLoginClick} className="border-4 border-violet-400 border-dashed outline-dashed px-0">
             アカウントをお持ちの方はこちら
-          </Button>
+          </CustomButton>
 
           {error && <div className="error text-red-500">{error}</div>}
         </div>
@@ -98,5 +98,3 @@ const SignupPage = () => {
     </div>
   )
 }
-
-export default SignupPage

@@ -1,4 +1,4 @@
-import Button from "@/components/CustomButton"
+import CustomButton from "@/components/CustomButton"
 import InputField from "@/components/InputField"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
@@ -6,11 +6,11 @@ import { auth } from "@/lib/firebase"
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { useSetAuth } from "@/context/useAuthContext"
 import { FirebaseError } from "firebase/app"
-import { getFirebaseErrorMessage } from "@/lib/firebaseErrorHandler"
+import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
 import { useApiClient } from "@/hooks/useApiClient"
 import { AxiosError } from "axios"
 
-const LoginPage = () => {
+export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -110,21 +110,19 @@ const LoginPage = () => {
             <button className="btn-ok my-4 md:mb-0 md:mr-4">ログイン</button>
           </form>
           <div className="flex flex-col items-center my-7 text-blue-600">
-            <Button onClick={signInWithGoogle} icon="i-lucide-mail">
+            <CustomButton onClick={signInWithGoogle} icon="i-lucide-mail">
               Googleアカウントでログイン
-            </Button>
-            <Button onClick={handleSignupClick}
+            </CustomButton>
+            <CustomButton onClick={handleSignupClick}
               className="block w-80 border-4 border-violet-400 border-dashed outline-dashed px-0">
               アカウントをお持ちでない方はこちら
-            </Button>
-            <Button onClick={redirectToSendEmail} className="mt-0 mb-1 px-0 border-none">
+            </CustomButton>
+            <CustomButton onClick={redirectToSendEmail} className="mt-0 mb-1 px-0 border-none">
               パスワードをお忘れの方はこちら
-            </Button>
+            </CustomButton>
           </div>
         </div>
       </div>
     </div>
   )
 }
-
-export default LoginPage

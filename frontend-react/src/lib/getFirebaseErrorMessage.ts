@@ -1,6 +1,6 @@
 import { FirebaseError } from "firebase/app"
 
-export const getFirebaseErrorMessage = (error: unknown): string => {
+export default function getFirebaseErrorMessage(error: unknown): string {
   if (error instanceof FirebaseError) {
     switch (error.code) {
       // Google認証関連のエラー
