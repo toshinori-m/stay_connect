@@ -2,7 +2,7 @@ import { useState } from "react"
 import { getAuth, sendPasswordResetEmail } from "firebase/auth"
 import { FirebaseError } from "firebase/app"
 import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
-import InputField from "@/components/InputField"
+import InputField from "@/components/ui/InputField"
 
 export default function ResetPassword() {
   const [email, setEmail] = useState("")

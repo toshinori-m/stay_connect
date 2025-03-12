@@ -1,5 +1,5 @@
-import CustomButton from "@/components/CustomButton"
-import InputField from "@/components/InputField"
+import CustomButton from "@/components/ui/CustomButton"
+import InputField from "@/components/ui/InputField"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { auth } from "@/lib/firebase"

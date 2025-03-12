@@ -1,4 +1,4 @@
-import CustomButton from "@/components/CustomButton"
+import CustomButton from "@/components/ui/CustomButton"
 import { RailsApiError } from "@/types"
 import { useState } from "react"
 import { auth } from "@/lib/firebase"

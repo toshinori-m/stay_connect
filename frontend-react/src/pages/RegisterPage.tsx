@@ -1,4 +1,4 @@
-import InputField from "@/components/InputField"
+import InputField from "@/components/ui/InputField"
 import { RailsApiError } from "@/types"
 import { useState, useMemo } from "react"
 import { auth } from "@/lib/firebase"
