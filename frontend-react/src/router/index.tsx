@@ -1,5 +1,6 @@
 import { Routes, Route, Outlet } from "react-router-dom"
 import OpenPage from "@/pages/OpenPage"
+import SendEmailPage from "@/pages/SendEmailPage"
 import SignupPage from "@/pages/SignupPage"
 import RegisterPage from "@/pages/RegisterPage"
 import OpenHeader from "@/components/layout/OpenHeader"
@@ -28,8 +29,9 @@ function SignupLayout() {
 export default function AppRouter() {
   return (
     <Routes>
-      <Route path="/" element={<OpenLayout />}>
-        <Route index element={<OpenPage />} />
+      <Route element={<OpenLayout />}>
+        <Route path="/" element={<OpenPage />} />
+        <Route path="/send-email" element={<SendEmailPage />} />
       </Route>
 
       <Route element={<RequireGuest />}>
