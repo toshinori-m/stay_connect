@@ -4,6 +4,8 @@ import SignupPage from "@/pages/SignupPage"
 import RegisterPage from "@/pages/RegisterPage"
 import OpenHeader from "@/components/layout/OpenHeader"
 import LoginHeader from "@/components/layout/LoginHeader"
+import LoginPage from "@/pages/LoginPage"
+import RequireGuest from "@/components/RequireGuest"
 
 function OpenLayout() {
   return (
@@ -30,9 +32,12 @@ export default function AppRouter() {
         <Route index element={<OpenPage />} />
       </Route>
 
-      <Route element={<SignupLayout />}>
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+      <Route element={<RequireGuest />}>
+        <Route element={<SignupLayout />}>
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<LoginPage />} /> 
+        </Route>
       </Route>
     </Routes>
   )
