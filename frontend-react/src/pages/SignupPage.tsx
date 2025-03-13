@@ -41,8 +41,7 @@ export default function SignupPage() {
       })
 
       setUser(firebaseUser)
-      // TODO: 後続タスクでhome画面を追加する際修正
-      console.log("home画面は次のissueで作成予定！")
+      navigate("/home")
     } catch (error: unknown) {
       if (error instanceof FirebaseError) {
         setError(getFirebaseErrorMessage(error))
@@ -55,8 +54,7 @@ export default function SignupPage() {
 
         if (errorData?.errors?.email?.includes("このメールアドレスは既に存在します。")) {
           setUser(firebaseUser)
-          // TODO: 後続タスクでhome画面を追加する際修正
-          console.log("home画面は次のissueで作成予定！")
+          navigate("/home")
           return
         } else {
           setError("googleアカウントで登録できませんでした。再試行してください。")

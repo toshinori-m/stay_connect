@@ -1,12 +1,15 @@
 import { Routes, Route, Outlet } from "react-router-dom"
-import OpenPage from "@/pages/OpenPage"
-import SendEmailPage from "@/pages/SendEmailPage"
-import SignupPage from "@/pages/SignupPage"
-import RegisterPage from "@/pages/RegisterPage"
+import { useContext } from "react"
+import { AuthContext } from "@/context/AuthContext"
+import RequireGuest from "@/components/RequireGuest"
 import OpenHeader from "@/components/layout/OpenHeader"
 import LoginHeader from "@/components/layout/LoginHeader"
+import SendEmailPage from "@/pages/SendEmailPage"
+import OpenPage from "@/pages/OpenPage"
 import LoginPage from "@/pages/LoginPage"
-import RequireGuest from "@/components/RequireGuest"
+import SignupPage from "@/pages/SignupPage"
+import RegisterPage from "@/pages/RegisterPage"
+import HomePage from "@/pages/HomePage"
 
 function OpenLayout() {
   return (
@@ -26,7 +29,23 @@ function SignupLayout() {
   )
 }
 
+function HomeLayout() {
+  return (
+    <>
+      <OpenHeader /> {/* // TODO: 後続タスクでHomeHeaderを追加する際修正 */}
+      <Outlet />
+    </>
+  )
+}
+
 export default function AppRouter() {
+  const { user } = useContext(AuthContext) || {}
+  const isLoggedIn = Boolean(user)
+
+  if (user === null) {
+    return null
+  }
+
   return (
     <Routes>
       <Route element={<OpenLayout />}>
@@ -41,6 +60,12 @@ export default function AppRouter() {
           <Route path="/login" element={<LoginPage />} /> 
         </Route>
       </Route>
+
+      {isLoggedIn && (
+        <Route element={<HomeLayout />}>
+          <Route path="/home" element={<HomePage />} />
+        </Route>
+      )}
     </Routes>
   )
 }

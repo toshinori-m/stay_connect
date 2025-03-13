@@ -74,8 +74,7 @@ export default function RegisterPage() {
         },
       })
       setUser(user)
-      // TODO: 後続タスクでhome画面を追加する際修正
-      console.log("home画面は次のissueで作成予定！")
+      navigate("/home")
     } catch (error: unknown) {
       if (error instanceof FirebaseError) {
         setError(getFirebaseErrorMessage(error))
