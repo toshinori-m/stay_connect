@@ -9,12 +9,6 @@ export interface RailsApiError {
   }
 }
 
-// 共通の API エラー応答型
-export interface ApiErrorResponse {
-  error?: string
-  errors?: string[]
-}
-
 // API から取得する選択肢の型
 export interface SelectOption {
   id: number

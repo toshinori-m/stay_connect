@@ -14,6 +14,7 @@ export default function SearchForm ({
   errors
 }: SearchFormProps) {
 
+// TODO: 選択したスポーツタイプを元に検索を実行する機能を追加
   return (
     <div className="rounded-lg bg-sky-100 drop-shadow-lg mb-4 md:w-1/4 md:mb-0 pb-3 px-3">
       <h2 className="mb-5 text-center pt-10 font-bold text-2xl text-blue-600">
