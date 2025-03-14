@@ -1,7 +1,5 @@
 import { Routes, Route, Outlet } from "react-router-dom"
-import { useContext } from "react"
-import { AuthContext } from "@/context/AuthContext"
-import RequireGuest from "@/components/RequireGuest"
+import { RequireGuest, RequireAuth } from "@/components/RequireGuestRedirect"
 import OpenHeader from "@/components/layout/OpenHeader"
 import LoginHeader from "@/components/layout/LoginHeader"
 import SendEmailPage from "@/pages/SendEmailPage"
@@ -39,12 +37,6 @@ function HomeLayout() {
 }
 
 export default function AppRouter() {
-  const { user } = useContext(AuthContext) || {}
-  const isLoggedIn = Boolean(user)
-
-  if (user === null) {
-    return null
-  }
 
   return (
     <Routes>
@@ -61,11 +53,11 @@ export default function AppRouter() {
         </Route>
       </Route>
 
-      {isLoggedIn && (
+      <Route element={<RequireAuth />}>
         <Route element={<HomeLayout />}>
           <Route path="/home" element={<HomePage />} />
         </Route>
-      )}
+      </Route>
     </Routes>
   )
 }
