@@ -1,5 +1,6 @@
 import { Routes, Route, Outlet } from "react-router-dom"
 import { RequireGuest, RequireAuth } from "@/components/RequireGuestRedirect"
+import HomeHeader from "@/components/layout/HomeHeader"
 import OpenHeader from "@/components/layout/OpenHeader"
 import LoginHeader from "@/components/layout/LoginHeader"
 import SendEmailPage from "@/pages/SendEmailPage"
@@ -30,7 +31,7 @@ function SignupLayout() {
 function HomeLayout() {
   return (
     <>
-      <OpenHeader /> {/* // TODO: 後続タスクでHomeHeaderを追加する際修正 */}
+      <HomeHeader />
       <Outlet />
     </>
   )
