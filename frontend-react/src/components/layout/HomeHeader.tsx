@@ -29,7 +29,6 @@ export default function HomeHeader() {
   const logOut = async () => {
     try {
       setErrors([])
-      await signOut(undefined as unknown as typeof auth);
       await signOut(auth)
       setUser(null)
       navigate("/login")
