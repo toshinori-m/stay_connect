@@ -36,8 +36,8 @@ export default function apiErrorHandler(error: unknown, setErrors: (errors: stri
       return setErrors(["サーバーエラーが発生しました。しばらくしてから再試行してください。"])
   
     default:
-      if ("error" in data && typeof data.error === "string") {
-        return setErrors([data.error])
+      if ("errors" in data && Array.isArray(data.errors)) {
+        return setErrors(Object.values(data.errors).flat() as string[])
       }
       return setErrors(["予期しないエラーが発生しました。"])
   }  
