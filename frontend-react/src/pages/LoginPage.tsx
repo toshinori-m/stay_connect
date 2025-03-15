@@ -61,8 +61,7 @@ export default function LoginPage() {
       }
 
       setUser(user)
-      // TODO: 後続タスクでhome画面を追加する際修正
-      console.log("home画面は次のissueで作成予定！")
+      navigate("/home")
     } catch (error: unknown) {
       setError(error instanceof FirebaseError ? getFirebaseErrorMessage(error) : "予期しないエラーが発生しました。")
       setUser(null)
@@ -77,8 +76,7 @@ export default function LoginPage() {
       const result = await signInWithPopup(auth, provider)
       const firebaseUser = result.user
       setUser(firebaseUser)
-      // TODO: 後続タスクでhome画面を追加する際修正
-      console.log("home画面は次のissueで作成予定！")
+      navigate("/home")
     } catch (error: unknown) {
       setError(error instanceof FirebaseError ? getFirebaseErrorMessage(error) : "予期しないエラーが発生しました。")
       setUser(null)

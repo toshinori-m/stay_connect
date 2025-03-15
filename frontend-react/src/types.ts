@@ -8,3 +8,9 @@ export interface RailsApiError {
     }
   }
 }
+
+// API から取得する選択肢の型
+export interface SelectOption {
+  id: number
+  name: string
+}
