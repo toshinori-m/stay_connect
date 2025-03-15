@@ -8,9 +8,10 @@ import { useSetAuth } from "@/context/useAuthContext"
 import { FirebaseError } from "firebase/app"
 import { useNavigate } from "react-router-dom"
 import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
+import apiErrorHandler from "@/utils/apiErrorHandler"
 
 export default function SignupPage() {
-  const [error, setError] = useState<string | null>(null)
+  const [errors, setErrors] = useState<string[]>([])
   const { setUser } = useSetAuth()
   const apiClient = useApiClient()
   const navigate = useNavigate()
@@ -27,7 +28,7 @@ export default function SignupPage() {
     let firebaseUser: User | null = null
 
     try {
-      setError(null)
+      setErrors([])
       const provider = new GoogleAuthProvider()
       const result = await signInWithPopup(auth, provider)
       firebaseUser = result.user
@@ -44,7 +45,7 @@ export default function SignupPage() {
       navigate("/home")
     } catch (error: unknown) {
       if (error instanceof FirebaseError) {
-        setError(getFirebaseErrorMessage(error))
+        setErrors([getFirebaseErrorMessage(error)])
         return
       }  
 
@@ -57,7 +58,7 @@ export default function SignupPage() {
           navigate("/home")
           return
         } else {
-          setError("googleアカウントで登録できませんでした。再試行してください。")
+          setErrors(["googleアカウントで登録できませんでした。再試行してください。"])
 
           if (firebaseUser) {
             await firebaseUser.delete().catch((deleteError) => {
@@ -67,8 +68,8 @@ export default function SignupPage() {
           return
         }
       } else {
-        setError("予期しないエラーが発生しました。")
         setUser(null)
+        apiErrorHandler(error, setErrors)
       }
     }
   }
@@ -89,8 +90,13 @@ export default function SignupPage() {
           <CustomButton onClick={handleLoginClick} className="border-4 border-violet-400 border-dashed outline-dashed px-0">
             アカウントをお持ちの方はこちら
           </CustomButton>
-
-          {error && <div className="error text-red-500">{error}</div>}
+          {errors.length > 0 && (
+            <div className="text-red-500 my-4">
+              {errors.map((err, index) => (
+                <div key={index}>{err}</div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
