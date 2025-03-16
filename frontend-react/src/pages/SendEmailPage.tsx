@@ -16,6 +16,11 @@ export default function ResetPassword() {
       newErrors.push("メールアドレスを入力してください。")
     }
 
+    if (newErrors.length > 0) {
+      setErrors(newErrors)
+      return
+    }
+
     try {
       setErrors([])
       const auth = getAuth()

@@ -33,11 +33,14 @@ export default function LoginPage() {
 
     if (!email.trim()) {
       newErrors.push("メールアドレスを入力してください。")
-      return
     }
-
+    
     if (!password) {
       newErrors.push("パスワードを入力してください。")
+    }
+    
+    if (newErrors.length > 0) {
+      setErrors(newErrors)
       return
     }
 

@@ -57,6 +57,11 @@ export default function RegisterPage() {
         newErrors.push("パスワードとパスワード確認が一致していません")
       }
 
+      if (newErrors.length > 0) {
+        setErrors(newErrors)
+        return
+      }
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       const user = userCredential.user
 
