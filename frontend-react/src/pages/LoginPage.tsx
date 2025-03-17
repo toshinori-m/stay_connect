@@ -9,9 +9,10 @@ import { FirebaseError } from "firebase/app"
 import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
 import { useApiClient } from "@/hooks/useApiClient"
 import { AxiosError } from "axios"
+import apiErrorHandler from "@/utils/apiErrorHandler"
 
 export default function LoginPage() {
-  const [error, setError] = useState<string | null>(null)
+  const [errors, setErrors] = useState<string[]>([])
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const navigate = useNavigate()
@@ -28,19 +29,23 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    const newErrors: string[] = []
 
     if (!email.trim()) {
-      setError("メールアドレスを入力してください。")
-      return
+      newErrors.push("メールアドレスを入力してください。")
     }
-
+    
     if (!password) {
-      setError("パスワードを入力してください。")
+      newErrors.push("パスワードを入力してください。")
+    }
+    
+    if (newErrors.length > 0) {
+      setErrors(newErrors)
       return
     }
 
     try {
-      setError(null)
+      setErrors([])
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
       const user = userCredential.user
       try {
@@ -56,14 +61,16 @@ export default function LoginPage() {
             },
           })
         } else {
-          setError("予期しないエラーが発生しました。")
+          apiErrorHandler(error, setErrors)
         }
       }
 
       setUser(user)
       navigate("/home")
     } catch (error: unknown) {
-      setError(error instanceof FirebaseError ? getFirebaseErrorMessage(error) : "予期しないエラーが発生しました。")
+      setErrors([
+        error instanceof FirebaseError ? getFirebaseErrorMessage(error) : "予期しないエラーが発生しました。",
+      ])
       setUser(null)
     }
   }
@@ -71,14 +78,16 @@ export default function LoginPage() {
   const signInWithGoogle = async () => {
 
     try {
-      setError(null)
+      setErrors([])
       const provider = new GoogleAuthProvider()
       const result = await signInWithPopup(auth, provider)
       const firebaseUser = result.user
       setUser(firebaseUser)
       navigate("/home")
     } catch (error: unknown) {
-      setError(error instanceof FirebaseError ? getFirebaseErrorMessage(error) : "予期しないエラーが発生しました。")
+      setErrors([
+        error instanceof FirebaseError ? getFirebaseErrorMessage(error) : "予期しないエラーが発生しました。",
+      ])
       setUser(null)
     }
   }
@@ -103,7 +112,13 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            {error && <div className="text-sm text-red-500 my-4">{error}</div>}
+            {errors.length > 0 && (
+              <div className="text-sm text-red-500 my-4">
+                {errors.map((error, index) => (
+                  <div key={index}>{error}</div>
+                ))}
+              </div>
+            )}
             <button className="btn-ok my-4 md:mb-0 md:mr-4">ログイン</button>
           </form>
           <div className="flex flex-col items-center my-7 text-blue-600">

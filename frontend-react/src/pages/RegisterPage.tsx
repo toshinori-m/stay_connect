@@ -1,5 +1,4 @@
 import InputField from "@/components/ui/InputField"
-import { RailsApiError } from "@/types"
 import { useState, useMemo } from "react"
 import { auth } from "@/lib/firebase"
 import { createUserWithEmailAndPassword } from "firebase/auth"
@@ -8,13 +7,14 @@ import { FirebaseError } from "firebase/app"
 import { useSetAuth } from "@/context/useAuthContext"
 import { useNavigate } from "react-router-dom"
 import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
+import apiErrorHandler from "@/utils/apiErrorHandler"
 
 export default function RegisterPage() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [passwordConfirmation, setPasswordConfirmation] = useState("")
-  const [error, setError] = useState<string | null>(null)
+  const [errors, setErrors] = useState<string[]>([])
   const apiClient = useApiClient()
   const { setUser } = useSetAuth()
   const MIN_NAME_LENGTH = 2
@@ -34,32 +34,31 @@ export default function RegisterPage() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
+    const newErrors: string[] = []
 
     try {
-      setError(null)
+      setErrors([])
 
       if (name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) {
-        setError(`名前は${MIN_NAME_LENGTH}文字以上${MAX_NAME_LENGTH}文字以内で入力してください。`)
-        return
+        newErrors.push(`名前は${MIN_NAME_LENGTH}文字以上${MAX_NAME_LENGTH}文字以内で入力してください。`)
       }
 
       if (!email.trim()) {
-        setError("メールアドレスを入力してください。")
-        return
+        newErrors.push("メールアドレスを入力してください。")
       }
 
       if (!password) {
-        setError("パスワードを入力してください。")
-        return
-      }
-
-      if (password.length < MIN_PASSWORD_LENGTH) {
-        setError(`パスワードは${MIN_PASSWORD_LENGTH}文字以上にしてください。`)
-        return
+        newErrors.push("パスワードを入力してください。")
+      } else if (password.length < MIN_PASSWORD_LENGTH) {
+        newErrors.push(`パスワードは${MIN_PASSWORD_LENGTH}文字以上にしてください。`)
       }
 
       if (password !== passwordConfirmation) {
-        setError("パスワードとパスワード確認が一致していません")
+        newErrors.push("パスワードとパスワード確認が一致していません")
+      }
+
+      if (newErrors.length > 0) {
+        setErrors(newErrors)
         return
       }
 
@@ -77,16 +76,9 @@ export default function RegisterPage() {
       navigate("/home")
     } catch (error: unknown) {
       if (error instanceof FirebaseError) {
-        setError(getFirebaseErrorMessage(error))
-      } else if ((error as RailsApiError).response?.status === 422) {
-        const errorData = (error as RailsApiError).response?.data
-        if (errorData?.errors?.email?.includes("このメールアドレスは既に存在します。")) {
-          setError("このメールアドレスは既に存在します。")
-        } else {
-          setError("このメールアドレスは登録できませんでした。再試行してください。")
-        }
+        setErrors([getFirebaseErrorMessage(error)])
       } else {
-        setError("予期しないエラーが発生しました。")
+        apiErrorHandler(error, setErrors)
       }
       setUser(null)
     }
@@ -149,9 +141,15 @@ export default function RegisterPage() {
               value={passwordConfirmation}
               onChange={(e) => setPasswordConfirmation(e.target.value)}
             />
-          {error && <div className="text-red-500 text-sm my-4">{error}</div>}
-          <button className="btn-ok my-4 md:mb-0 md:mr-4">登録する</button>
-        </form>
+            {errors.length > 0 && (
+                <div className="text-red-500 text-sm my-4">
+                  {errors.map((err, index) => (
+                    <div key={index}>{err}</div>
+                  ))}
+                </div>
+              )}
+            <button className="btn-ok my-4 md:mb-0 md:mr-4">登録する</button>
+          </form>
         </div>
         <button onClick={handleLoginClick} className="block mx-auto w-80 my-7 text-blue-600 border-4 border-violet-400 border-dashed outline-dashed px-0 py-2">
           アカウントをお持ちの方はこちら

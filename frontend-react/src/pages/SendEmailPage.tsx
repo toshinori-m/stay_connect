@@ -6,24 +6,31 @@ import InputField from "@/components/ui/InputField"
 
 export default function ResetPassword() {
   const [email, setEmail] = useState("")
-  const [error, setError] = useState<string | null>(null)
+  const [errors, setErrors] = useState<string[]>([])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const newErrors: string[] = []
 
     if (!email.trim()) {
-      setError("メールアドレスを入力してください。")
+      newErrors.push("メールアドレスを入力してください。")
+    }
+
+    if (newErrors.length > 0) {
+      setErrors(newErrors)
       return
     }
 
     try {
-      setError(null)
+      setErrors([])
       const auth = getAuth()
 
       await sendPasswordResetEmail(auth, email)
       alert("再設定のご案内メールを送信しました。")
     } catch (error: unknown) {
-      setError(error instanceof FirebaseError ? getFirebaseErrorMessage(error) : "予期しないエラーが発生しました。")
+      setErrors([
+        error instanceof FirebaseError ? getFirebaseErrorMessage(error) : "予期しないエラーが発生しました。",
+      ])
     }
   }
 
@@ -39,13 +46,19 @@ export default function ResetPassword() {
           </p>
           <form className="text-center mx-7 md:mx-0" onSubmit={handleSubmit}>
             <InputField
-                label="メールアドレス"
-                type="email"
-                placeholder="メールアドレス"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+              label="メールアドレス"
+              type="email"
+              placeholder="メールアドレス"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-            {error && <p className="ext-sm text-red-500 my-4">{error}</p>}
+            {errors.length > 0 && (
+              <div className="text-sm text-red-500 my-4">
+                {errors.map((err, index) => (
+                  <div key={index}>{err}</div>
+                ))}
+              </div>
+            )}
             <button className="btn-ok my-4 md:mb-0 md:mr-4">送信する</button>
           </form>
         </div>
