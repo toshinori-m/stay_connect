@@ -16,46 +16,48 @@ export default function HomePage() {
   const [errors, setErrors] = useState<string[]>([])
   const apiClient = useApiClient()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setErrors([])
-  
-        const [sportsRes, prefecturesRes, targetAgesRes] = await Promise.all([
-          apiClient.get("/sports_types"),
-          apiClient.get("/prefectures"),
-          apiClient.get("/target_ages"),
-        ])
-  
-        setSportsTypes(sportsRes.data.data)
-        setPrefectures(prefecturesRes.data.data)
-        setTargetAges(targetAgesRes.data.data)
-      } catch (error: unknown) {
-        apiErrorHandler(error, setErrors)
-      }
+  const fetchData = async () => {
+    try {
+      setErrors([])
+
+      const [sportsRes, prefecturesRes, targetAgesRes] = await Promise.all([
+        apiClient.get("/sports_types"),
+        apiClient.get("/prefectures"),
+        apiClient.get("/target_ages"),
+      ])
+
+      setSportsTypes(sportsRes.data.data)
+      setPrefectures(prefecturesRes.data.data)
+      setTargetAges(targetAgesRes.data.data)
+    } catch (error: unknown) {
+      setErrors(prev => [...prev, "スポーツタイプ・都道府県・対象年齢の取得に失敗しました"])
+      apiErrorHandler(error, setErrors)
     }
-  
+  }
+
+  useEffect(() => {
     fetchData()
-  }, [apiClient])
+  }, [])
+
+  const fetchSportsTypes = async () => {
+    try {
+      if (!sportsTypeSelected) {
+        setSportsDisciplines([])
+        return
+      }
+      const params = { sports_type_id: sportsTypeSelected.id }
+      const res = await apiClient.get("/sports_disciplines", { params })
+      setSportsDisciplines(res.data.data)
+    } catch (error: unknown) {
+      console.error("APIエラー発生:", error)
+      setErrors(prev => [...prev, "スポーツ種目の取得に失敗しました"])
+      apiErrorHandler(error, setErrors)
+    }
+  }
 
   useEffect(() => {
-    const fetchSportsTypes = async () => {
-      try {
-        setErrors([])
-        if (!sportsTypeSelected) {
-          setSportsDisciplines([])
-          return
-        }
-        const params = { sports_type_id: sportsTypeSelected.id }
-        const res = await apiClient.get("/sports_disciplines", { params })
-        setSportsDisciplines(res.data.data)
-      } catch (error: unknown) {
-        apiErrorHandler(error, setErrors)
-      }
-    }
-
     fetchSportsTypes()
-  }, [sportsTypeSelected, apiClient])
+  }, [sportsTypeSelected])
 
   return (
     <div className="mt-32 md:mt-20 mx-auto p-4 md:flex md:items-start">
