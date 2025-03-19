@@ -30,13 +30,13 @@ export default function HomePage() {
       setPrefectures(prefecturesRes.data.data)
       setTargetAges(targetAgesRes.data.data)
     } catch (error: unknown) {
-      setErrors(prev => [...prev, "スポーツタイプ・都道府県・対象年齢の取得に失敗しました"])
-      apiErrorHandler(error, setErrors)
+      setErrors(prev => [...prev, "スポーツタイプ・都道府県・対象年齢の取得に失敗しました", ...apiErrorHandler(error)])
     }
   }
 
   useEffect(() => {
     fetchData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchSportsTypes = async () => {
@@ -49,14 +49,13 @@ export default function HomePage() {
       const res = await apiClient.get("/sports_disciplines", { params })
       setSportsDisciplines(res.data.data)
     } catch (error: unknown) {
-      console.error("APIエラー発生:", error)
-      setErrors(prev => [...prev, "スポーツ種目の取得に失敗しました"])
-      apiErrorHandler(error, setErrors)
+      setErrors(prev => [...prev, "スポーツ種目の取得に失敗しました", ...apiErrorHandler(error)])
     }
   }
 
   useEffect(() => {
     fetchSportsTypes()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sportsTypeSelected])
 
   return (

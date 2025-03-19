@@ -1,59 +1,42 @@
 import { AxiosError } from "axios"
 import { RailsApiError } from "@/types"
 
-const addError = (
-  setErrors: React.Dispatch<React.SetStateAction<string[]>>, 
-  errorMessage: string | string[]
-) => {
-  setErrors(prev => [...prev, ...(Array.isArray(errorMessage) ? errorMessage : [errorMessage])])
-}
-
-export default function apiErrorHandler(error: unknown, setErrors: React.Dispatch<React.SetStateAction<string[]>>) {
+export default function apiErrorHandler(error: unknown): string[] {
   const axiosError = error as AxiosError<RailsApiError>
 
   if (!axiosError.response) {
-    addError(setErrors, "ネットワークエラーが発生しました。インターネット接続を確認してください。")
-    return
+    return ["ネットワークエラーが発生しました。インターネット接続を確認してください。"]
   }
 
   const { status, data } = axiosError.response
 
   if (!status) {
-    addError(setErrors, "予期しないエラーが発生しました。")
-    return
+    return ["予期しないエラーが発生しました。"]
   }
 
   switch (status) {
     case 400:
       if ("errors" in data && data.errors) {
-        addError(setErrors, Object.values(data.errors).flat() as string[])
-        return
+        return Object.values(data.errors).flat() as string[]
       }
-      addError(setErrors, "リクエストが不正です。入力内容を確認してください。")
-      return
-  
+      return ["リクエストが不正です。入力内容を確認してください。"]
+
     case 401:
-      addError(setErrors, "認証エラー：ログインしてください。")
-      return
-  
+      return ["認証エラー：ログインしてください。"]
+
     case 403:
-      addError(setErrors, "アクセスが拒否されました。")
-      return
-  
+      return ["アクセスが拒否されました。"]
+
     case 404:
-      addError(setErrors, "リソースが見つかりませんでした。")
-      return
-  
+      return ["リソースが見つかりませんでした。"]
+
     case 500:
-      addError(setErrors, "サーバーエラーが発生しました。しばらくしてから再試行してください。")
-      return
-  
+      return ["サーバーエラーが発生しました。しばらくしてから再試行してください。"]
+
     default:
       if ("errors" in data && Array.isArray(data.errors)) {
-        addError(setErrors, Object.values(data.errors).flat() as string[])
-        return
+        return Object.values(data.errors).flat() as string[]
       }
-      addError(setErrors, "予期しないエラーが発生しました。")
-      return
+      return ["予期しないエラーが発生しました。"]
   }  
 }
