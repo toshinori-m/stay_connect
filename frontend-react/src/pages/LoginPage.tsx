@@ -5,8 +5,6 @@ import { useNavigate } from "react-router-dom"
 import { auth } from "@/lib/firebase"
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { useSetAuth } from "@/context/useAuthContext"
-import { FirebaseError } from "firebase/app"
-import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
 import { useApiClient } from "@/hooks/useApiClient"
 import { AxiosError } from "axios"
 
@@ -82,10 +80,8 @@ export default function LoginPage() {
           setUser(null)
         }
       }
-    } catch (error: unknown) {
-      setErrors([
-        error instanceof FirebaseError ? getFirebaseErrorMessage(error) : "予期しないエラーが発生しました。",
-      ])
+    } catch {
+      setErrors(["登録できませんでした。"])
     }
   }
 
@@ -98,10 +94,8 @@ export default function LoginPage() {
       const firebaseUser = result.user
       setUser(firebaseUser)
       navigate("/home")
-    } catch (error: unknown) {
-      setErrors([
-        error instanceof FirebaseError ? getFirebaseErrorMessage(error) : "予期しないエラーが発生しました。",
-      ])
+    } catch {
+      setErrors(["登録できませんでした。"])
       setUser(null)
     }
   }

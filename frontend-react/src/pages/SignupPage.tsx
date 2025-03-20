@@ -5,9 +5,7 @@ import { auth } from "@/lib/firebase"
 import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth"
 import { useApiClient } from "@/hooks/useApiClient"
 import { useSetAuth } from "@/context/useAuthContext"
-import { FirebaseError } from "firebase/app"
 import { useNavigate } from "react-router-dom"
-import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
 
 export default function SignupPage() {
   const [errors, setErrors] = useState<string[]>([])
@@ -43,11 +41,6 @@ export default function SignupPage() {
       setUser(firebaseUser)
       navigate("/home")
     } catch (error: unknown) {
-      if (error instanceof FirebaseError) {
-        setErrors([getFirebaseErrorMessage(error)])
-        return
-      }  
-
       const responseError = error as RailsApiError
       if (responseError.response?.status === 422) {
         const errorData = responseError.response?.data
