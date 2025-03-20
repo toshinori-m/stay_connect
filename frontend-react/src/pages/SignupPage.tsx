@@ -69,7 +69,10 @@ export default function SignupPage() {
         }
       } else {
         setUser(null)
-        apiErrorHandler(error, setErrors)
+        setErrors(prev => [...prev,
+          "googleアカウントで登録できませんでした。再試行してください。",
+          ...apiErrorHandler(responseError)
+        ])
       }
     }
   }

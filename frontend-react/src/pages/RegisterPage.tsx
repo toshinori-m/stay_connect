@@ -78,7 +78,10 @@ export default function RegisterPage() {
       if (error instanceof FirebaseError) {
         setErrors([getFirebaseErrorMessage(error)])
       } else {
-        apiErrorHandler(error, setErrors)
+        setErrors(prev => [...prev,
+          "データベースへユーザー情報を登録しようとしましたが、失敗しました。",
+          ...apiErrorHandler(error)
+        ])
       }
       setUser(null)
     }

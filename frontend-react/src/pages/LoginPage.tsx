@@ -27,6 +27,29 @@ export default function LoginPage() {
     navigate("/send-email")
   }
 
+  const registerUserAndNavigate = async (email: string, uid: string) => {
+    try {
+      await apiClient.post("/users", {
+        user: {
+          name: "新規ユーザー",
+          email,
+          uid,
+        },
+      })
+      navigate("/home")
+    } catch (postError: unknown) {
+      const axiosPostError = postError as AxiosError
+      if (axiosPostError.response?.status === 422) {
+        navigate("/home")
+      } else {
+        setErrors(prev => [...prev,
+          "データベースへユーザー情報を登録しようとしましたが、失敗しました。",
+          ...apiErrorHandler(postError)
+        ])
+      }
+    }
+  }
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     const newErrors: string[] = []
@@ -48,30 +71,28 @@ export default function LoginPage() {
       setErrors([])
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
       const user = userCredential.user
+
       try {
         await apiClient.get("/users/me")
+        setUser(user)
+        navigate("/home")
       } catch (error: unknown) {
         const axiosError = error as AxiosError
+
         if (axiosError.response?.status === 401) {
-          await apiClient.post("/users", {
-            user: {
-              name: "新規ユーザー",
-              email: user.email,
-              uid: user.uid,
-            },
-          })
+          await registerUserAndNavigate(user.email!, user.uid)
         } else {
-          apiErrorHandler(error, setErrors)
+          setErrors(prev => [...prev,
+            "ユーザー情報をデータベースから取得しようとしましたが、失敗しました。",
+            ...apiErrorHandler(axiosError)
+          ])
+          setUser(null)
         }
       }
-
-      setUser(user)
-      navigate("/home")
     } catch (error: unknown) {
       setErrors([
         error instanceof FirebaseError ? getFirebaseErrorMessage(error) : "予期しないエラーが発生しました。",
       ])
-      setUser(null)
     }
   }
 
