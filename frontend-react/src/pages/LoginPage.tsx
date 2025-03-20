@@ -39,7 +39,7 @@ export default function LoginPage() {
       if (axiosPostError.response?.status === 422) {
         navigate("/home")
       } else {
-        setErrors(["登録できませんでした。"])
+        setErrors(["ログインに失敗しました。メールアドレスとパスワードを確認してください。"])
       }
     }
   }
@@ -76,12 +76,12 @@ export default function LoginPage() {
         if (axiosError.response?.status === 401) {
           await registerUserAndNavigate(user.email!, user.uid)
         } else {
-          setErrors(["表示できませんでした。"])
+          setErrors(["予期しないエラーが発生し、ログインできませんでした。"])
           setUser(null)
         }
       }
     } catch {
-      setErrors(["登録できませんでした。"])
+      setErrors(["ログインに失敗しました。メールアドレスとパスワードを確認してください。"])
     }
   }
 
@@ -95,7 +95,7 @@ export default function LoginPage() {
       setUser(firebaseUser)
       navigate("/home")
     } catch {
-      setErrors(["登録できませんでした。"])
+      setErrors(["googleアカウントでログインできませんでした。再試行してください。"])
       setUser(null)
     }
   }

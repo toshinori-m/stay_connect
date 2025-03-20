@@ -26,7 +26,7 @@ export default function ResetPassword() {
       await sendPasswordResetEmail(auth, email)
       alert("再設定のご案内メールを送信しました。")
     } catch {
-      setErrors(["登録できませんでした。"])
+      setErrors(["メールを送信できませんでした。メールアドレスを確認してください。"])
     }
   }
 
