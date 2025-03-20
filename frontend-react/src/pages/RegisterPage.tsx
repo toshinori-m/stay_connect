@@ -7,7 +7,6 @@ import { FirebaseError } from "firebase/app"
 import { useSetAuth } from "@/context/useAuthContext"
 import { useNavigate } from "react-router-dom"
 import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
-import apiErrorHandler from "@/utils/apiErrorHandler"
 
 export default function RegisterPage() {
   const [name, setName] = useState("")
@@ -78,10 +77,7 @@ export default function RegisterPage() {
       if (error instanceof FirebaseError) {
         setErrors([getFirebaseErrorMessage(error)])
       } else {
-        setErrors(prev => [...prev,
-          "データベースへユーザー情報を登録しようとしましたが、失敗しました。",
-          ...apiErrorHandler(error)
-        ])
+        setErrors(["登録できませんでした。"])
       }
       setUser(null)
     }

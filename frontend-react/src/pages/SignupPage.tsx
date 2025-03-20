@@ -8,7 +8,6 @@ import { useSetAuth } from "@/context/useAuthContext"
 import { FirebaseError } from "firebase/app"
 import { useNavigate } from "react-router-dom"
 import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
-import apiErrorHandler from "@/utils/apiErrorHandler"
 
 export default function SignupPage() {
   const [errors, setErrors] = useState<string[]>([])
@@ -69,10 +68,7 @@ export default function SignupPage() {
         }
       } else {
         setUser(null)
-        setErrors(prev => [...prev,
-          "googleアカウントで登録できませんでした。再試行してください。",
-          ...apiErrorHandler(responseError)
-        ])
+        setErrors(["登録できませんでした。"])
       }
     }
   }

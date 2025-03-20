@@ -9,7 +9,6 @@ import { FirebaseError } from "firebase/app"
 import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
 import { useApiClient } from "@/hooks/useApiClient"
 import { AxiosError } from "axios"
-import apiErrorHandler from "@/utils/apiErrorHandler"
 
 export default function LoginPage() {
   const [errors, setErrors] = useState<string[]>([])
@@ -42,10 +41,7 @@ export default function LoginPage() {
       if (axiosPostError.response?.status === 422) {
         navigate("/home")
       } else {
-        setErrors(prev => [...prev,
-          "データベースへユーザー情報を登録しようとしましたが、失敗しました。",
-          ...apiErrorHandler(postError)
-        ])
+        setErrors(["登録できませんでした。"])
       }
     }
   }
@@ -82,10 +78,7 @@ export default function LoginPage() {
         if (axiosError.response?.status === 401) {
           await registerUserAndNavigate(user.email!, user.uid)
         } else {
-          setErrors(prev => [...prev,
-            "ユーザー情報をデータベースから取得しようとしましたが、失敗しました。",
-            ...apiErrorHandler(axiosError)
-          ])
+          setErrors(["表示できませんでした。"])
           setUser(null)
         }
       }
