@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { useApiClient } from "@/hooks/useApiClient"
 import SearchForm from "@/components/HomePage/SearchForm"
 import { SelectOption } from "@/types"
+import { useAuthUser } from "@/hooks/useAuthUser"
 
 interface Recruitment {
   id: number
@@ -26,6 +27,7 @@ export default function HomePage() {
   const [recruitments, setRecruitments] = useState<Recruitment[]>([])
   const [errors, setErrors] = useState<string[]>([])
   const apiClient = useApiClient()
+  const { user, loading } = useAuthUser()
 
   const fetchData = async () => {
     try {
@@ -72,19 +74,19 @@ export default function HomePage() {
 
   const fetchInitialRecruitments = async () => {
     try {
-      setErrors([])
       const res = await apiClient.get("/searches")
       setRecruitments(res.data)
-
     } catch {
       setErrors(["イベントのデータ取得に失敗しました。時間を置いて再試行してください。"])
     }
   }
 
   useEffect(() => {
-    fetchInitialRecruitments()
+    if (!loading && user) {
+      fetchInitialRecruitments()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [user, loading])
 
   const handleSearch = async () => {
     try {
