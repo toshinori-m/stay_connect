@@ -3,7 +3,6 @@ import { useState, useMemo } from "react"
 import { auth } from "@/lib/firebase"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { useApiClient } from "@/hooks/useApiClient"
-import { useSetAuth } from "@/context/useAuthContext"
 import { useNavigate } from "react-router-dom"
 
 export default function RegisterPage() {
@@ -13,7 +12,6 @@ export default function RegisterPage() {
   const [passwordConfirmation, setPasswordConfirmation] = useState("")
   const [errors, setErrors] = useState<string[]>([])
   const apiClient = useApiClient()
-  const { setUser } = useSetAuth()
   const MIN_NAME_LENGTH = 2
   const MAX_NAME_LENGTH = 100
   const MIN_PASSWORD_LENGTH = 6
@@ -69,11 +67,9 @@ export default function RegisterPage() {
           uid: user.uid,
         },
       })
-      setUser(user)
       navigate("/home")
     } catch {
       setErrors(["登録に失敗しました。メールアドレスとパスワードを確認してください。"])
-      setUser(null)
     }
   }
 
