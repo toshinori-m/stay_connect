@@ -103,7 +103,6 @@ export default function HomePage() {
   handleSearch(sportsType , sportsDiscipline, prefecture, targetAge)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  
 
   interface DetailItemProps {
     label: string

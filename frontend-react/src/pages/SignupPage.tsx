@@ -4,12 +4,10 @@ import { useState } from "react"
 import { auth } from "@/lib/firebase"
 import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth"
 import { useApiClient } from "@/hooks/useApiClient"
-import { useSetAuth } from "@/context/useAuthContext"
 import { useNavigate } from "react-router-dom"
 
 export default function SignupPage() {
   const [errors, setErrors] = useState<string[]>([])
-  const { setUser } = useSetAuth()
   const apiClient = useApiClient()
   const navigate = useNavigate()
 
@@ -38,7 +36,6 @@ export default function SignupPage() {
         }
       })
 
-      setUser(firebaseUser)
       navigate("/home")
     } catch (error: unknown) {
       const responseError = error as RailsApiError
@@ -46,7 +43,6 @@ export default function SignupPage() {
         const errorData = responseError.response?.data
 
         if (errorData?.errors?.email?.includes("このメールアドレスは既に存在します。")) {
-          setUser(firebaseUser)
           navigate("/home")
           return
         } else {
@@ -60,7 +56,6 @@ export default function SignupPage() {
           return
         }
       } else {
-        setUser(null)
         setErrors(["googleアカウント登録に失敗しました。再試行してください。"])
       }
     }
