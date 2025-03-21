@@ -29,7 +29,7 @@ export default function HomePage() {
       setPrefectures(prefecturesRes.data.data)
       setTargetAges(targetAgesRes.data.data)
     } catch {
-      setErrors(["競技・都道府県・対象年齢のデータの取得に失敗しました。時間を置いて再試行してください。"])
+      setErrors(["競技・都道府県・対象年齢のデータ取得に失敗しました。時間を置いて再試行してください。"])
     }
   }
 
@@ -48,7 +48,7 @@ export default function HomePage() {
       const res = await apiClient.get("/sports_disciplines", { params })
       setSportsDisciplines(res.data.data)
     } catch {
-      setErrors(["スポーツ種目のデータの取得に失敗しました。時間を置いて再試行してください。"])
+      setErrors(["スポーツ種目のデータ取得に失敗しました。時間を置いて再試行してください。"])
     }
   }
 

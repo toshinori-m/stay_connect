@@ -76,7 +76,7 @@ export default function LoginPage() {
         if (axiosError.response?.status === 401) {
           await registerUserAndNavigate(user.email!, user.uid)
         } else {
-          setErrors(["予期しないエラーが発生し、ログインできませんでした。"])
+          setErrors(["ログインに失敗しました。予期しないエラーが発生しました。"])
           setUser(null)
         }
       }
@@ -95,7 +95,7 @@ export default function LoginPage() {
       setUser(firebaseUser)
       navigate("/home")
     } catch {
-      setErrors(["googleアカウントでログインできませんでした。再試行してください。"])
+      setErrors(["googleアカウントでログインに失敗しました。再試行してください。"])
       setUser(null)
     }
   }

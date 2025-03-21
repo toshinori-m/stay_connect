@@ -72,7 +72,7 @@ export default function RegisterPage() {
       setUser(user)
       navigate("/home")
     } catch {
-      setErrors(["登録できませんでした。メールアドレスとパスワードを確認してください。"])
+      setErrors(["登録に失敗しました。メールアドレスとパスワードを確認してください。"])
       setUser(null)
     }
   }

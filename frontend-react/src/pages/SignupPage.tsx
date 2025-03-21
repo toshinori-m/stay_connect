@@ -50,7 +50,7 @@ export default function SignupPage() {
           navigate("/home")
           return
         } else {
-          setErrors(["googleアカウントで登録できませんでした。再試行してください。"])
+          setErrors(["googleアカウント登録に失敗しました。再試行してください。"])
 
           if (firebaseUser) {
             await firebaseUser.delete().catch((deleteError) => {
@@ -61,7 +61,7 @@ export default function SignupPage() {
         }
       } else {
         setUser(null)
-        setErrors(["googleアカウントで登録できませんでした。再試行してください。"])
+        setErrors(["googleアカウント登録に失敗しました。再試行してください。"])
       }
     }
   }

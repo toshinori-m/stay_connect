@@ -31,7 +31,7 @@ export default function HomeHeader() {
       setUser(null)
       navigate("/login")
     } catch {
-      setErrors(["ログアウトできませんでした。"])
+      setErrors(["ログアウトに失敗しました"])
     }
   }
 
