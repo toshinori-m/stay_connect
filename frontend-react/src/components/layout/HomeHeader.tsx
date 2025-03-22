@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom"
 import { signOut } from "firebase/auth"
 import { auth } from "@/lib/firebase"
 import MouseCharacter from "@/components/layout/MouseCharacter"
-import { useQueryClient } from "@tanstack/react-query"
+import { useSetAuth } from "@/context/useAuthContext"
 
 export default function HomeHeader() {
   const [isClose, setIsClose] = useState(true)
   const [errors, setErrors] = useState<string[]>([])
   const menuRef = useRef<HTMLUListElement | null>(null)
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
+  const { setUser } = useSetAuth()
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -28,7 +28,7 @@ export default function HomeHeader() {
     try {
       setErrors([])
       await signOut(auth)
-      queryClient.removeQueries({ queryKey: ["authUser"] })
+      setUser(null)
       navigate("/login")
     } catch {
       setErrors(["ログアウトに失敗しました"])

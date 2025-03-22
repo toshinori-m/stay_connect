@@ -13,7 +13,6 @@
     "@egoist/tailwindcss-icons": "^1.9.0",
     "@iconify-json/lucide": "^1.2.26",
     "@iconify-json/tabler": "^1.2.16",
-    "@tanstack/react-query": "^5.69.0",
     "axios": "^1.7.9",
     "firebase": "^11.3.1",
     "react": "^19.0.0",

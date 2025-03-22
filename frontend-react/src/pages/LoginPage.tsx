@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { auth } from "@/lib/firebase"
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
+import { useSetAuth } from "@/context/useAuthContext"
 import { useApiClient } from "@/hooks/useApiClient"
 import { AxiosError } from "axios"
 
@@ -12,6 +13,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const navigate = useNavigate()
+  const { setUser } = useSetAuth()
   const apiClient = useApiClient()
 
   const handleSignupClick = () => {
@@ -66,6 +68,7 @@ export default function LoginPage() {
 
       try {
         await apiClient.get("/users/me")
+        setUser(user)
         navigate("/home")
       } catch (error: unknown) {
         const axiosError = error as AxiosError
@@ -74,6 +77,7 @@ export default function LoginPage() {
           await registerUserAndNavigate(user.email!, user.uid)
         } else {
           setErrors(["ログインに失敗しました。予期しないエラーが発生しました。"])
+          setUser(null)
         }
       }
     } catch {
@@ -86,10 +90,13 @@ export default function LoginPage() {
     try {
       setErrors([])
       const provider = new GoogleAuthProvider()
-      await signInWithPopup(auth, provider)
+      const result = await signInWithPopup(auth, provider)
+      const firebaseUser = result.user
+      setUser(firebaseUser)
       navigate("/home")
     } catch {
       setErrors(["googleアカウントでログインに失敗しました。再試行してください。"])
+      setUser(null)
     }
   }
 
