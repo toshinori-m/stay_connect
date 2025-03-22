@@ -71,10 +71,10 @@ export default function HomePage() {
   }, [sportsTypeSelected])
 
   const handleSearch = async (
-    sportsType?: SelectOption | null,
-    sportsDiscipline?: SelectOption | null,
-    prefecture?: SelectOption | null,
-    targetAge?: SelectOption | null
+    sportsType: SelectOption | null,
+    sportsDiscipline: SelectOption | null,
+    prefecture: SelectOption | null,
+    targetAge: SelectOption | null
   ) => {
     try {
       setErrors([])
@@ -95,7 +95,7 @@ export default function HomePage() {
   }
 
   useEffect(() => {
-    handleSearch()
+    handleSearch(null, null, null, null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   
