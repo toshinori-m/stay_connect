@@ -70,40 +70,35 @@ export default function HomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sportsTypeSelected])
 
-  const fetchInitialRecruitments = async () => {
+  const handleSearch = async (
+    sportsType?: SelectOption | null,
+    sportsDiscipline?: SelectOption | null,
+    prefecture?: SelectOption | null,
+    targetAge?: SelectOption | null
+  ) => {
     try {
       setErrors([])
-      const res = await apiClient.get("/searches")
+      setRecruitments([])
+  
+      const params = {
+        sports_type_name: sportsType?.name ?? "",
+        prefecture_name: prefecture?.name ?? "",
+        target_age_name: targetAge?.name ?? "",
+        sports_discipline_name: sportsDiscipline?.name ?? "",
+      }
+  
+      const res = await apiClient.get("/searches", { params })
       setRecruitments(res.data)
-
     } catch {
       setErrors(["イベントのデータ取得に失敗しました。時間を置いて再試行してください。"])
     }
   }
 
   useEffect(() => {
-    fetchInitialRecruitments()
+    handleSearch()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  const handleSearch = async () => {
-    try {
-      setErrors([])
-      setRecruitments([])
-
-      const params = {
-        sports_type_name: sportsTypeSelected?.name ?? "",
-        prefecture_name: prefecturesSelected?.name ?? "",
-        target_age_name: targetAgesSelected?.name ?? "",
-        sports_discipline_name: sportsDisciplineSelected?.name ?? "",
-      }
-
-      const res = await apiClient.get("/searches", { params })
-      setRecruitments(res.data)
-    } catch {
-      setErrors(["表示できませんでした。"])
-    }
-  }
+  
 
   interface DetailItemProps {
     label: string
@@ -132,7 +127,7 @@ export default function HomePage() {
         targetAges={targetAges}
         targetAgesSelected={targetAgesSelected}
         setTargetAgesSelected={setTargetAgesSelected}
-        onSearch={handleSearch}
+        onSearch={() => handleSearch(sportsTypeSelected, sportsDisciplineSelected, prefecturesSelected, targetAgesSelected)}
         errors={errors}
       />
 
