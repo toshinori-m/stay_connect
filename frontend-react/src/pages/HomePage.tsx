@@ -89,6 +89,7 @@ export default function HomePage() {
   
       const res = await apiClient.get("/searches", { params })
       setRecruitments(res.data)
+
     } catch {
       setErrors(["イベントのデータ取得に失敗しました。時間を置いて再試行してください。"])
     }
