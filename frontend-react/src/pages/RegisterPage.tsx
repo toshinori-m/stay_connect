@@ -3,11 +3,8 @@ import { useState, useMemo } from "react"
 import { auth } from "@/lib/firebase"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { useApiClient } from "@/hooks/useApiClient"
-import { FirebaseError } from "firebase/app"
 import { useSetAuth } from "@/context/useAuthContext"
 import { useNavigate } from "react-router-dom"
-import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
-import apiErrorHandler from "@/utils/apiErrorHandler"
 
 export default function RegisterPage() {
   const [name, setName] = useState("")
@@ -74,12 +71,8 @@ export default function RegisterPage() {
       })
       setUser(user)
       navigate("/home")
-    } catch (error: unknown) {
-      if (error instanceof FirebaseError) {
-        setErrors([getFirebaseErrorMessage(error)])
-      } else {
-        apiErrorHandler(error, setErrors)
-      }
+    } catch {
+      setErrors(["登録に失敗しました。メールアドレスとパスワードを確認してください。"])
       setUser(null)
     }
   }

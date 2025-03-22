@@ -3,9 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { signOut } from "firebase/auth"
 import { auth } from "@/lib/firebase"
 import MouseCharacter from "@/components/layout/MouseCharacter"
-import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
 import { useSetAuth } from "@/context/useAuthContext"
-import { FirebaseError } from "firebase/app"
 
 export default function HomeHeader() {
   const [isClose, setIsClose] = useState(true)
@@ -32,8 +30,8 @@ export default function HomeHeader() {
       await signOut(auth)
       setUser(null)
       navigate("/login")
-    } catch (error: unknown) {
-      setErrors([error instanceof FirebaseError ? getFirebaseErrorMessage(error) : "予期しないエラーが発生しましたので、ログアウトできませんでした。"])
+    } catch {
+      setErrors(["ログアウトに失敗しました"])
     }
   }
 

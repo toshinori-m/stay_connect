@@ -5,10 +5,7 @@ import { auth } from "@/lib/firebase"
 import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth"
 import { useApiClient } from "@/hooks/useApiClient"
 import { useSetAuth } from "@/context/useAuthContext"
-import { FirebaseError } from "firebase/app"
 import { useNavigate } from "react-router-dom"
-import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
-import apiErrorHandler from "@/utils/apiErrorHandler"
 
 export default function SignupPage() {
   const [errors, setErrors] = useState<string[]>([])
@@ -44,11 +41,6 @@ export default function SignupPage() {
       setUser(firebaseUser)
       navigate("/home")
     } catch (error: unknown) {
-      if (error instanceof FirebaseError) {
-        setErrors([getFirebaseErrorMessage(error)])
-        return
-      }  
-
       const responseError = error as RailsApiError
       if (responseError.response?.status === 422) {
         const errorData = responseError.response?.data
@@ -58,7 +50,7 @@ export default function SignupPage() {
           navigate("/home")
           return
         } else {
-          setErrors(["googleアカウントで登録できませんでした。再試行してください。"])
+          setErrors(["googleアカウント登録に失敗しました。再試行してください。"])
 
           if (firebaseUser) {
             await firebaseUser.delete().catch((deleteError) => {
@@ -69,7 +61,7 @@ export default function SignupPage() {
         }
       } else {
         setUser(null)
-        apiErrorHandler(error, setErrors)
+        setErrors(["googleアカウント登録に失敗しました。再試行してください。"])
       }
     }
   }

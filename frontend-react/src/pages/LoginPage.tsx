@@ -5,11 +5,8 @@ import { useNavigate } from "react-router-dom"
 import { auth } from "@/lib/firebase"
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { useSetAuth } from "@/context/useAuthContext"
-import { FirebaseError } from "firebase/app"
-import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
 import { useApiClient } from "@/hooks/useApiClient"
 import { AxiosError } from "axios"
-import apiErrorHandler from "@/utils/apiErrorHandler"
 
 export default function LoginPage() {
   const [errors, setErrors] = useState<string[]>([])
@@ -25,6 +22,26 @@ export default function LoginPage() {
 
   const redirectToSendEmail = () => {
     navigate("/send-email")
+  }
+
+  const registerUserAndNavigate = async (email: string, uid: string) => {
+    try {
+      await apiClient.post("/users", {
+        user: {
+          name: "新規ユーザー",
+          email,
+          uid,
+        },
+      })
+      navigate("/home")
+    } catch (postError: unknown) {
+      const axiosPostError = postError as AxiosError
+      if (axiosPostError.response?.status === 422) {
+        navigate("/home")
+      } else {
+        setErrors(["ログインに失敗しました。メールアドレスとパスワードを確認してください。"])
+      }
+    }
   }
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -48,30 +65,23 @@ export default function LoginPage() {
       setErrors([])
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
       const user = userCredential.user
+
       try {
         await apiClient.get("/users/me")
+        setUser(user)
+        navigate("/home")
       } catch (error: unknown) {
         const axiosError = error as AxiosError
+
         if (axiosError.response?.status === 401) {
-          await apiClient.post("/users", {
-            user: {
-              name: "新規ユーザー",
-              email: user.email,
-              uid: user.uid,
-            },
-          })
+          await registerUserAndNavigate(user.email!, user.uid)
         } else {
-          apiErrorHandler(error, setErrors)
+          setErrors(["ログインに失敗しました。予期しないエラーが発生しました。"])
+          setUser(null)
         }
       }
-
-      setUser(user)
-      navigate("/home")
-    } catch (error: unknown) {
-      setErrors([
-        error instanceof FirebaseError ? getFirebaseErrorMessage(error) : "予期しないエラーが発生しました。",
-      ])
-      setUser(null)
+    } catch {
+      setErrors(["ログインに失敗しました。メールアドレスとパスワードを確認してください。"])
     }
   }
 
@@ -84,10 +94,8 @@ export default function LoginPage() {
       const firebaseUser = result.user
       setUser(firebaseUser)
       navigate("/home")
-    } catch (error: unknown) {
-      setErrors([
-        error instanceof FirebaseError ? getFirebaseErrorMessage(error) : "予期しないエラーが発生しました。",
-      ])
+    } catch {
+      setErrors(["googleアカウントでログインに失敗しました。再試行してください。"])
       setUser(null)
     }
   }

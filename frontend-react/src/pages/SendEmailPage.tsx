@@ -1,7 +1,5 @@
 import { useState } from "react"
 import { getAuth, sendPasswordResetEmail } from "firebase/auth"
-import { FirebaseError } from "firebase/app"
-import getFirebaseErrorMessage from "@/lib/getFirebaseErrorMessage"
 import InputField from "@/components/ui/InputField"
 
 export default function ResetPassword() {
@@ -27,10 +25,8 @@ export default function ResetPassword() {
 
       await sendPasswordResetEmail(auth, email)
       alert("再設定のご案内メールを送信しました。")
-    } catch (error: unknown) {
-      setErrors([
-        error instanceof FirebaseError ? getFirebaseErrorMessage(error) : "予期しないエラーが発生しました。",
-      ])
+    } catch {
+      setErrors(["メール送信に失敗しました。メールアドレスを確認してください。"])
     }
   }
 

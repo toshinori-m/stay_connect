@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import { useApiClient } from "@/hooks/useApiClient"
 import SearchForm from "@/components/HomePage/SearchForm"
-import apiErrorHandler from "@/utils/apiErrorHandler"
 import { SelectOption } from "@/types"
 
 export default function HomePage() {
@@ -29,8 +28,8 @@ export default function HomePage() {
       setSportsTypes(sportsRes.data.data)
       setPrefectures(prefecturesRes.data.data)
       setTargetAges(targetAgesRes.data.data)
-    } catch (error: unknown) {
-      setErrors(prev => [...prev, "スポーツタイプ・都道府県・対象年齢の取得に失敗しました", ...apiErrorHandler(error)])
+    } catch {
+      setErrors(["競技・都道府県・対象年齢のデータ取得に失敗しました。時間を置いて再試行してください。"])
     }
   }
 
@@ -48,8 +47,8 @@ export default function HomePage() {
       const params = { sports_type_id: sportsTypeSelected.id }
       const res = await apiClient.get("/sports_disciplines", { params })
       setSportsDisciplines(res.data.data)
-    } catch (error: unknown) {
-      setErrors(prev => [...prev, "スポーツ種目の取得に失敗しました", ...apiErrorHandler(error)])
+    } catch {
+      setErrors(["スポーツ種目のデータ取得に失敗しました。時間を置いて再試行してください。"])
     }
   }
 
