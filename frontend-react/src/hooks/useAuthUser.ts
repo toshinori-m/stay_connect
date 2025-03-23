@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { onAuthStateChanged, User } from "firebase/auth"
 import { auth } from "@/lib/firebase"
+import { AUTH_USER_QUERY_KEY } from "@/constants/queryKeys"
 
 const fetchUser = (): Promise<User | null> => {
   return new Promise((resolve) => {
@@ -13,8 +14,7 @@ const fetchUser = (): Promise<User | null> => {
 
 export const useAuthUser = () => {
   return useSuspenseQuery<User | null>({
-    queryKey: ["authUser"],
-    queryFn: fetchUser,
-    staleTime: Infinity,
+    queryKey: AUTH_USER_QUERY_KEY,
+    queryFn: fetchUser
   })
 }
