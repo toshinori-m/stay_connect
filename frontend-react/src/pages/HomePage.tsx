@@ -81,10 +81,10 @@ export default function HomePage() {
       setRecruitments([])
   
       const params = {
-        sports_type_name: sportsType?.name ?? "",
-        prefecture_name: prefecture?.name ?? "",
-        target_age_name: targetAge?.name ?? "",
-        sports_discipline_name: sportsDiscipline?.name ?? "",
+        sports_type_name: sportsType? sportsType.name : "",
+        prefecture_name: prefecture? prefecture.name : "",
+        target_age_name: targetAge? targetAge.name : "",
+        sports_discipline_name: sportsDiscipline? sportsDiscipline.name : ""
       }
   
       const res = await apiClient.get("/searches", { params })
@@ -95,7 +95,12 @@ export default function HomePage() {
   }
 
   useEffect(() => {
-    handleSearch(null, null, null, null)
+  const sportsType = null
+  const  sportsDiscipline = null
+  const prefecture = null
+  const targetAge = null
+  
+  handleSearch(sportsType , sportsDiscipline, prefecture, targetAge)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   
