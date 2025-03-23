@@ -14,7 +14,7 @@ const fetchUser = (): Promise<User | null> => {
 
 export const useAuthUser = () => {
   return useSuspenseQuery<User | null>({
-    queryKey: AUTH_USER_QUERY_KEY,
+    queryKey: [AUTH_USER_QUERY_KEY],
     queryFn: fetchUser
   })
 }

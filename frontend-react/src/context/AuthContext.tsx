@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser) 
       setLoading(false)
-      queryClient.invalidateQueries({ queryKey: AUTH_USER_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: [AUTH_USER_QUERY_KEY] })
     })
 
     return () => unsubscribe()
