@@ -89,6 +89,7 @@ export default function HomePage() {
   
       const res = await apiClient.get("/searches", { params })
       setRecruitments(res.data)
+
     } catch {
       setErrors(["イベントのデータ取得に失敗しました。時間を置いて再試行してください。"])
     }
@@ -103,7 +104,6 @@ export default function HomePage() {
   handleSearch(sportsType , sportsDiscipline, prefecture, targetAge)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  
 
   interface DetailItemProps {
     label: string
