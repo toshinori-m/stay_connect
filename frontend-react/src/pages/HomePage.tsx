@@ -1,32 +1,96 @@
-import { useState } from "react"
+import { startTransition, useState, useEffect } from "react"
+import { useApiClient } from "@/hooks/useApiClient"
 import SearchForm from "@/components/HomePage/SearchForm"
-import { SelectOption, Recruitment } from "@/types"
-import { useFetchInitialData } from "@/hooks/search/useFetchInitialData"
-import { useFetchSportsDisciplines } from "@/hooks/search/useFetchSportsDisciplines"
-import { useInitialSearch } from "@/hooks/search/useInitialSearch"
+import { SelectOption } from "@/types"
+import useFetchInitialData from "@/hooks/search/useFetchInitialData"
+import useFetchSportsDisciplines from "@/hooks/search/useFetchSportsDisciplines"
+
+interface Recruitment {
+  id: number
+  name: string
+  sports_type_name: string
+  sports_discipline_name: { id: number; name: string }[]
+  prefecture_name: string
+  purpose_body: string
+  sex: string
+  target_age_name: { id: number; name: string }[]
+}
 
 export default function HomePage() {
-  const [sportsTypes, setSportsTypes] = useState<SelectOption[]>([])
   const [sportsTypeSelected, setSportsTypeSelected] = useState<SelectOption | null>(null)
-  const [sportsDisciplines, setSportsDisciplines] = useState<SelectOption[]>([])
   const [sportsDisciplineSelected, setSportsDisciplineSelected] = useState<SelectOption | null>(null)
-  const [prefectures, setPrefectures] = useState<SelectOption[]>([])
   const [prefecturesSelected, setPrefecturesSelected] = useState<SelectOption | null>(null)
-  const [targetAges, setTargetAges] = useState<SelectOption[]>([])
   const [targetAgesSelected, setTargetAgesSelected] = useState<SelectOption | null>(null)
   const [recruitments, setRecruitments] = useState<Recruitment[]>([])
   const [errors, setErrors] = useState<string[]>([])
+  const apiClient = useApiClient()
 
-  useFetchInitialData({ setSportsTypes, setPrefectures, setTargetAges, setErrors })
-  useFetchSportsDisciplines({
-    sportsTypeSelected,
-    setSportsDisciplines,
-    setSportsDisciplineSelected,
-    setErrors,
-  })
-  useInitialSearch({ setRecruitments, setErrors })
-  const { handleSearch } = useInitialSearch({ setRecruitments, setErrors })
+  const {
+    sportsTypes,
+    prefectures,
+    targetAges,
+    errors: initialErrors,
+    fetchInitialData,
+  } = useFetchInitialData()
+
+  useEffect(() => {
+    startTransition(() => {
+      fetchInitialData()
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const {
+    sportsDisciplines,
+    fetchSportsDisciplines,
+    errors: disciplineErrors,
+  } = useFetchSportsDisciplines()
+
+  useEffect(() => {
+    startTransition(() => {
+      fetchSportsDisciplines(sportsTypeSelected)
+      setSportsDisciplineSelected(null)
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sportsTypeSelected])
+
+  const handleSearch = async (
+    sportsType: SelectOption | null,
+    sportsDiscipline: SelectOption | null,
+    prefecture: SelectOption | null,
+    targetAge: SelectOption | null
+  ) => {
+    try {
+      setErrors([])
+      setRecruitments([])
   
+      const params = {
+        sports_type_name: sportsType? sportsType.name : "",
+        prefecture_name: prefecture? prefecture.name : "",
+        target_age_name: targetAge? targetAge.name : "",
+        sports_discipline_name: sportsDiscipline? sportsDiscipline.name : ""
+      }
+  
+      const res = await apiClient.get("/searches", { params })
+      setRecruitments(res.data)
+
+    } catch {
+      setErrors(["イベントのデータ取得に失敗しました。時間を置いて再試行してください。"])
+    }
+  }
+
+  useEffect(() => {
+    const sportsType = null
+    const  sportsDiscipline = null
+    const prefecture = null
+    const targetAge = null
+    
+    handleSearch(sportsType , sportsDiscipline, prefecture, targetAge)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+  const allErrors = [...initialErrors, ...disciplineErrors, ...errors]
+
   interface DetailItemProps {
     label: string
     value: string | null
@@ -55,7 +119,7 @@ export default function HomePage() {
         targetAgesSelected={targetAgesSelected}
         setTargetAgesSelected={setTargetAgesSelected}
         onSearch={() => handleSearch(sportsTypeSelected, sportsDisciplineSelected, prefecturesSelected, targetAgesSelected)}
-        errors={errors}
+        errors={allErrors}
       />
 
       <div className="md:w-5/6 md:ml-2">

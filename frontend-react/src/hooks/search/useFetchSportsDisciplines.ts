@@ -1,40 +1,44 @@
-import { useEffect } from "react"
-import { useApiClient } from "@/hooks/useApiClient"
-import { SelectOption } from "@/types"
+import { useActionState } from 'react'
+import { useApiClient } from '@/hooks/useApiClient'
+import { SelectOption } from '@/types'
 
-interface UseFetchSportsDisciplinesProps {
-  sportsTypeSelected: SelectOption | null
-  setSportsDisciplines: (data: SelectOption[]) => void
-  setSportsDisciplineSelected: (data: SelectOption | null) => void
-  setErrors: (errors: string[]) => void
+interface FetchSportsDisciplinesState {
+  sportsDisciplines: SelectOption[]
+  errors: string[]
 }
 
-export const useFetchSportsDisciplines = ({
-  sportsTypeSelected,
-  setSportsDisciplines,
-  setSportsDisciplineSelected,
-  setErrors,
-}: UseFetchSportsDisciplinesProps) => {
+const initialState: FetchSportsDisciplinesState = {
+  sportsDisciplines: [],
+  errors: []
+}
+
+export default function useFetchSportsDisciplines() {
   const apiClient = useApiClient()
 
-  const fetchSportsTypes = async () => {
+  const fetchSportsDisciplinesAction = async (
+    prevState: FetchSportsDisciplinesState,
+    sportsTypeSelected: SelectOption | null
+  ): Promise<FetchSportsDisciplinesState> => {
+    if (!sportsTypeSelected) {
+      return { ...prevState, sportsDisciplines: [], errors: [] }
+    }
     try {
-      if (!sportsTypeSelected) {
-        setSportsDisciplines([])
-        setSportsDisciplineSelected(null)
-        return
-      }
-
       const params = { sports_type_id: sportsTypeSelected.id }
-      const res = await apiClient.get("/sports_disciplines", { params })
-      setSportsDisciplines(res.data.data)
+      const res = await apiClient.get('/sports_disciplines', { params })
+      return { ...prevState, sportsDisciplines: res.data.data, errors: [] }
     } catch {
-      setErrors(["スポーツ種目のデータ取得に失敗しました。時間を置いて再試行してください。"])
+      return {
+        ...prevState,
+        errors: ['スポーツ種目のデータ取得に失敗しました。時間を置いて再試行してください。'],
+      }
     }
   }
 
-  useEffect(() => {
-    fetchSportsTypes()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sportsTypeSelected])
+  const [state, fetchSportsDisciplines, isPending] = useActionState(fetchSportsDisciplinesAction, initialState)
+
+  return {
+    ...state,
+    fetchSportsDisciplines,
+    isPending,
+  }
 }
