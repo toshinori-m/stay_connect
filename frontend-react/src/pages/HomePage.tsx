@@ -1,18 +1,9 @@
-import { useState, useEffect } from "react"
-import { useApiClient } from "@/hooks/useApiClient"
+import { useState } from "react"
 import SearchForm from "@/components/HomePage/SearchForm"
-import { SelectOption } from "@/types"
-
-interface Recruitment {
-  id: number
-  name: string
-  sports_type_name: string
-  sports_discipline_name: { id: number; name: string }[]
-  prefecture_name: string
-  purpose_body: string
-  sex: string
-  target_age_name: { id: number; name: string }[]
-}
+import { SelectOption, Recruitment } from "@/types"
+import { useFetchInitialData } from "@/hooks/search/useFetchInitialData"
+import { useFetchSportsDisciplines } from "@/hooks/search/useFetchSportsDisciplines"
+import { useInitialSearch } from "@/hooks/search/useInitialSearch"
 
 export default function HomePage() {
   const [sportsTypes, setSportsTypes] = useState<SelectOption[]>([])
@@ -25,86 +16,17 @@ export default function HomePage() {
   const [targetAgesSelected, setTargetAgesSelected] = useState<SelectOption | null>(null)
   const [recruitments, setRecruitments] = useState<Recruitment[]>([])
   const [errors, setErrors] = useState<string[]>([])
-  const apiClient = useApiClient()
 
-  const fetchData = async () => {
-    try {
-      setErrors([])
-
-      const [sportsRes, prefecturesRes, targetAgesRes] = await Promise.all([
-        apiClient.get("/sports_types"),
-        apiClient.get("/prefectures"),
-        apiClient.get("/target_ages"),
-      ])
-
-      setSportsTypes(sportsRes.data.data)
-      setPrefectures(prefecturesRes.data.data)
-      setTargetAges(targetAgesRes.data.data)
-    } catch {
-      setErrors(["競技・都道府県・対象年齢のデータ取得に失敗しました。時間を置いて再試行してください。"])
-    }
-  }
-
-  useEffect(() => {
-    fetchData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const fetchSportsTypes = async () => {
-    try {
-      if (!sportsTypeSelected) {
-        setSportsDisciplines([])
-        setSportsDisciplineSelected(null)
-        return
-      }
-      const params = { sports_type_id: sportsTypeSelected.id }
-      const res = await apiClient.get("/sports_disciplines", { params })
-      setSportsDisciplines(res.data.data)
-    } catch {
-      setErrors(["スポーツ種目のデータ取得に失敗しました。時間を置いて再試行してください。"])
-    }
-  }
-
-  useEffect(() => {
-    fetchSportsTypes()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sportsTypeSelected])
-
-  const handleSearch = async (
-    sportsType: SelectOption | null,
-    sportsDiscipline: SelectOption | null,
-    prefecture: SelectOption | null,
-    targetAge: SelectOption | null
-  ) => {
-    try {
-      setErrors([])
-      setRecruitments([])
+  useFetchInitialData({ setSportsTypes, setPrefectures, setTargetAges, setErrors })
+  useFetchSportsDisciplines({
+    sportsTypeSelected,
+    setSportsDisciplines,
+    setSportsDisciplineSelected,
+    setErrors,
+  })
+  useInitialSearch({ setRecruitments, setErrors })
+  const { handleSearch } = useInitialSearch({ setRecruitments, setErrors })
   
-      const params = {
-        sports_type_name: sportsType? sportsType.name : "",
-        prefecture_name: prefecture? prefecture.name : "",
-        target_age_name: targetAge? targetAge.name : "",
-        sports_discipline_name: sportsDiscipline? sportsDiscipline.name : ""
-      }
-  
-      const res = await apiClient.get("/searches", { params })
-      setRecruitments(res.data)
-
-    } catch {
-      setErrors(["イベントのデータ取得に失敗しました。時間を置いて再試行してください。"])
-    }
-  }
-
-  useEffect(() => {
-  const sportsType = null
-  const  sportsDiscipline = null
-  const prefecture = null
-  const targetAge = null
-  
-  handleSearch(sportsType , sportsDiscipline, prefecture, targetAge)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   interface DetailItemProps {
     label: string
     value: string | null
@@ -152,16 +74,22 @@ export default function HomePage() {
               <h3 className="text-lg font-bold text-blue-600 break-words w-full md:w-11/12">
                 {recruitment.name}
               </h3>
+
               <DetailItem label="競技" value={recruitment.sports_type_name} />
+
               {recruitment.sports_discipline_name?.length > 0 && (
                 <DetailItem
                   label="種目"
-                  value={recruitment.sports_discipline_name?.map(d => d.name).join(", ") || "なし"}
+                  value={recruitment.sports_discipline_name?.map((d) => d.name).join(", ") || "なし"}
                 />
               )}
+
               <DetailItem label="イベント目的" value={recruitment.purpose_body} />
               <DetailItem label="性別" value={recruitment.sex} />
-              <DetailItem label="対象年齢" value={recruitment.target_age_name?.map(d => d.name).join(", ") || "なし"} />
+              <DetailItem
+                label="対象年齢"
+                value={recruitment.target_age_name?.map((d) => d.name).join(", ") || "なし"}
+              />
             </div>
           ))
         )}
