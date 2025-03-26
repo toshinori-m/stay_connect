@@ -9,6 +9,7 @@ import LoginPage from "@/pages/LoginPage"
 import SignupPage from "@/pages/SignupPage"
 import RegisterPage from "@/pages/RegisterPage"
 import HomePage from "@/pages/HomePage"
+import EventSettingPage from "@/pages/eventPages/EventSettingPage"
 
 function OpenLayout() {
   return (
@@ -57,6 +58,7 @@ export default function AppRouter() {
       <Route element={<RequireAuth />}>
         <Route element={<HomeLayout />}>
           <Route path="/home" element={<HomePage />} />
+          <Route path="/event_setting" element={<EventSettingPage />} />
         </Route>
       </Route>
     </Routes>
