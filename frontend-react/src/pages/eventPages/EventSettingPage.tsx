@@ -1,276 +1,231 @@
-import { useState, useEffect } from "react"
-import { useApiClient } from "@/hooks/useApiClient"
+import { useState } from "react"
 import { SelectOption } from "@/types"
+import InputField from "@/components/ui/InputField"
+import TextareaField from "@/components/ui/TextareaField"
+import SelectField from "@/components/ui/SelectField"
+import useInitialFormData from "@/hooks/search/useInitialFormData"
+import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
 
 export default function EventSettingPage() {
-  const [sportsTypes, setSportsTypes] = useState<SelectOption[]>([])
   const [sportsTypeSelected, setSportsTypeSelected] = useState<SelectOption | null>(null)
-  const [sportsDisciplines, setSportsDisciplines] = useState<SelectOption[]>([])
   const [sportsDisciplineSelected, setSportsDisciplineSelected] = useState<SelectOption[]>([])
-
+  const [targetAgeSelected, setTargetAgeSelected] = useState<SelectOption[]>([])
+  const [prefectureSelected, setPrefectureSelected] = useState<string | null>(null)
   const [eventUrl, setEventUrl] = useState("")
   const [eventName, setEventName] = useState("")
   const [area, setArea] = useState("")
   const [sex, setSex] = useState("")
 
-  const [prefectures, setPrefectures] = useState<SelectOption[]>([])
-  const [prefectureSelected, setPrefectureSelected] = useState<string | null>(null)
-
-  const [targetAges, setTargetAges] = useState<SelectOption[]>([])
-  const [targetAgeSelected, setTargetAgeSelected] = useState<SelectOption[]>([])
-
-  const [errors, setErrors] = useState<string[]>([])
-  const apiClient = useApiClient()
   const remainingCharacters = (input: string) => MAX_LENGTH - input.length
 
+  const {
+    sportsTypes,
+    prefectures,
+    targetAges,
+    errors: initialErrors,
+  } = useInitialFormData()
 
-  const fetchData = async () => {
-    try {
-      setErrors([])
-
-      const [sportsRes, prefecturesRes, targetAgesRes] = await Promise.all([
-        apiClient.get("/sports_types"),
-        apiClient.get("/prefectures"),
-        apiClient.get("/target_ages"),
-      ])
-
-      setSportsTypes(sportsRes.data.data)
-      setPrefectures(prefecturesRes.data.data)
-      setTargetAges(targetAgesRes.data.data)
-    } catch {
-      setErrors(["競技・都道府県・対象年齢のデータ取得に失敗しました。時間を置いて再試行してください。"])
-    }
-  }
-
-  useEffect(() => {
-    fetchData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const fetchSportsTypes = async () => {
-    try {
-      if (!sportsTypeSelected) {
-        setSportsDisciplines([])
-        setSportsDisciplineSelected([])
-        return
-      }
-      const params = { sports_type_id: sportsTypeSelected.id }
-      const res = await apiClient.get("/sports_disciplines", { params })
-      setSportsDisciplines(res.data.data)
-    } catch {
-      setErrors(["スポーツ種目のデータ取得に失敗しました。時間を置いて再試行してください。"])
-    }
-  }
-
-  useEffect(() => {
-    fetchSportsTypes()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sportsTypeSelected])
-
-  const selectFields: {
-    label: React.ReactNode
-    options: SelectOption[]
-    selected: unknown
-    setSelected: (value: unknown) => void
-    isMultiple?: boolean
-    show?: boolean
-  }[] = [
-    {
-      label: "競技選択",
-      options: sportsTypes,
-      selected: sportsTypeSelected,
-      setSelected: (value) => setSportsTypeSelected(value as SelectOption | null)
-    },
-    {
-      label: (
-        <>
-          種目選択<br/>（複数可）
-        </>
-      ),
-      options: sportsDisciplines,
-      selected: sportsDisciplineSelected,
-      setSelected: (value) => setSportsDisciplineSelected(value as SelectOption[]),
-      isMultiple: true,
-      show: sportsDisciplines.length > 0
-    },
-    {
-      label: "都道府県選択",
-      options: prefectures,
-      selected: prefectureSelected,
-      setSelected: (value) => setPrefectureSelected(value as string)
-    },
-    {
-      label:(
-        <>
-          対象年齢選択<br/>（複数可）
-        </>
-      ),
-      options: targetAges,
-      selected: targetAgeSelected,
-      setSelected: (value) => setTargetAgeSelected(value as SelectOption[]),
-      isMultiple: true
-    }
-  ]
-
-  const inputFields: {
-    label: React.ReactNode,
-    type: "text" | "url" | "textarea",
-    value: string,
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void,
-    placeholder: string,
-    showLimit?: boolean
-  }[] = [
-    {
-      label: "イベント名",
-      type: "text",
-      value: eventName,
-      onChange: (e) => setEventName(e.target.value),
-      placeholder: "イベント名",
-      showLimit: true
-    },
-    {
-      label: "イベントURL",
-      type: "url",
-      value: eventUrl,
-      onChange: (e) => setEventUrl(e.target.value),
-      placeholder: "https://www.example.com/images/example.jpg"
-    },
-    {
-      label:(
-        <>
-          地域<br/>（255文字まで）
-        </>
-      ),
-      type: "textarea",
-      value: area,
-      onChange: (e) => setArea(e.target.value),
-      placeholder: "イベント開催場所",
-      showLimit: true
-    }
-  ]
-
-  const radioFields = [
-    {
-      label: "性別",
-      options: [
-        { value: "man", label: "男" },
-        { value: "woman", label: "女" },
-        { value: "mix", label: "男女" },
-        { value: "man_and_woman", label: "混合" },
-      ],
-      selected: sex,
-      setSelected: setSex,
-    },
-  ]
+  const { sportsDisciplines, errors: disciplineErrors } = useFetchDisciplines(sportsTypeSelected)
 
   const SHOW_LIMIT_THRESHOLD = 5
   const MAX_LENGTH = 255
+
+  const handleSportsTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = sportsTypes.find(s => s.id.toString() === e.target.value) || null
+    setSportsTypeSelected(selected)
+  }
+
+  const handleMultiSelectChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    options: SelectOption[],
+    setSelected: React.Dispatch<React.SetStateAction<SelectOption[]>>
+  ) => {
+    const selectedIds = Array.from(e.target.selectedOptions).map(opt => opt.value)
+    const selectedOptions = options.filter(opt => selectedIds.includes(opt.id.toString()))
+    setSelected(selectedOptions)
+  }
+
+  const handlePrefectureChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPrefectureSelected(e.target.value)
+  }
+
+  const handleInputChange = (
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setter(e.target.value);
+  }
+
+  const handleSexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSex(e.target.value)
+  }
+
+  const formatSelectedNames = (selected: SelectOption[]) => {
+    if (selected.length === 0) return null
+  
+    return (
+      <div className="mt-2 py-2 px-3 border-2 border-gray-200 rounded-lg bg-white text-gray-700">
+        {selected.map((s) => s.name).join(", ")}
+      </div>
+    )
+  }
+
+  const renderErrorList = (errors: string[]) => {
+    if (errors.length === 0) return null
+  
+    return (
+      <div className="text-red-500 text-sm mt-2 px-4">
+        {errors.map((error, index) => (
+          <li key={index}>{error}</li>
+        ))}
+      </div>
+    )
+  }
+
+  const FormItem = ({ children }: { children: React.ReactNode }) => (
+    <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+      <div className="md:col-span-12 md:ml-2 md:mr-4">
+        {children}
+      </div>
+    </li>
+  )
 
   return (
     <div className="flex items-center justify-center mt-32 md:mt-20">
       <div className="w-full md:w-3/5 xl:w-2/5 shadow-gray-200 bg-sky-100 rounded-lg">
         <h2 className="text-center mb-10 pt-10 font-bold text-3xl text-blue-600">イベント設定</h2>
-        <form className="px-4 md:px-0 text-center" onSubmit={(e) => e.preventDefault()}>
+        <form className="px-4 md:px-0 text-center">
           <ul className="space-y-4 text-left">
-            {selectFields.map(({ label, options, selected, setSelected, isMultiple = false, show = true }, index) =>
-              show ? (
-                <li key={index} className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
-                  <label className="md:col-span-4 px-3 py-2">{label}</label>
-                  <div className="md:col-span-8">
-                    <select
-                      multiple={isMultiple}
-                      value={
-                        isMultiple
-                          ? (selected as SelectOption[]).map((s) => s.id.toString())
-                          : (selected as SelectOption)?.id?.toString() || ""
-                      }
-                      onChange={(e) => {
-                        if (isMultiple) {
-                          const selectedIds = Array.from(e.target.selectedOptions).map((opt) => opt.value)
-                          const filtered = (options as SelectOption[]).filter((opt) =>
-                            selectedIds.includes(opt.id.toString())
-                          )
-                          setSelected(filtered)
-                        } else {
-                          const option = (options as SelectOption[]).find(
-                            (opt) => opt.id.toString() === e.target.value
-                          ) || null
-                          setSelected(option)
-                        }
-                      }}
-                      className="w-full py-2 px-3 border-2 border-gray-200 rounded-lg"
-                    >
-                      {!isMultiple && <option value="">{label}</option>}
-                      {options.map((opt) => (
-                        <option key={opt.id} value={opt.id.toString()}>{opt.name}</option>
-                      ))}
-                    </select>
-                    {isMultiple && (selected as SelectOption[]).length > 0 && (
-                      <div className="mt-2 py-2 px-3 border-2 border-gray-200 rounded-lg bg-white text-gray-700">
-                        {(selected as SelectOption[]).map((s) => s.name).join(", ")}
-                      </div>
-                    )}
-                  </div>
-                </li>
-              ) : null
+
+            {/* 競技種別 */}
+            <FormItem>
+              <SelectField
+                label="競技名"
+                className="w-full py-2 px-3 border-2 border-gray-200 rounded-lg"
+                value={sportsTypeSelected ? sportsTypeSelected.id : ""}
+                onChange={handleSportsTypeChange}
+                options={sportsTypes}
+              />
+            </FormItem>
+
+            {/* 種目 */}
+            {sportsDisciplines.length > 0 && (
+              <FormItem>
+                <SelectField
+                  multiple
+                  label={
+                    <>
+                      種目
+                      <br />
+                      （複数可）
+                    </>
+                  }
+                  className="w-full py-2 px-3 border-2 border-gray-200 rounded-lg"
+                  value={sportsDisciplineSelected.map(d => d.id.toString())}
+                  onChange={(e) => handleMultiSelectChange(e, sportsDisciplines, setSportsDisciplineSelected)}
+                  options={sportsDisciplines}
+                />
+                {formatSelectedNames(sportsDisciplineSelected)}
+              </FormItem>
             )}
 
-            {inputFields.map(({ label, type, value, onChange, placeholder, showLimit }, index) => (
-              <li key={index} className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
-                <label className="md:col-span-4 px-3 py-2">{label}</label>
-                <div className="md:col-span-8">
-                  {type === "textarea" ? (
-                    <textarea
-                      value={value}
-                      onChange={onChange}
-                      placeholder={placeholder}
-                      className="w-full h-32 py-2 px-3 border-2 border-gray-200 rounded-lg"
-                    />
-                  ) : (
-                    <input
-                      type={type}
-                      value={value}
-                      onChange={onChange}
-                      placeholder={placeholder}
-                      className="w-full py-2 px-3 border-2 border-gray-200 rounded-lg"
-                    />
-                  )}
-                  {showLimit && remainingCharacters(value) <= SHOW_LIMIT_THRESHOLD && (
-                    <div className="text-red-500 text-sm">{label}はあと{remainingCharacters(value)}文字までです。</div>
-                  )}
-                </div>
-              </li>
-            ))}
+            {/* 都道府県 */}
+            <FormItem>
+              <SelectField
+                label="都道府県"
+                className="w-full py-2 px-3 border-2 border-gray-200 rounded-lg"
+                value={prefectureSelected ? prefectureSelected : ""}
+                onChange={handlePrefectureChange}
+                options={prefectures}
+              />
+            </FormItem>
 
-            {radioFields.map(({ label, options, selected, setSelected }, index) => (
-              <li key={index} className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
-                <label className="md:col-span-4 px-3 py-2">{label}</label>
-                <div className="md:col-span-8 grid grid-cols-4 gap-2">
-                  {options.map((opt) => (
-                    <label key={opt.value}>
-                      <input
-                        type="radio"
-                        value={opt.value}
-                        checked={selected === opt.value}
-                        onChange={(e) => setSelected(e.target.value)}
-                        className="mr-1"
-                      />
-                      {opt.label}
-                    </label>
-                  ))}
-                </div>
-              </li>
-            ))}
+            {/* 対象年齢 */}
+            <FormItem>
+              <SelectField
+                multiple
+                label={
+                  <>
+                    対象年齢
+                    <br />
+                    （複数可）
+                  </>
+                }
+                className="w-full py-2 px-3 border-2 border-gray-200 rounded-lg"
+                value={targetAgeSelected.map(age => age.id.toString())}
+                onChange={(e) => handleMultiSelectChange(e, targetAges, setTargetAgeSelected)}
+                options={targetAges}
+              />
+              {formatSelectedNames(targetAgeSelected)}
+            </FormItem>
+
+            {/* イベント名 */}
+            <FormItem>
+              <InputField
+                type="text"
+                label="イベント名"
+                placeholder="イベント名"
+                className="w-full py-2 px-3 border-2 border-gray-200 rounded-lg"
+                value={eventName}
+                onChange={handleInputChange(setEventName)}
+              />
+              {remainingCharacters(eventName) <= SHOW_LIMIT_THRESHOLD && (
+                <div className="text-red-500 text-sm">イベント名はあと{remainingCharacters(eventName)}文字までです。</div>
+              )}
+            </FormItem>
+
+            {/* イベントURL */}
+            <FormItem>
+              <InputField
+                type="url"
+                label="イベントURL"
+                placeholder="https://www.example.com"
+                className="w-full py-2 px-3 border-2 border-gray-200 rounded-lg"
+                value={eventUrl}
+                onChange={handleInputChange(setEventUrl)}
+              />
+            </FormItem>
+
+            {/* イベント開催場所 */}
+            <FormItem>
+              <TextareaField
+                label="イベント開催場所"
+                placeholder="イベント開催場所"
+                className="w-full py-2 px-3 border-2 border-gray-200 rounded-lg"
+                value={area}
+                onChange={handleInputChange(setArea)}
+                rows={4}
+              />
+              {remainingCharacters(area) <= SHOW_LIMIT_THRESHOLD && (
+                <div className="text-red-500 text-sm">地域はあと{remainingCharacters(area)}文字までです。</div>
+              )}
+            </FormItem>
+
+            {/* 性別 */}
+            <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <div className="md:col-span-4 md:ml-7 px-3 py-2 w-40 text-sm">性別</div>
+              <div className="md:col-span-8 md:-ml-12 ml-3 grid grid-cols-4 gap-2">
+                {[
+                  { label: "男", value: "man" },
+                  { label: "女", value: "woman" },
+                  { label: "男女", value: "mix" },
+                  { label: "混合", value: "man_and_woman" }
+                ].map((option) => (
+                  <div key={option.value}>
+                    <input
+                      type="radio"
+                      value={option.value}
+                      checked={sex === option.value}
+                      onChange={handleSexChange}
+                      className="mr-1"
+                    />
+                    {option.label}
+                  </div>
+                ))}
+              </div>
+            </li>
           </ul>
         </form>
-
-        {errors.length > 0 && (
-          <div className="text-red-500 text-sm mt-2">
-            {errors.map((error, index) => (
-              <li key={index}>{error}</li>
-            ))}
-          </div>
-        )}
+        {renderErrorList([...initialErrors, ...disciplineErrors])}
       </div>
     </div>
   )
