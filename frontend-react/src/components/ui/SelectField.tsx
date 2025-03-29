@@ -48,7 +48,7 @@ export default function SelectField({
         value={value}
         onChange={onChange}
         multiple={multiple}
-        className={`w-full py-3 px-1.5 my-2 border-2 border-gray-200 ${className}`}
+        className={`w-full py-3 px-1.5 my-2 border-2 border-gray-200 rounded-lg ${className}`}
       >
         {renderPlaceholderOption(multiple, placeholder)}
         {renderOptions(options)}
