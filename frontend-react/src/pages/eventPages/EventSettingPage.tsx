@@ -5,6 +5,8 @@ import TextareaField from "@/components/ui/TextareaField"
 import SelectField from "@/components/ui/SelectField"
 import useInitialFormData from "@/hooks/search/useInitialFormData"
 import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
+import useEventSubmit from "@/hooks/useEventSubmit"
+import Button from "@/components/ui/Button"
 
 export default function EventSettingPage() {
   const [sportsTypeSelected, setSportsTypeSelected] = useState<SelectOption | null>(null)
@@ -20,7 +22,6 @@ export default function EventSettingPage() {
   const [number, setNumber] = useState("")
   const [purposeBody, setPurposeBody] = useState("")
   const [otherBody, setOtherBody] = useState("")
-  const [errors, setErrors] = useState<string[]>([])
 
   const {
     sportsTypes,
@@ -74,6 +75,8 @@ export default function EventSettingPage() {
     )
   }
 
+  const { handleSubmit, submitState } = useEventSubmit()
+
   const renderErrorList = (errors: string[]) => {
     if (errors.length === 0) return null
   
@@ -86,101 +89,18 @@ export default function EventSettingPage() {
     )
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    const disciplineIds = sportsDisciplineSelected.map(d => d.id)
-    const targetAgeIds = targetAgeSelected.map(t => t.id)
-
-    const newErrors: string[] = []
-
-    if (!sportsTypeSelected) {
-      newErrors.push("競技名を選択してください。")
-    }
-
-    if (sportsTypeSelected && disciplineIds.length === 0) {
-      newErrors.push("種目名を選択してください。")
-    }
-
-    if (!prefectureSelected) {
-      newErrors.push("都道府県を選択してください。")
-    }
-
-    if (targetAgeIds.length === 0) {
-      newErrors.push("対象年齢を選択してください。")
-    }
-
-    if (!eventName.trim()) {
-      newErrors.push("イベント名を入力してください。")
-    }
-
-    if (!area.trim()) {
-      newErrors.push("イベント開催場所を入力してください。")
-    }
-
-    if (!sex.trim()) {
-      newErrors.push("性別を選択してください。")
-    }
-
-    if (!number.trim()) {
-      newErrors.push("募集チーム数を入力してください。")
-    }
-
-    if (!purposeBody.trim()) {
-      newErrors.push("イベント目的を入力してください。")
-    }
-
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-  
-    const selectedStartDate = new Date(startDate)
-    const selectedEndDate = new Date(endDate)
-  
-    if (selectedStartDate < today) {
-      newErrors.push("開始日は今日以降の日付を選択してください。")
-    }
-  
-    if (selectedEndDate < today) {
-      newErrors.push("今日以降の終了日付を選択してください。")
-    }
-  
-    if (newErrors.length > 0) {
-      setErrors(newErrors)
-      return
-    }
-
-    const payload = {
-      image: eventUrl,
-      name: eventName,
-      area,
-      sex,
-      number,
-      start_date: startDate,
-      end_date: endDate,
-      purpose_body: purposeBody,
-      other_body: otherBody,
-      sports_type_id: sportsTypeSelected?.id,
-      sports_discipline_ids: disciplineIds,
-      prefecture_id: prefectureSelected,
-      target_age_ids: targetAgeIds,
-    }
-    setErrors([])
-    console.log("送信データ:", payload)
-  
-    // TODO: 後続PRで実装する（API 送信など）
-  }
-  
   return (
     <div className="flex items-center justify-center mt-32 md:mt-20">
       <div className="w-full md:w-3/5 xl:w-2/5 shadow-gray-200 bg-sky-100 rounded-lg">
         <h2 className="text-center mb-10 pt-10 font-bold text-3xl text-blue-600">イベント設定</h2>
-        <form className="px-4 md:px-0 text-center" onSubmit={handleSubmit}>
+        <form className="px-4 md:px-0 text-center" action={handleSubmit}>
           <ul className="space-y-4 text-left">
 
             {/* 競技種別 */}
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <SelectField
+                  name="eventSportsType"
                   label="競技名"
                   value={sportsTypeSelected ? sportsTypeSelected.id : ""}
                   onChange={handleSportsTypeChange}
@@ -194,6 +114,7 @@ export default function EventSettingPage() {
               <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
                 <div className="md:col-span-12 md:ml-2 md:mr-4">
                   <SelectField
+                    name="eventSportsDiscipline"
                     multiple
                     label={
                       <>
@@ -215,6 +136,7 @@ export default function EventSettingPage() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <SelectField
+                  name="eventPrefecture"
                   label="都道府県"
                   value={prefectureSelected ? prefectureSelected : ""}
                   onChange={handlePrefectureChange}
@@ -227,6 +149,7 @@ export default function EventSettingPage() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <SelectField
+                  name="eventTargetAge"
                   multiple
                   label={
                     <>
@@ -247,6 +170,7 @@ export default function EventSettingPage() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <InputField
+                  name="eventName"
                   type="text"
                   label="イベント名"
                   placeholder="イベント名"
@@ -263,6 +187,7 @@ export default function EventSettingPage() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <InputField
+                  name="eventURL"
                   type="url"
                   label="イベントURL"
                   placeholder="https://www.example.com"
@@ -276,6 +201,7 @@ export default function EventSettingPage() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <TextareaField
+                  name="eventArea"
                   label="イベント開催場所"
                   placeholder="イベント開催場所"
                   value={area}
@@ -300,6 +226,7 @@ export default function EventSettingPage() {
                 ].map((option) => (
                   <div key={option.value}>
                     <input
+                      name="eventSex"
                       type="radio"
                       value={option.value}
                       checked={sex === option.value}
@@ -316,6 +243,7 @@ export default function EventSettingPage() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <InputField
+                  name="eventStartDate"
                   type="date"
                   label="開始日付"
                   value={startDate}
@@ -329,6 +257,7 @@ export default function EventSettingPage() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <InputField
+                  name="eventEndDate"
                   type="date"
                   label="終了日付"
                   value={endDate}
@@ -341,6 +270,7 @@ export default function EventSettingPage() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <InputField
+                  name="eventNumber"
                   type="number"
                   label="募集チーム数"
                   placeholder="募集チーム数"
@@ -354,6 +284,7 @@ export default function EventSettingPage() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <TextareaField
+                  name="eventPurposeBody"
                   label="イベント目的"
                   placeholder="イベント目的"
                   value={purposeBody}
@@ -367,6 +298,7 @@ export default function EventSettingPage() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <TextareaField
+                  name="eventOtherBody"
                   label="その他"
                   placeholder="その他"
                   value={otherBody}
@@ -376,10 +308,10 @@ export default function EventSettingPage() {
               </div>
             </li>
           </ul>
-          {renderErrorList([...initialErrors, ...disciplineErrors, ...errors])}
+          {renderErrorList([...initialErrors, ...disciplineErrors, ...submitState.errors])}
           {/* 登録ボタン */}
           <div className="text-center mb-5">
-            <button className="btn-ok my-4 md:mb-0 md:mr-4">登録する</button>
+            <Button variant="ok" className="my-4 md:mb-0 md:mr-4">登録する</Button>
           </div>
         </form>
       </div>

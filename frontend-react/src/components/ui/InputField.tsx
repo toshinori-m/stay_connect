@@ -1,8 +1,9 @@
-import { ReactNode } from "react"
+import { ReactNode, HTMLInputTypeAttribute } from "react"
 
 interface InputFieldProps {
+  name?: string,
   label: ReactNode
-  type?: "text" | "email" | "password" | "url" | "radio" | "date" | "number" | "text"
+  type?: HTMLInputTypeAttribute
   placeholder?: string
   value: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -11,7 +12,8 @@ interface InputFieldProps {
   min?: string
 }
 
-export default function InputField({ 
+export default function InputField({
+  name,
   label,
   type,
   placeholder = "",
@@ -26,6 +28,7 @@ export default function InputField({
       <p className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm">{label}</p>
       <input
         className={`w-full py-3 px-1.5 my-2 border-2 border-gray-200 rounded-lg ${className}`}
+        name={name}
         type={type}
         placeholder={placeholder}
         value={value}
