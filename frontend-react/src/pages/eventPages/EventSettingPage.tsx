@@ -311,7 +311,7 @@ export default function EventSettingPage() {
           {renderErrorList([...initialErrors, ...disciplineErrors, ...submitState.errors])}
           {/* 登録ボタン */}
           <div className="text-center mb-5">
-            <Button variant="ok" className="my-4 md:mb-0 md:mr-4">登録する</Button>
+            <Button variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">登録する</Button>
           </div>
         </form>
       </div>

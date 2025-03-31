@@ -2,18 +2,23 @@ import React from "react"
 import clsx from "clsx"
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "signup" | "ok" | "login"
+  variant?: "primary" | "ghost"
+  size?: "lg" | "sm"
 }
 
-export default function Button({ variant = "ok", className, children, ...props }: ButtonProps) {
-  const baseClass = {
-    signup: "btn-signup",
-    ok: "btn-ok",
-    login: "btn-login",
+export default function Button({ variant = "primary", size = "sm", className, children, ...props }: ButtonProps) {
+  const variantClass = {
+    primary: "btn-primary",
+    ghost: "btn-ghost",
   }[variant]
 
+  const sizeClass = {
+    lg: "btn-lg",
+    sm: "btn-sm",
+  }[size]
+
   return (
-    <button className={clsx(baseClass, className)} {...props}>
+    <button className={clsx("btn", variantClass, sizeClass, className)} {...props}>
       {children}
     </button>
   )

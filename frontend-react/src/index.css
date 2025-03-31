@@ -7,43 +7,36 @@ body {
 }
 
 @layer components {
-  /* 追加: 共通のボタンスタイル */
+  /* ボタンのサイズ */
   .btn {
     @apply border-0 text-center rounded-lg cursor-pointer;
   }
-  /* Sign Up ボタン（大） */
-  .btn-signup {
-    @apply btn px-16 py-5 text-lg text-white bg-blue-700 leading-[2] 
+  
+  .btn-lg {
+    @apply px-16 py-5 text-lg leading-[2];
+  }
+  .btn-sm {
+    @apply px-5 py-1 text-base leading-[2];
+  }
+
+  /* 色・役割 */
+  .btn-primary {
+    @apply text-white bg-blue-700 
            shadow-[inset_2px_2px_3px_rgba(255,255,255,0.6),inset_-2px_-2px_3px_rgba(0,0,0,0.6)];
   }
-  .btn-signup:hover {
+  .btn-primary:hover {
     @apply bg-blue-500;
   }
-  .btn-signup:active {
+  .btn-primary:active {
     @apply shadow-[inset_-2px_-2px_3px_rgba(255,255,255,0.6),inset_2px_2px_3px_rgba(0,0,0,0.6)];
   }
-
-  /* Sign Up ボタン（小） */
-  .btn-ok {
-    @apply btn px-5 py-1 text-base text-white bg-blue-700 leading-[2]
+  
+  .btn-ghost {
+    @apply text-black bg-white 
            shadow-[inset_2px_2px_3px_rgba(255,255,255,0.6),inset_-2px_-2px_3px_rgba(0,0,0,0.6)];
   }
-  .btn-ok:hover {
-    @apply bg-blue-500  text-white;
-  }
-  .btn-ok:active {
-    @apply shadow-[inset_-2px_-2px_3px_rgba(255,255,255,0.6),inset_2px_2px_3px_rgba(0,0,0,0.6)];
-  }
-
-  /* Login ボタン */
-  .btn-login {
-    @apply btn px-5 py-1 text-base text-black bg-white leading-[2]
-           shadow-[inset_2px_2px_3px_rgba(255,255,255,0.6),inset_-2px_-2px_3px_rgba(0,0,0,0.6)];
-  }
-  .btn-login:hover {
+  .btn-ghost:hover {
     @apply bg-gray-500 text-white;
   }
-  .btn-login:active {
-    @apply shadow-[inset_-2px_-2px_3px_rgba(255,255,255,0.6),inset_2px_2px_3px_rgba(0,0,0,0.6)];
-  }
+    
 }
