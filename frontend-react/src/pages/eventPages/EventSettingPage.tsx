@@ -5,7 +5,7 @@ import TextareaField from "@/components/ui/TextareaField"
 import SelectField from "@/components/ui/SelectField"
 import useInitialFormData from "@/hooks/search/useInitialFormData"
 import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
-import useEventSubmit from "@/hooks/useEventSubmit"
+import { useActionState } from "react"
 import Button from "@/components/ui/Button"
 
 export default function EventSettingPage() {
@@ -75,7 +75,59 @@ export default function EventSettingPage() {
     )
   }
 
-  const { handleSubmit, submitState } = useEventSubmit()
+  const [submitState, handleSubmit] = useActionState(
+    async () => {
+      const newErrors: string[] = []
+  
+      const disciplineIds = sportsDisciplineSelected.map(d => d.id)
+      const targetAgeIds = targetAgeSelected.map(t => t.id)
+  
+      if (!sportsTypeSelected) newErrors.push("競技名を選択してください。")
+      if (sportsTypeSelected && disciplineIds.length === 0) newErrors.push("種目名を選択してください。")
+      if (!prefectureSelected) newErrors.push("都道府県を選択してください。")
+      if (targetAgeIds.length === 0) newErrors.push("対象年齢を選択してください。")
+      if (!eventName.trim()) newErrors.push("イベント名を入力してください。")
+      if (!area.trim()) newErrors.push("イベント開催場所を入力してください。")
+      if (!sex.trim()) newErrors.push("性別を選択してください。")
+      if (!number.trim()) newErrors.push("募集チーム数を入力してください。")
+      if (!purposeBody.trim()) newErrors.push("イベント目的を入力してください。")
+  
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const selectedStartDate = new Date(startDate)
+      const selectedEndDate = new Date(endDate)
+  
+      if (selectedStartDate < today) newErrors.push("開始日は今日以降の日付を選択してください。")
+      if (selectedEndDate < today) newErrors.push("今日以降の終了日付を選択してください。")
+  
+      if (newErrors.length > 0) {
+        return { errors: newErrors }
+      }
+  
+      const payload = {
+        image: eventUrl,
+        name: eventName,
+        area,
+        sex,
+        number,
+        start_date: startDate,
+        end_date: endDate,
+        purpose_body: purposeBody,
+        other_body: otherBody,
+        sports_type_id: sportsTypeSelected?.id,
+        sports_discipline_ids: disciplineIds,
+        prefecture_id: prefectureSelected!,
+        target_age_ids: targetAgeIds,
+      }
+  
+      console.log("送信データ:", payload)
+  
+      // TODO: API送信処理
+      return { errors: [] }
+    },
+    { errors: [] }
+  )
+  
 
   const renderErrorList = (errors: string[]) => {
     if (errors.length === 0) return null
