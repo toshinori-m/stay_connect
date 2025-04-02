@@ -3,6 +3,7 @@ import { SelectOption } from "@/types"
 import InputField from "@/components/ui/InputField"
 import TextareaField from "@/components/ui/TextareaField"
 import SelectField from "@/components/ui/SelectField"
+import RadioGroupField from "@/components/ui/RadioGroupField"
 import useInitialFormData from "@/hooks/search/useInitialFormData"
 import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
 import { useActionState } from "react"
@@ -268,26 +269,19 @@ export default function EventSettingPage() {
 
             {/* 性別 */}
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
-              <div className="md:col-span-4 md:ml-7 px-3 py-2 w-40 text-sm">性別</div>
-              <div className="md:col-span-8 md:-ml-12 ml-3 grid grid-cols-4 gap-2">
-                {[
-                  { label: "男", value: "man" },
-                  { label: "女", value: "woman" },
-                  { label: "男女", value: "mix" },
-                  { label: "混合", value: "man_and_woman" }
-                ].map((option) => (
-                  <div key={option.value}>
-                    <input
-                      name="eventSex"
-                      type="radio"
-                      value={option.value}
-                      checked={sex === option.value}
-                      onChange={handleSexChange}
-                      className="mr-1"
-                    />
-                    {option.label}
-                  </div>
-                ))}
+              <div className="md:col-span-12 md:ml-2 md:mr-4">
+                <RadioGroupField
+                  name="eventSex"
+                  label="性別"
+                  options={[
+                    { label: "男", value: "man" },
+                    { label: "女", value: "woman" },
+                    { label: "男女", value: "mix" },
+                    { label: "混合", value: "man_and_woman" }
+                  ]}
+                  selected={sex}
+                  onChange={handleSexChange}
+                />
               </div>
             </li>
 
