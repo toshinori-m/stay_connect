@@ -8,8 +8,14 @@ import useInitialFormData from "@/hooks/search/useInitialFormData"
 import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
 import { useActionState } from "react"
 import Button from "@/components/ui/Button"
+import { useApiClient } from "@/hooks/useApiClient"
+import { useNavigate } from "react-router-dom"
 
 export default function EventSettingPage() {
+
+  const apiClient = useApiClient()
+  const navigate = useNavigate()
+
   const [formState, setFormState] = useState({
     sportsTypeSelected: null as SelectOption | null,
     sportsDisciplineSelected: [] as SelectOption[],
@@ -106,7 +112,7 @@ export default function EventSettingPage() {
 
       // バリデーション
       if (!sportsTypeSelected) newErrors.push("競技名を選択してください。")
-      if (sportsTypeSelected && disciplineIds.length === 0) newErrors.push("種目名を選択してください。")
+      if (sportsTypeSelected && sportsDisciplines.length > 0 && disciplineIds.length === 0) newErrors.push("種目名を選択してください。")
       if (!prefectureSelected) newErrors.push("都道府県を選択してください。")
       if (targetAgeIds.length === 0) newErrors.push("対象年齢を選択してください。")
       if (!eventName?.trim()) newErrors.push("イベント名を入力してください。")
@@ -127,26 +133,32 @@ export default function EventSettingPage() {
         return { errors: newErrors, formData: currentFormState }
       }
 
-      const payload = {
-        image: eventUrl,
-        name: eventName,
-        area,
-        sex,
-        number,
-        start_date: startDate,
-        end_date: endDate,
-        purpose_body: purposeBody,
-        other_body: otherBody,
-        sports_type_id: sportsTypeSelected?.id,
-        sports_discipline_ids: disciplineIds,
-        prefecture_id: prefectureSelected!,
-        target_age_ids: targetAgeIds,
+      try {
+        await apiClient.post("/recruitments", {
+          recruitment: {
+            image: eventUrl,
+            name: eventName,
+            area,
+            sex,
+            number,
+            start_date: startDate,
+            end_date: endDate,
+            purpose_body: purposeBody,
+            other_body: otherBody,
+            sports_type_id: sportsTypeSelected?.id,
+            sports_discipline_ids: disciplineIds,
+            prefecture_id: prefectureSelected,
+            target_age_ids: targetAgeIds,
+          }
+        })
+        navigate("/home")
+        return { errors: [], formData: null }
+      } catch {
+        return {
+          errors: ["イベント登録に失敗しました。入力を確認してください。"],
+          formData: currentFormState
+        }
       }
-
-      console.log("送信データ:", payload)
-
-      // TODO: API送信処理
-      return { errors: [], formData: null }
     },
     { errors: [], formData: null }
   )
