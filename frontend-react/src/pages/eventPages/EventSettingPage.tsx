@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { SelectOption } from "@/types"
 import InputField from "@/components/ui/InputField"
 import TextareaField from "@/components/ui/TextareaField"
@@ -10,19 +10,21 @@ import { useActionState } from "react"
 import Button from "@/components/ui/Button"
 
 export default function EventSettingPage() {
-  const [sportsTypeSelected, setSportsTypeSelected] = useState<SelectOption | null>(null)
-  const [sportsDisciplineSelected, setSportsDisciplineSelected] = useState<SelectOption[]>([])
-  const [targetAgeSelected, setTargetAgeSelected] = useState<SelectOption[]>([])
-  const [prefectureSelected, setPrefectureSelected] = useState<string | null>(null)
-  const [eventName, setEventName] = useState("")
-  const [eventUrl, setEventUrl] = useState("")
-  const [area, setArea] = useState("")
-  const [sex, setSex] = useState("")
-  const [startDate, setStartDate] = useState("2023-01-01")
-  const [endDate, setEndDate] = useState("2023-01-01")
-  const [number, setNumber] = useState("")
-  const [purposeBody, setPurposeBody] = useState("")
-  const [otherBody, setOtherBody] = useState("")
+  const [formState, setFormState] = useState({
+    sportsTypeSelected: null as SelectOption | null,
+    sportsDisciplineSelected: [] as SelectOption[],
+    targetAgeSelected: [] as SelectOption[],
+    prefectureSelected: null as string | null,
+    eventName: "",
+    eventUrl: "",
+    area: "",
+    sex: "",
+    startDate: "2023-01-01",
+    endDate: "2023-01-01",
+    number: "",
+    purposeBody: "",
+    otherBody: "",
+  })
 
   const {
     sportsTypes,
@@ -31,39 +33,43 @@ export default function EventSettingPage() {
     errors: initialErrors,
   } = useInitialFormData()
 
-  const { sportsDisciplines, errors: disciplineErrors } = useFetchDisciplines(sportsTypeSelected)
+  const { sportsDisciplines, errors: disciplineErrors } = useFetchDisciplines(formState.sportsTypeSelected)
 
   const SHOW_LIMIT_THRESHOLD = 5
   const MAX_LENGTH = 255
   const remainingCharacters = (input: string) => MAX_LENGTH - input.length
 
+  const updateFormState = (field: string, value: unknown) => {
+    setFormState(prev => ({ ...prev, [field]: value }))
+  }
+
   const handleSportsTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = sportsTypes.find(s => s.id.toString() === e.target.value) || null
-    setSportsTypeSelected(selected)
+    updateFormState('sportsTypeSelected', selected)
+    // Reset disciplines when sports type changes
+    updateFormState('sportsDisciplineSelected', [])
   }
 
   const handleMultiSelectChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
     options: SelectOption[],
-    setSelected: React.Dispatch<React.SetStateAction<SelectOption[]>>
+    field: string
   ) => {
     const selectedIds = Array.from(e.target.selectedOptions).map(opt => opt.value)
     const selectedOptions = options.filter(opt => selectedIds.includes(opt.id.toString()))
-    setSelected(selectedOptions)
+    updateFormState(field, selectedOptions)
   }
 
   const handlePrefectureChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setPrefectureSelected(e.target.value)
+    updateFormState('prefectureSelected', e.target.value)
   }
 
-  const handleInputChange = (
-    setter: React.Dispatch<React.SetStateAction<string>>
-  ) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setter(e.target.value);
+  const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    updateFormState(field, e.target.value)
   }
 
   const handleSexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSex(e.target.value)
+    updateFormState('sex', e.target.value)
   }
 
   const formatSelectedNames = (selected: SelectOption[]) => {
@@ -76,35 +82,51 @@ export default function EventSettingPage() {
     )
   }
 
-  const [submitState, handleSubmit] = useActionState(
-    async () => {
+  const [actionState, action] = useActionState(
+    async (_prevState:  { errors: string[] }, formData: FormData) => {
       const newErrors: string[] = []
-  
-      const disciplineIds = sportsDisciplineSelected.map(d => d.id)
-      const targetAgeIds = targetAgeSelected.map(t => t.id)
-  
+      const currentFormState = { ...formState }
+      
+      // FormDataから値を取得
+      const eventName = formData.get('eventName') as string
+      const eventUrl = formData.get('eventURL') as string
+      const area = formData.get('eventArea') as string
+      const sex = formData.get('eventSex') as string
+      const startDate = formData.get('eventStartDate') as string
+      const endDate = formData.get('eventEndDate') as string
+      const number = formData.get('eventNumber') as string
+      const purposeBody = formData.get('eventPurposeBody') as string
+      const otherBody = formData.get('eventOtherBody') as string
+
+      // 選択項目は状態から取得
+      const sportsTypeSelected = formState.sportsTypeSelected
+      const disciplineIds = formState.sportsDisciplineSelected.map(d => d.id)
+      const targetAgeIds = formState.targetAgeSelected.map(t => t.id)
+      const prefectureSelected = formState.prefectureSelected
+
+      // バリデーション
       if (!sportsTypeSelected) newErrors.push("競技名を選択してください。")
       if (sportsTypeSelected && disciplineIds.length === 0) newErrors.push("種目名を選択してください。")
       if (!prefectureSelected) newErrors.push("都道府県を選択してください。")
       if (targetAgeIds.length === 0) newErrors.push("対象年齢を選択してください。")
-      if (!eventName.trim()) newErrors.push("イベント名を入力してください。")
-      if (!area.trim()) newErrors.push("イベント開催場所を入力してください。")
-      if (!sex.trim()) newErrors.push("性別を選択してください。")
-      if (!number.trim()) newErrors.push("募集チーム数を入力してください。")
-      if (!purposeBody.trim()) newErrors.push("イベント目的を入力してください。")
-  
+      if (!eventName?.trim()) newErrors.push("イベント名を入力してください。")
+      if (!area?.trim()) newErrors.push("イベント開催場所を入力してください。")
+      if (!sex?.trim()) newErrors.push("性別を選択してください。")
+      if (!number?.trim()) newErrors.push("募集チーム数を入力してください。")
+      if (!purposeBody?.trim()) newErrors.push("イベント目的を入力してください。")
+
       const today = new Date()
       today.setHours(0, 0, 0, 0)
       const selectedStartDate = new Date(startDate)
       const selectedEndDate = new Date(endDate)
-  
+
       if (selectedStartDate < today) newErrors.push("開始日は今日以降の日付を選択してください。")
       if (selectedEndDate < today) newErrors.push("今日以降の終了日付を選択してください。")
-  
+
       if (newErrors.length > 0) {
-        return { errors: newErrors }
+        return { errors: newErrors, formData: currentFormState }
       }
-  
+
       const payload = {
         image: eventUrl,
         name: eventName,
@@ -120,16 +142,15 @@ export default function EventSettingPage() {
         prefecture_id: prefectureSelected!,
         target_age_ids: targetAgeIds,
       }
-  
+
       console.log("送信データ:", payload)
-  
+
       // TODO: API送信処理
-      return { errors: [] }
+      return { errors: [], formData: null }
     },
-    { errors: [] }
+    { errors: [], formData: null }
   )
   
-
   const renderErrorList = (errors: string[]) => {
     if (errors.length === 0) return null
   
@@ -142,11 +163,17 @@ export default function EventSettingPage() {
     )
   }
 
+  useEffect(() => {
+    if (actionState.formData) {
+      setFormState(actionState.formData)
+    }
+  }, [actionState.formData])
+
   return (
     <div className="flex items-center justify-center mt-32 md:mt-20">
       <div className="w-full md:w-3/5 xl:w-2/5 shadow-gray-200 bg-sky-100 rounded-lg">
         <h2 className="text-center mb-10 pt-10 font-bold text-3xl text-blue-600">イベント設定</h2>
-        <form className="px-4 md:px-0 text-center" action={handleSubmit}>
+        <form className="px-4 md:px-0 text-center" action={action}>
           <ul className="space-y-4 text-left">
 
             {/* 競技種別 */}
@@ -155,7 +182,7 @@ export default function EventSettingPage() {
                 <SelectField
                   name="eventSportsType"
                   label="競技名"
-                  value={sportsTypeSelected ? sportsTypeSelected.id : ""}
+                  value={formState.sportsTypeSelected ? formState.sportsTypeSelected.id : ""}
                   onChange={handleSportsTypeChange}
                   options={sportsTypes}
                 />
@@ -176,11 +203,11 @@ export default function EventSettingPage() {
                         （複数可）
                       </>
                     }
-                    value={sportsDisciplineSelected.map(d => d.id.toString())}
-                    onChange={(e) => handleMultiSelectChange(e, sportsDisciplines, setSportsDisciplineSelected)}
+                    value={formState.sportsDisciplineSelected.map(d => d.id.toString())}
+                    onChange={(e) => handleMultiSelectChange(e, sportsDisciplines, 'sportsDisciplineSelected')}
                     options={sportsDisciplines}
                   />
-                  {formatSelectedNames(sportsDisciplineSelected)}
+                  {formatSelectedNames(formState.sportsDisciplineSelected)}
                 </div>
               </li>
             )}
@@ -191,7 +218,7 @@ export default function EventSettingPage() {
                 <SelectField
                   name="eventPrefecture"
                   label="都道府県"
-                  value={prefectureSelected ? prefectureSelected : ""}
+                  value={formState.prefectureSelected ? formState.prefectureSelected : ""}
                   onChange={handlePrefectureChange}
                   options={prefectures}
                 />
@@ -211,11 +238,11 @@ export default function EventSettingPage() {
                       （複数可）
                     </>
                   }
-                  value={targetAgeSelected.map(age => age.id.toString())}
-                  onChange={(e) => handleMultiSelectChange(e, targetAges, setTargetAgeSelected)}
+                  value={formState.targetAgeSelected.map(age => age.id.toString())}
+                  onChange={(e) => handleMultiSelectChange(e, targetAges, 'targetAgeSelected')}
                   options={targetAges}
                 />
-                {formatSelectedNames(targetAgeSelected)}
+                {formatSelectedNames(formState.targetAgeSelected)}
               </div>
             </li>
 
@@ -227,11 +254,11 @@ export default function EventSettingPage() {
                   type="text"
                   label="イベント名"
                   placeholder="イベント名"
-                  value={eventName}
-                  onChange={handleInputChange(setEventName)}
+                  value={formState.eventName}
+                  onChange={handleInputChange('eventName')}
                 />
-                {remainingCharacters(eventName) <= SHOW_LIMIT_THRESHOLD && (
-                  <div className="text-red-500 text-sm">イベント名はあと{remainingCharacters(eventName)}文字までです。</div>
+                {remainingCharacters(formState.eventName) <= SHOW_LIMIT_THRESHOLD && (
+                  <div className="text-red-500 text-sm">イベント名はあと{remainingCharacters(formState.eventName)}文字までです。</div>
                 )}
               </div>
             </li>
@@ -244,8 +271,8 @@ export default function EventSettingPage() {
                   type="url"
                   label="イベントURL"
                   placeholder="https://www.example.com"
-                  value={eventUrl}
-                  onChange={handleInputChange(setEventUrl)}
+                  value={formState.eventUrl}
+                  onChange={handleInputChange('eventUrl')}
                 />
               </div>
             </li>
@@ -257,12 +284,12 @@ export default function EventSettingPage() {
                   name="eventArea"
                   label="イベント開催場所"
                   placeholder="イベント開催場所"
-                  value={area}
-                  onChange={handleInputChange(setArea)}
+                  value={formState.area}
+                  onChange={handleInputChange('area')}
                   rows={4}
                 />
-                {remainingCharacters(area) <= SHOW_LIMIT_THRESHOLD && (
-                  <div className="text-red-500 text-sm">地域はあと{remainingCharacters(area)}文字までです。</div>
+                {remainingCharacters(formState.area) <= SHOW_LIMIT_THRESHOLD && (
+                  <div className="text-red-500 text-sm">地域はあと{remainingCharacters(formState.area)}文字までです。</div>
                 )}
               </div>
             </li>
@@ -279,7 +306,7 @@ export default function EventSettingPage() {
                     { label: "男女", value: "mix" },
                     { label: "混合", value: "man_and_woman" }
                   ]}
-                  selected={sex}
+                  selected={formState.sex}
                   onChange={handleSexChange}
                 />
               </div>
@@ -292,8 +319,8 @@ export default function EventSettingPage() {
                   name="eventStartDate"
                   type="date"
                   label="開始日付"
-                  value={startDate}
-                  onChange={handleInputChange(setStartDate)}
+                  value={formState.startDate}
+                  onChange={handleInputChange('startDate')}
                   min={new Date().toISOString().split("T")[0]}
                 />
               </div>
@@ -306,8 +333,8 @@ export default function EventSettingPage() {
                   name="eventEndDate"
                   type="date"
                   label="終了日付"
-                  value={endDate}
-                  onChange={handleInputChange(setEndDate)}
+                  value={formState.endDate}
+                  onChange={handleInputChange('endDate')}
                 />
               </div>
             </li>
@@ -320,8 +347,8 @@ export default function EventSettingPage() {
                   type="number"
                   label="募集チーム数"
                   placeholder="募集チーム数"
-                  value={number}
-                  onChange={handleInputChange(setNumber)}
+                  value={formState.number}
+                  onChange={handleInputChange('number')}
                 />
               </div>
             </li>
@@ -333,8 +360,8 @@ export default function EventSettingPage() {
                   name="eventPurposeBody"
                   label="イベント目的"
                   placeholder="イベント目的"
-                  value={purposeBody}
-                  onChange={handleInputChange(setPurposeBody)}
+                  value={formState.purposeBody}
+                  onChange={handleInputChange('purposeBody')}
                   rows={5}
                 />
               </div>
@@ -347,14 +374,14 @@ export default function EventSettingPage() {
                   name="eventOtherBody"
                   label="その他"
                   placeholder="その他"
-                  value={otherBody}
-                  onChange={handleInputChange(setOtherBody)}
+                  value={formState.otherBody}
+                  onChange={handleInputChange('otherBody')}
                   rows={5}
                 />
               </div>
             </li>
           </ul>
-          {renderErrorList([...initialErrors, ...disciplineErrors, ...submitState.errors])}
+          {renderErrorList([...initialErrors, ...disciplineErrors, ...actionState.errors])}
           {/* 登録ボタン */}
           <div className="text-center mb-5">
             <Button variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">登録する</Button>
