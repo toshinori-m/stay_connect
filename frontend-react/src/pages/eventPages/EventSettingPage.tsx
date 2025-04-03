@@ -39,15 +39,15 @@ export default function EventSettingPage() {
   const MAX_LENGTH = 255
   const remainingCharacters = (input: string) => MAX_LENGTH - input.length
 
-  const updateFormState = (field: string, value: unknown) => {
-    setFormState(prev => ({ ...prev, [field]: value }))
-  }
-
   const handleSportsTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = sportsTypes.find(s => s.id.toString() === e.target.value) || null
     updateFormState('sportsTypeSelected', selected)
     // Reset disciplines when sports type changes
     updateFormState('sportsDisciplineSelected', [])
+  }
+
+  const updateFormState = (field: string, value: unknown) => {
+    setFormState(prev => ({ ...prev, [field]: value }))
   }
 
   const handleMultiSelectChange = (
