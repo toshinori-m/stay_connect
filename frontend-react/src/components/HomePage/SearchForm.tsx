@@ -1,4 +1,5 @@
 import { SelectOption } from "@/types"
+import SelectField from "@/components/ui/SelectField"
 
 interface SearchFormProps {
   sportsTypes: SelectOption[]
@@ -34,12 +35,14 @@ export default function SearchForm ({
   errors
 }: SearchFormProps) {
 
-  const selectFields = [
-    { label: "競技選択", options: sportsTypes, selected: sportsTypeSelected, setSelected: setSportsTypeSelected },
-    { label: "種目選択", options: sportsDisciplines, selected: sportsDisciplineSelected, setSelected: setSportsDisciplineSelected, show: sportsDisciplines.length > 0 },
-    { label: "都道府県選択", options: prefectures, selected: prefecturesSelected, setSelected: setPrefecturesSelected },
-    { label: "対象年齢選択", options: targetAges, selected: targetAgesSelected, setSelected: setTargetAgesSelected }
-  ]
+  const handleSelectChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    options: SelectOption[],
+    setSelected: (option: SelectOption | null) => void
+  ) => {
+    const selected = options.find(opt => opt.id.toString() === e.target.value) || null
+    setSelected(selected)
+  }
 
   return (
     <div className="rounded-lg bg-sky-100 drop-shadow-lg mb-4 md:w-1/4 md:mb-0 pb-3 px-3">
@@ -47,26 +50,49 @@ export default function SearchForm ({
         カテゴリー別検索
       </h2>
       <form onSubmit={(e) => { e.preventDefault(); onSearch(); }} className="my-5 text-center">
-        {selectFields.map(({ label, options, selected, setSelected, show = true }, index) =>
-          show ? (
-            <select
-              key={index}
-              className="ring-offset-2 ring-2 hover:bg-blue-200 my-3 py-2 px-1 rounded-md w-full"
-              value={selected?.id || ""}
-              onChange={(e) => {
-                const selectedOption = options.find((opt) => opt.id === Number(e.target.value)) || null
-                setSelected(selectedOption)
-              }}
-              >
-              <option value="">{label}</option>
-              {options.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.name}
-                </option>
-              ))}
-            </select>
-          ) : null
+
+        {/* 競技選択 */}
+        <SelectField
+          name="eventSportsType"
+          className="ring-offset-2 ring-2 hover:bg-blue-200"
+          value={sportsTypeSelected?.id || ""}
+          onChange={(e) => handleSelectChange(e, sportsTypes, setSportsTypeSelected)}
+          options={[{ id: "" as unknown as number, name: "競技選択" }, ...sportsTypes]}
+          placeholder="競技選択"
+        />
+
+        {/* 種目選択 */}
+        {sportsDisciplines.length > 0 && (
+          <SelectField
+            name="eventSportsDiscipline"
+            className="ring-offset-2 ring-2 hover:bg-blue-200"
+            value={sportsDisciplineSelected?.id || ""}
+            onChange={(e) => handleSelectChange(e, sportsDisciplines, setSportsDisciplineSelected)}
+            options={[{ id: "" as unknown as number, name: "種目選択" }, ...sportsDisciplines]}
+            placeholder="種目選択"
+          />
         )}
+
+        {/* 都道府県選択 */}
+        <SelectField
+          name="eventPrefecture"
+          className="ring-offset-2 ring-2 hover:bg-blue-200"
+          value={prefecturesSelected?.id || ""}
+          onChange={(e) => handleSelectChange(e, prefectures, setPrefecturesSelected)}
+          options={[{ id: "" as unknown as number, name: "都道府県選択" }, ...prefectures]}
+          placeholder="都道府県選択"
+        />
+
+        {/* 対象年齢選択 */}
+        <SelectField
+          name="eventTargetAge"
+          className="ring-offset-2 ring-2 hover:bg-blue-200"
+          value={targetAgesSelected?.id || ""}
+          onChange={(e) => handleSelectChange(e, targetAges, setTargetAgesSelected)}
+          options={[{ id: "" as unknown as number, name: "対象年齢選択" }, ...targetAges]}
+          placeholder="対象年齢選択"
+        />
+
         <button type="submit" className="btn-ok my-4 md:mb-0 md:mr-4 w-full">検索</button>
       </form>
 
