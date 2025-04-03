@@ -10,6 +10,7 @@ import SignupPage from "@/pages/SignupPage"
 import RegisterPage from "@/pages/RegisterPage"
 import HomePage from "@/pages/HomePage"
 import EventSettingPage from "@/pages/eventPages/EventSettingPage"
+import EventSettingListPage from "@/pages/eventPages/EventSettingListPage"
 
 function OpenLayout() {
   return (
@@ -59,6 +60,7 @@ export default function AppRouter() {
         <Route element={<HomeLayout />}>
           <Route path="/home" element={<HomePage />} />
           <Route path="/event_setting" element={<EventSettingPage />} />
+          <Route path="/event_setting_list" element={<EventSettingListPage />} />
         </Route>
       </Route>
     </Routes>

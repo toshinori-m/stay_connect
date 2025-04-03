@@ -29,9 +29,9 @@ class RecruitmentsController < ApplicationController
   end
 
   def destroy
-    recruitment = Recruitment.find(params[:id])
+    recruitment = current_user.recruitments.find(params[:id])
     recruitment.destroy!
-    @recruitments = current_user.recruitment.preload(:sports_disciplines, :target_ages)
+    @recruitments = current_user.recruitments.preload(:sports_disciplines, :target_ages)
   rescue ActiveRecord::RecordNotFound => e
     render json: { error: '対象の募集が見つかりません。' }, status: :not_found
   rescue ActiveRecord::RecordNotDestroyed => e
