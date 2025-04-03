@@ -7,6 +7,11 @@ export default function EventList() {
   const [errors, setErrors] = useState<string[]>([])
   const apiClient = useApiClient()
 
+  useEffect(() => {
+    getRecruitment()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const getRecruitment = async () => {
     setErrors([])
     try {
@@ -16,11 +21,6 @@ export default function EventList() {
       setErrors(["イベントを表示できませんでした。"])
     }
   }
-
-  useEffect(() => {
-    getRecruitment()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   const editRecruitment = () => {
     console.log("イベント編集画面は次のissueで作成予定！") // TODO: 後続タスクで処理を追加
@@ -47,16 +47,16 @@ export default function EventList() {
             </div>
           )}
 
-          {recruitments.map((SelectOption) => (
+          {recruitments.map((recruitment) => (
             <div
-              key={SelectOption.id}
+              key={recruitment.id}
               className="text-left my-3 sm:ml-4 sm:mr-6 w-72 p-4 ring-offset-2 ring-2 rounded-lg break-words"
             >
-              イベント名: {SelectOption.name}
+              イベント名: {recruitment.name}
               <div className="flex justify-center mt-5">
                 {/* TODO: ボタンのデザインについては後続タスクで処理を追加 */}
                 <button className="update_button" onClick={() => editRecruitment()}>更新</button>
-                <button className="delete_button mx-5" onClick={() => deleteRecruitment(SelectOption.id)}>削除</button>
+                <button className="delete_button mx-5" onClick={() => deleteRecruitment(recruitment.id)}>削除</button>
               </div>
             </div>
           ))}
