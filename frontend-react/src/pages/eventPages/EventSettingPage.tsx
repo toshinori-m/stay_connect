@@ -48,7 +48,6 @@ export default function EventSettingPage() {
   const handleSportsTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = sportsTypes.find(s => s.id.toString() === e.target.value) || null
     updateFormState('sportsTypeSelected', selected)
-    // Reset disciplines when sports type changes
     updateFormState('sportsDisciplineSelected', [])
   }
 
@@ -111,8 +110,11 @@ export default function EventSettingPage() {
       const prefectureSelected = formState.prefectureSelected
 
       // バリデーション
-      if (!sportsTypeSelected) newErrors.push("競技名を選択してください。")
-      if (sportsTypeSelected && sportsDisciplines.length > 0 && disciplineIds.length === 0) newErrors.push("種目名を選択してください。")
+      if (!sportsTypeSelected) {
+        newErrors.push("競技名を選択してください。")
+      } else if (sportsDisciplines.length > 0 && disciplineIds.length === 0) {
+        newErrors.push("種目名を選択してください。")
+      }
       if (!prefectureSelected) newErrors.push("都道府県を選択してください。")
       if (targetAgeIds.length === 0) newErrors.push("対象年齢を選択してください。")
       if (!eventName?.trim()) newErrors.push("イベント名を入力してください。")
