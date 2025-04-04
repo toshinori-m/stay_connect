@@ -5,7 +5,7 @@ import { useApiClient } from "@/hooks/useApiClient"
 export default function TeamProfileList() {
   const [teams, setTeams] = useState<SelectOption[]>([])
   const [errors, setErrors] = useState<string[]>([])
-  const maxTeamsAllowed = 5
+  const MAX_TEAM_NUMBER = 5
   const apiClient = useApiClient()
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function TeamProfileList() {
           <button
             className="ml-2 mr-1"
             onClick={createTeamProfile}
-            disabled={teams.length >= maxTeamsAllowed}
+            disabled={teams.length >= MAX_TEAM_NUMBER}
           >
             チーム紹介作成
             <br />
