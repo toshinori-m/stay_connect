@@ -10,6 +10,8 @@ export default function Button({ variant = "primary", size = "sm", className, ch
   const variantClass = {
     primary: "btn-primary",
     ghost: "btn-ghost",
+    yellow: "btn-yellow",
+    red: "btn-red",
   }[variant]
 
   const sizeClass = {

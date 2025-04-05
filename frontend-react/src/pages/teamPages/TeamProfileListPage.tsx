@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { SelectOption } from "@/types"
 import { useApiClient } from "@/hooks/useApiClient"
+import Button from "@/components/ui/Button"
 
 export default function TeamProfileList() {
   const [teams, setTeams] = useState<SelectOption[]>([])
@@ -40,8 +41,9 @@ export default function TeamProfileList() {
       <div className="w-full md:w-3/5 xl:w-2/5 pb-7 shadow-gray-200 bg-sky-100 rounded-lg">
         <h2 className="text-center mb-7 pt-10 font-bold text-3xl text-blue-600">チーム紹介一覧</h2>
         <div className="flex justify-center">
-           {/* TODO: ボタンのデザインについては後続タスクで処理を追加 */}
-          <button
+          <Button
+            variant="primary"
+            size="sm"
             className="ml-2 mr-1"
             onClick={createTeamProfile}
             disabled={teams.length >= MAX_TEAM_NUMBER}
@@ -49,7 +51,7 @@ export default function TeamProfileList() {
             チーム紹介作成
             <br />
             （最大5チームまで）
-          </button>
+          </Button>
         </div>
         <div className="flex flex-col items-center">
           {errors.length > 0 && (
@@ -65,10 +67,8 @@ export default function TeamProfileList() {
               >
                 チーム名: {team.name}
                 <div className="flex justify-center">
-                  {/* TODO: ボタンのデザインについては後続タスクで処理を追加 */}
-                  <button className="" onClick={() => editTeamProfile()}>更新</button>
-                  {/* TODO: ボタンのデザインについては後続タスクで処理を追加 */}
-                  <button className=" mx-5" onClick={() => deleteTeamProfile()}>削除</button>
+                  <Button variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4" onClick={() => editTeamProfile()}>修正</Button>
+                  <Button variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4" onClick={() => deleteTeamProfile()}>削除</Button>
                 </div>
               </div>
             ))}
