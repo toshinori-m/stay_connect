@@ -11,6 +11,7 @@ import RegisterPage from "@/pages/RegisterPage"
 import HomePage from "@/pages/HomePage"
 import EventSettingPage from "@/pages/eventPages/EventSettingPage"
 import EventSettingListPage from "@/pages/eventPages/EventSettingListPage"
+import TeamProfileListPage from "@/pages/teamPages/TeamProfileListPage"
 
 function OpenLayout() {
   return (
@@ -61,6 +62,7 @@ export default function AppRouter() {
           <Route path="/home" element={<HomePage />} />
           <Route path="/event_setting" element={<EventSettingPage />} />
           <Route path="/event_setting_list" element={<EventSettingListPage />} />
+          <Route path="/team_profile_list" element={<TeamProfileListPage />} />
         </Route>
       </Route>
     </Routes>

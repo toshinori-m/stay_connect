@@ -20,6 +20,7 @@ body {
   }
 
   /* 色・役割 */
+    /* Primary button */
   .btn-primary {
     @apply text-white bg-blue-700 
            shadow-[inset_2px_2px_3px_rgba(255,255,255,0.6),inset_-2px_-2px_3px_rgba(0,0,0,0.6)];
@@ -31,6 +32,7 @@ body {
     @apply shadow-[inset_-2px_-2px_3px_rgba(255,255,255,0.6),inset_2px_2px_3px_rgba(0,0,0,0.6)];
   }
   
+    /* Ghost button */
   .btn-ghost {
     @apply text-black bg-white 
            shadow-[inset_2px_2px_3px_rgba(255,255,255,0.6),inset_-2px_-2px_3px_rgba(0,0,0,0.6)];
@@ -38,5 +40,28 @@ body {
   .btn-ghost:hover {
     @apply bg-gray-500 text-white;
   }
-    
+
+    /* Yellow button */
+  .btn-yellow {
+    @apply text-white bg-yellow-700
+           shadow-[inset_2px_2px_3px_rgba(255,255,255,0.6),inset_-2px_-2px_3px_rgba(0,0,0,0.6)];
+  }
+  .btn-yellow:hover {
+    @apply bg-yellow-500;
+  }
+  .btn-yellow:active {
+    @apply shadow-[inset_-2px_-2px_3px_rgba(255,255,255,0.6),inset_2px_2px_3px_rgba(0,0,0,0.6)];
+  }
+
+  /* Red button */
+  .btn-red {
+    @apply text-white bg-red-700
+           shadow-[inset_2px_2px_3px_rgba(255,255,255,0.6),inset_-2px_-2px_3px_rgba(0,0,0,0.6)];
+  }
+  .btn-red:hover {
+    @apply bg-pink-500;
+  }
+  .btn-red:active {
+    @apply shadow-[inset_-2px_-2px_3px_rgba(255,255,255,0.6),inset_2px_2px_3px_rgba(0,0,0,0.6)];
+  }
 }
