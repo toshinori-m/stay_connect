@@ -2,13 +2,14 @@ import React, { ReactNode } from "react"
 import { SelectOption } from "@/types"
 
 interface SelectFieldProps {
+  name?: string
   label?: ReactNode
   value: string | number | string[]  
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
   options: SelectOption[]
   placeholder?: string
   className?: string
-  multiple?: boolean  
+  multiple?: boolean
 }
 
 const renderPlaceholderOption = (multiple: boolean, placeholder: string) => {
@@ -29,6 +30,7 @@ const renderOptions = (options: SelectOption[]) => {
 }
 
 export default function SelectField({
+  name,
   label,
   value,
   onChange,
@@ -45,10 +47,11 @@ export default function SelectField({
         </p>
       )}
       <select
+        name={name}
         value={value}
         onChange={onChange}
         multiple={multiple}
-        className={`w-full py-3 px-1.5 my-2 border-2 border-gray-200 ${className}`}
+        className={`w-full py-3 px-1.5 my-2 border-2 border-gray-200 rounded-lg ${className}`}
       >
         {renderPlaceholderOption(multiple, placeholder)}
         {renderOptions(options)}
