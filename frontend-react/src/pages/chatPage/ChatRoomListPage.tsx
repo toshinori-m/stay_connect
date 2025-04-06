@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useApiClient } from "@/hooks/useApiClient"
 import { SelectOption } from "@/types"
+import Button from "@/components/ui/Button"
 
 export default function ChatRoomListPage() {
   const [chatRooms, setChatRooms] = useState<SelectOption[]>([])
@@ -48,9 +49,8 @@ export default function ChatRoomListPage() {
             >
               チャット名: {chatRoom.name}
               <div className="flex justify-center mt-5">
-                {/* TODO: ボタンのデザインについては後続タスクで処理を追加 */}
-                <button className="update_button" onClick={() => editChatRoom()}>連絡</button>
-                <button className="delete_button mx-5" onClick={() => deleteChatRoom()}>削除</button>
+                <Button variant="yellow" size="sm" className="my-4 md:mb-0 md:mr-4" onClick={() => editChatRoom()}>連絡</Button>
+                <Button variant="red" size="sm" className="my-4 md:mb-0 md:mr-4" onClick={() => deleteChatRoom()}>削除</Button>
               </div>
             </div>
           ))}
