@@ -36,7 +36,7 @@ export default function HomeHeader() {
   }
 
   const goToHome = () => navigate("/home")
-  const goToChatRoomList = () => console.log("チャットルーム一覧画面は次のissueで作成予定！") // TODO: 後続タスクで処理を追加
+  const goToChatRoomList = () => navigate("/chat_room_list")
   const menuItems = [
   { label: "ホーム", onClick: () => navigate("/home") },
   { label: "イベント作成", onClick: () => navigate("/event_setting") },
