@@ -10,7 +10,7 @@ import useInitialFormData from "@/hooks/search/useInitialFormData"
 import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
 
 export default function EventSettingForm() {
-  const { id } = useParams<{ id: string }>()
+  const { id: recruitmentId } = useParams<{ id: string }>()
   const apiClient = useApiClient()
 
   const [formState, setFormState] = useState({
@@ -23,6 +23,9 @@ export default function EventSettingForm() {
     area: "",
     sex: ""
   })
+  // const [sportsDisciplineIds, setSportsDisciplineIds] = useState<number[]>([])
+  const [errors, setErrors] = useState<string[]>([])
+  const hasFetchedRef = useRef(false)
 
   const {
     sportsTypes,
@@ -31,40 +34,52 @@ export default function EventSettingForm() {
     errors: initialErrors
   } = useInitialFormData()
 
-  const { sportsDisciplines, errors: disciplineErrors } = useFetchDisciplines(formState.sportsTypeSelected)
-  const disciplineIdsRef = useRef<number[]>([])
-  const [errors, setErrors] = useState<string[]>([])
-  const hasFetchedRef = useRef(false)
+  const { sportsDisciplines, errors: sportsDisciplineErrors } = useFetchDisciplines(formState.sportsTypeSelected)
 
   useEffect(() => {
     if (hasFetchedRef.current) return
-    if (!id || sportsTypes.length === 0 || prefectures.length === 0 || targetAges.length === 0) return
+    if (!recruitmentId || sportsTypes.length === 0 || prefectures.length === 0 || targetAges.length === 0) return
 
-    getEventSettingData()
+    fetchRecruitmentAndSetFormState()
     hasFetchedRef.current = true 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, sportsTypes, prefectures, targetAges])
+  }, [recruitmentId, sportsTypes, prefectures, targetAges])
 
   useEffect(() => {
-    if (disciplineIdsRef.current.length > 0 && sportsDisciplines.length > 0) {
-      const selected = sportsDisciplines.filter(discipline =>
-        disciplineIdsRef.current.includes(discipline.id)
-      )
-      
-      setFormState(prev => ({
-        ...prev,
-        sportsDisciplineSelected: selected
-      }))
-    }
-  }, [sportsDisciplines])
+    const fetchAndSetDisciplines = async () => {
+      try {
+        if (!recruitmentId || !formState.sportsTypeSelected || sportsDisciplines.length === 0) return
 
-  const getEventSettingData = async () => {
+        const sportsDisciplineIds = (
+          await apiClient.get(`/recruitments/${recruitmentId}/sports_disciplines`)
+        ).data.map((item: { sports_discipline_id: number }) => item.sports_discipline_id)
+
+        if (sportsDisciplineIds.length > 0 && sportsDisciplines.length > 0) {
+          const selectedSportsDisciplines = sportsDisciplines.filter(sportsDiscipline =>
+            sportsDisciplineIds.includes(sportsDiscipline.id)
+          )
+
+          setFormState(prev => ({
+            ...prev,
+            sportsDisciplineSelected: selectedSportsDisciplines
+          }))
+        }
+      } catch {
+        setErrors(["種目の取得に失敗しました。"])
+      }
+    }
+
+    fetchAndSetDisciplines()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sportsDisciplines])
+  
+
+  const fetchRecruitmentAndSetFormState = async () => {
     try {
-      if (!id) return
+      if (!recruitmentId) return
       setErrors([])
 
-      const res = await apiClient.get(`/recruitments/${id}`)
-      const recruitmentData = res.data.data
+      const recruitmentData = (await apiClient.get(`/recruitments/${recruitmentId}`)).data.data
 
       setFormState(prev => ({
         ...prev,
@@ -75,30 +90,26 @@ export default function EventSettingForm() {
         prefectureSelected: recruitmentData.prefecture_id ? recruitmentData.prefecture_id.toString() : null
       }))
 
-      const rdsRes = await apiClient.get(`/recruitments/${id}/sports_disciplines`)
-      disciplineIdsRef.current = rdsRes.data.map((item: { sports_discipline_id: number }) => item.sports_discipline_id)
+      const targetAgeIds = (await apiClient.get(`/recruitments/${recruitmentId}/target_ages`)).data.map((item: { target_age_id: number }) => item.target_age_id)
 
-      const rtaRes = await apiClient.get(`/recruitments/${id}/target_ages`)
-      const targetAgeIds = rtaRes.data.map((item: { target_age_id: number }) => item.target_age_id)
-
-      await getSportsType(recruitmentData.sports_type_id)
-      await getTargetAge(targetAgeIds)
+      await setSelectedSportsType(recruitmentData.sports_type_id)
+      await setSelectedTargetAge(targetAgeIds)
     } catch {
       setErrors(["イベントを表示できませんでした。"])
     }
   }
-  
-  const getSportsType = async (selectedTypeId?: number) => {
+
+  const setSelectedSportsType = async (selectSportsTypeId?: number) => {
     try {
       setErrors([])
 
-      if (selectedTypeId) {
-        const foundSportsType = sportsTypes.find((st: SelectOption) => st.id === selectedTypeId)
+      if (selectSportsTypeId) {
+        const selectedSportsType = sportsTypes.find((st: SelectOption) => st.id === selectSportsTypeId)
 
-        if (foundSportsType) {
+        if (selectedSportsType) {
           setFormState(prev => ({
             ...prev,
-            sportsTypeSelected: foundSportsType
+            sportsTypeSelected: selectedSportsType
           }))
         }
       }
@@ -107,16 +118,16 @@ export default function EventSettingForm() {
     }
   }
 
-  const getTargetAge = async (targetAgeIds?: number[]) => {
+  const setSelectedTargetAge = async (targetAgeIds?: number[]) => {
     try {
       if (targetAgeIds && targetAgeIds.length > 0 && targetAges.length > 0) {
-        const selected = targetAges.filter((age: SelectOption) => 
+        const selectedTargetAges = targetAges.filter((age: SelectOption) => 
           targetAgeIds.includes(age.id)
         )
         
         setFormState(prev => ({
           ...prev,
-          targetAgeSelected: selected
+          targetAgeSelected: selectedTargetAges
         }))
       }
     } catch {
@@ -124,7 +135,7 @@ export default function EventSettingForm() {
     }
   }
 
-  const renderErrorList = (errors: string[]) => {
+  const ErrorList = (errors: string[]) => {
     if (errors.length === 0) return null
 
     return (
@@ -149,6 +160,7 @@ export default function EventSettingForm() {
                   label="競技名"
                   value={formState.sportsTypeSelected ? formState.sportsTypeSelected.id : ""}
                   options={sportsTypes}
+                  // TODO: 後続PRで実装する編集・送信機能追加時に実装する
                   onChange={() => {}}
                 />
               </div>
@@ -164,6 +176,7 @@ export default function EventSettingForm() {
                     label={<>種目<br />（複数可）</>}
                     value={formState.sportsDisciplineSelected.map(d => d.id.toString())}
                     options={sportsDisciplines}
+                    // TODO: 後続PRで実装する編集・送信機能追加時に実装する
                     onChange={() => {}}
                   />
                 </div>
@@ -178,6 +191,7 @@ export default function EventSettingForm() {
                   label="都道府県"
                   value={formState.prefectureSelected ? formState.prefectureSelected : ""}
                   options={prefectures}
+                  // TODO: 後続PRで実装する編集・送信機能追加時に実装する
                   onChange={() => {}}
                 />
               </div>
@@ -198,6 +212,7 @@ export default function EventSettingForm() {
                   }
                   value={formState.targetAgeSelected.map(age => age.id.toString())}
                   options={targetAges}
+                  // TODO: 後続PRで実装する編集・送信機能追加時に実装する
                   onChange={() => {}}
                 />
               </div>
@@ -212,6 +227,7 @@ export default function EventSettingForm() {
                   label="イベント名"
                   placeholder="イベント名"
                   value={formState.eventName}
+                  // TODO: 後続PRで実装する編集・送信機能追加時に実装する
                   onChange={() => {}}
                 />
               </div>
@@ -226,6 +242,7 @@ export default function EventSettingForm() {
                   label="イベントURL"
                   placeholder="https://www.example.com"
                   value={formState.eventUrl}
+                  // TODO: 後続PRで実装する編集・送信機能追加時に実装する
                   onChange={() => {}}
                 />
               </div>
@@ -240,6 +257,7 @@ export default function EventSettingForm() {
                   placeholder="イベント開催場所"
                   value={formState.area}
                   rows={4}
+                  // TODO: 後続PRで実装する編集・送信機能追加時に実装する
                   onChange={() => {}}
                 />
               </div>
@@ -258,13 +276,14 @@ export default function EventSettingForm() {
                     { label: "混合", value: "man_and_woman" }
                   ]}
                   selected={formState.sex}
+                  // TODO: 後続PRで実装する編集・送信機能追加時に実装する
                   onChange={() => {}}
                 />
               </div>
             </li>
             {/* 「開始日付」「終了日付」「募集チーム数」「イベント目的」「その他」の追加及びこのページの編集・送信機能は次回PRで対応予定 */}
           </ul>
-          {renderErrorList([...initialErrors, ...disciplineErrors, ...errors])}
+          {ErrorList([...initialErrors, ...sportsDisciplineErrors, ...errors])}
       </div>
     </div>
   )
