@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useApiClient } from "@/hooks/useApiClient"
 import { SelectOption } from "@/types"
@@ -8,6 +8,15 @@ import SelectField from "@/components/ui/SelectField"
 import RadioGroupField from "@/components/ui/RadioGroupField"
 import useInitialFormData from "@/hooks/search/useInitialFormData"
 import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
+
+interface RecruitmentData {
+  name: string
+  area: string
+  sex: string
+  event_url: string
+  prefecture_id: number
+  sports_type_id: number
+}
 
 export default function EventSettingForm() {
   const { id: recruitmentId } = useParams<{ id: string }>()
@@ -23,9 +32,9 @@ export default function EventSettingForm() {
     area: "",
     sex: ""
   })
-  // const [sportsDisciplineIds, setSportsDisciplineIds] = useState<number[]>([])
+
   const [errors, setErrors] = useState<string[]>([])
-  const hasFetchedRef = useRef(false)
+  const [hasFetched, setHasFetched] = useState(false)
 
   const {
     sportsTypes,
@@ -37,65 +46,77 @@ export default function EventSettingForm() {
   const { sportsDisciplines, errors: sportsDisciplineErrors } = useFetchDisciplines(formState.sportsTypeSelected)
 
   useEffect(() => {
-    if (hasFetchedRef.current) return
+    if (hasFetched) return
     if (!recruitmentId || sportsTypes.length === 0 || prefectures.length === 0 || targetAges.length === 0) return
-
-    fetchRecruitmentAndSetFormState()
-    hasFetchedRef.current = true 
+    fetchAndInitializeForm()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recruitmentId, sportsTypes, prefectures, targetAges])
 
-  useEffect(() => {
-    const fetchAndSetDisciplines = async () => {
-      try {
-        if (!recruitmentId || !formState.sportsTypeSelected || sportsDisciplines.length === 0) return
+  const fetchAndInitializeForm = async () => {
+    const recruitmentFormData = await fetchRecruitmentData()
 
-        const sportsDisciplineIds = (
-          await apiClient.get(`/recruitments/${recruitmentId}/sports_disciplines`)
-        ).data.map((item: { sports_discipline_id: number }) => item.sports_discipline_id)
+    if (!recruitmentFormData) return
+    const { recruitmentData, targetAgeIds } = recruitmentFormData
 
-        if (sportsDisciplineIds.length > 0 && sportsDisciplines.length > 0) {
-          const selectedSportsDisciplines = sportsDisciplines.filter(sportsDiscipline =>
-            sportsDisciplineIds.includes(sportsDiscipline.id)
-          )
+    await setRecruitmentFormState(recruitmentData)
+    await setSelectedSportsType(recruitmentData.sports_type_id)
+    await setSelectedTargetAge(targetAgeIds)
 
-          setFormState(prev => ({
-            ...prev,
-            sportsDisciplineSelected: selectedSportsDisciplines
-          }))
-        }
-      } catch {
-        setErrors(["種目の取得に失敗しました。"])
-      }
+    setHasFetched(true)
+  }
+
+  const fetchRecruitmentData = async () => {
+    if (!recruitmentId) return null
+
+    try {
+      const recruitmentData = (await apiClient.get(`/recruitments/${recruitmentId}`)).data.data
+      const targetAgeIds = (await apiClient.get(`/recruitments/${recruitmentId}/target_ages`)).data.map(
+        (item: { target_age_id: number }) => item.target_age_id
+      )
+
+      return { recruitmentData, targetAgeIds }
+    } catch {
+      setErrors(["イベントを表示できませんでした。"])
+      return null
     }
+  }
 
+  const setRecruitmentFormState = async (recruitmentData: RecruitmentData,) => {
+    setFormState(prev => ({
+      ...prev,
+      eventName: recruitmentData.name || "",
+      area: recruitmentData.area || "",
+      sex: recruitmentData.sex || "",
+      eventUrl: recruitmentData.event_url || "",
+      prefectureSelected: recruitmentData.prefecture_id ? recruitmentData.prefecture_id.toString() : null
+    }))
+  }
+
+  useEffect(() => {
     fetchAndSetDisciplines()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sportsDisciplines])
-  
 
-  const fetchRecruitmentAndSetFormState = async () => {
+  const fetchAndSetDisciplines = async () => {
     try {
-      if (!recruitmentId) return
-      setErrors([])
+      if (!recruitmentId || !formState.sportsTypeSelected || sportsDisciplines.length === 0) return
 
-      const recruitmentData = (await apiClient.get(`/recruitments/${recruitmentId}`)).data.data
+      const sportsDisciplineIds = (
+        await apiClient.get(`/recruitments/${recruitmentId}/sports_disciplines`)
+      ).data.map((item: { sports_discipline_id: number }) => item.sports_discipline_id)
 
-      setFormState(prev => ({
-        ...prev,
-        eventName: recruitmentData.name || "",
-        area: recruitmentData.area || "",
-        sex: recruitmentData.sex || "",
-        eventUrl: recruitmentData.event_url || "",
-        prefectureSelected: recruitmentData.prefecture_id ? recruitmentData.prefecture_id.toString() : null
-      }))
+      if (sportsDisciplineIds.length > 0 && sportsDisciplines.length > 0) {
+        const selectedSportsDisciplines = sportsDisciplines.filter(sportsDiscipline =>
+          sportsDisciplineIds.includes(sportsDiscipline.id)
+        )
 
-      const targetAgeIds = (await apiClient.get(`/recruitments/${recruitmentId}/target_ages`)).data.map((item: { target_age_id: number }) => item.target_age_id)
-
-      await setSelectedSportsType(recruitmentData.sports_type_id)
-      await setSelectedTargetAge(targetAgeIds)
+        setFormState(prev => ({
+          ...prev,
+          sportsDisciplineSelected: selectedSportsDisciplines
+        }))
+      }
     } catch {
-      setErrors(["イベントを表示できませんでした。"])
+      setErrors(["種目の取得に失敗しました。"])
     }
   }
 
