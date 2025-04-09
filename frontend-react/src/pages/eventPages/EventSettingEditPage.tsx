@@ -59,9 +59,9 @@ export default function EventSettingForm() {
     if (!recruitmentFormData) return
     const { recruitmentData, targetAgeIds } = recruitmentFormData
 
-    await setRecruitmentFormState(recruitmentData)
-    await setSelectedSportsType(recruitmentData.sports_type_id)
-    await setSelectedTargetAge(targetAgeIds)
+    setRecruitmentFormState(recruitmentData)
+    setSelectedSportsType(recruitmentData.sports_type_id)
+    setSelectedTargetAge(targetAgeIds)
 
     setFetchedId(recruitmentId ?? null)
   }
