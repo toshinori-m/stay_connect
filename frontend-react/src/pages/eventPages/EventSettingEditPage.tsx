@@ -19,7 +19,7 @@ interface RecruitmentData {
 }
 
 export default function EventSettingForm() {
-  const { id: recruitmentId } = useParams<{ id: string }>()
+  const { id: recruitmentId = null } = useParams<{ id?: string }>()
   const apiClient = useApiClient()
 
   const [formState, setFormState] = useState({
@@ -34,7 +34,7 @@ export default function EventSettingForm() {
   })
 
   const [errors, setErrors] = useState<string[]>([])
-  const [hasFetched, setHasFetched] = useState(false)
+  const [fetchedId, setFetchedId] = useState<string | null>(null)
 
   const {
     sportsTypes,
@@ -46,8 +46,9 @@ export default function EventSettingForm() {
   const { sportsDisciplines, errors: sportsDisciplineErrors } = useFetchDisciplines(formState.sportsTypeSelected)
 
   useEffect(() => {
-    if (hasFetched) return
-    if (!recruitmentId || sportsTypes.length === 0 || prefectures.length === 0 || targetAges.length === 0) return
+    if (fetchedId === recruitmentId) return
+    if (sportsTypes.length === 0 || prefectures.length === 0 || targetAges.length === 0) return
+
     fetchAndInitializeForm()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recruitmentId, sportsTypes, prefectures, targetAges])
@@ -62,7 +63,7 @@ export default function EventSettingForm() {
     await setSelectedSportsType(recruitmentData.sports_type_id)
     await setSelectedTargetAge(targetAgeIds)
 
-    setHasFetched(true)
+    setFetchedId(recruitmentId ?? null)
   }
 
   const fetchRecruitmentData = async () => {
