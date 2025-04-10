@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { getAuth, sendPasswordResetEmail } from "firebase/auth"
 import InputField from "@/components/ui/InputField"
+import Button from "@/components/ui/Button"
 
 export default function ResetPassword() {
   const [email, setEmail] = useState("")
@@ -55,7 +56,7 @@ export default function ResetPassword() {
                 ))}
               </div>
             )}
-            <button className="btn-ok my-4 md:mb-0 md:mr-4">送信する</button>
+            <Button type="submit" variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">送信する</Button>
           </form>
         </div>
       </div>

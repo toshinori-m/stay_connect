@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth"
 import { useApiClient } from "@/hooks/useApiClient"
 import { useSetAuth } from "@/context/useAuthContext"
 import { useNavigate } from "react-router-dom"
+import Button from "@/components/ui/Button"
 
 export default function RegisterPage() {
   const [name, setName] = useState("")
@@ -141,7 +142,7 @@ export default function RegisterPage() {
                   ))}
                 </div>
               )}
-            <button className="btn-ok my-4 md:mb-0 md:mr-4">登録する</button>
+            <Button type="submit" variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">登録する</Button>
           </form>
         </div>
         <button onClick={handleLoginClick} className="block mx-auto w-80 my-7 text-blue-600 border-4 border-violet-400 border-dashed outline-dashed px-0 py-2">

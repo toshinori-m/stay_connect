@@ -7,6 +7,7 @@ import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 
 import { useSetAuth } from "@/context/useAuthContext"
 import { useApiClient } from "@/hooks/useApiClient"
 import { AxiosError } from "axios"
+import Button from "@/components/ui/Button"
 
 export default function LoginPage() {
   const [errors, setErrors] = useState<string[]>([])
@@ -127,7 +128,7 @@ export default function LoginPage() {
                 ))}
               </div>
             )}
-            <button className="btn-ok my-4 md:mb-0 md:mr-4">ログイン</button>
+            <Button type="submit" variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">ログイン</Button>
           </form>
           <div className="flex flex-col items-center my-7 text-blue-600">
             <CustomButton onClick={signInWithGoogle} icon="i-lucide-mail">
