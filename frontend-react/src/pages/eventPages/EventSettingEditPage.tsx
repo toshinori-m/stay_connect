@@ -48,25 +48,26 @@ export default function EventSettingForm() {
   useEffect(() => {
     if (fetchedId === recruitmentId) return
     if (sportsTypes.length === 0 || prefectures.length === 0 || targetAges.length === 0) return
+    if (!recruitmentId) return
 
-    fetchAndInitializeForm()
+    fetchRecruitmentData(recruitmentId)
+    .then(recruitmentFormData => {
+      if (!recruitmentFormData) return
+      
+      const { recruitmentData, targetAgeIds } = recruitmentFormData
+  
+      setRecruitmentFormState(recruitmentData)
+      setSelectedSportsType(recruitmentData.sports_type_id)
+      setSelectedTargetAge(targetAgeIds)
+      setFetchedId(recruitmentId)
+    })
+    .catch(() => {
+      setErrors(["イベントを表示できませんでした。"])
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recruitmentId, sportsTypes, prefectures, targetAges])
 
-  const fetchAndInitializeForm = async () => {
-    const recruitmentFormData = await fetchRecruitmentData()
-
-    if (!recruitmentFormData) return
-    const { recruitmentData, targetAgeIds } = recruitmentFormData
-
-    setRecruitmentFormState(recruitmentData)
-    setSelectedSportsType(recruitmentData.sports_type_id)
-    setSelectedTargetAge(targetAgeIds)
-
-    setFetchedId(recruitmentId ?? null)
-  }
-
-  const fetchRecruitmentData = async () => {
+  const fetchRecruitmentData = async (recruitmentId: string) => {
     if (!recruitmentId) return null
 
     try {
