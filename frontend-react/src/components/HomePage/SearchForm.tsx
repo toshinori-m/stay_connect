@@ -1,62 +1,64 @@
 import { SelectOption } from "@/types"
 import SelectField from "@/components/ui/SelectField"
+import Button from "@/components/ui/Button"
+import {FormState} from "@/pages/HomePage"
 
 interface SearchFormProps {
   sportsTypes: SelectOption[]
-  sportsTypeSelected: SelectOption | null
-  setSportsTypeSelected: (option: SelectOption | null) => void
   sportsDisciplines: SelectOption[]
-  sportsDisciplineSelected: SelectOption | null
-  setSportsDisciplineSelected: (option: SelectOption | null) => void
   prefectures: SelectOption[]
-  prefecturesSelected: SelectOption | null
-  setPrefecturesSelected: (option: SelectOption | null) => void
   targetAges: SelectOption[]
-  targetAgesSelected: SelectOption | null
-  setTargetAgesSelected: (option: SelectOption | null) => void
-  onSearch: () => void
+  formState: {
+    sportsTypeId: SelectOption | null
+    sportsDisciplineId: SelectOption | null
+    prefectureId: SelectOption | null
+    targetAgeId: SelectOption | null
+  }
+  onFormChange: (FormStateKey: keyof FormState, selectedOption: SelectOption | null) => void | Promise<void>
+  onSearch: () => Promise<void>
   errors: string[]
 }
 
-export default function SearchForm ({
+export default function SearchForm({
   sportsTypes,
-  sportsTypeSelected,
-  setSportsTypeSelected,
   sportsDisciplines,
-  sportsDisciplineSelected,
-  setSportsDisciplineSelected,
   prefectures,
-  prefecturesSelected,
-  setPrefecturesSelected,
   targetAges,
-  targetAgesSelected,
-  setTargetAgesSelected,
+  formState,
+  onFormChange,
   onSearch,
   errors
 }: SearchFormProps) {
 
-  const handleSelectChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-    options: SelectOption[],
-    setSelected: (option: SelectOption | null) => void
-  ) => {
-    const selected = options.find(opt => opt.id.toString() === e.target.value) || null
-    setSelected(selected)
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>, FormStateKey: keyof FormState) => {
+    const formSelectedId = parseInt(e.target.value)
+    const formSelectedName = e.target.options[e.target.selectedIndex].text
+  
+    if (e.target.value === "") {
+      onFormChange(FormStateKey, null)
+      return
+    }
+  
+    onFormChange(FormStateKey, { id: formSelectedId, name: formSelectedName })
+  }
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    onSearch()
   }
 
   return (
-    <div className="rounded-lg bg-sky-100 drop-shadow-lg mb-4 md:w-1/4 md:mb-0 pb-3 px-3">
+    <div className="rounded-lg bg-sky-100 drop-shadow-lg mb-4 md:w-1/4 md:mb-0 pb-3">
       <h2 className="mb-5 text-center pt-10 font-bold text-2xl text-blue-600">
         カテゴリー別検索
       </h2>
-      <form onSubmit={(e) => { e.preventDefault(); onSearch(); }} className="my-5 text-center">
-
+      <form onSubmit={handleSubmit} className="my-5 text-center">
         {/* 競技選択 */}
         <SelectField
-          name="eventSportsType"
+          name="sportsTypeId"
           className="ring-offset-2 ring-2 hover:bg-blue-200"
-          value={sportsTypeSelected?.id || ""}
-          onChange={(e) => handleSelectChange(e, sportsTypes, setSportsTypeSelected)}
+          value={formState.sportsTypeId ? formState.sportsTypeId.id.toString() : ""}
+          onChange={(e) => handleChange(e, "sportsTypeId")}
           options={[{ id: "" as unknown as number, name: "競技選択" }, ...sportsTypes]}
           placeholder="競技選択"
         />
@@ -64,10 +66,10 @@ export default function SearchForm ({
         {/* 種目選択 */}
         {sportsDisciplines.length > 0 && (
           <SelectField
-            name="eventSportsDiscipline"
+            name="sportsDisciplineId"
             className="ring-offset-2 ring-2 hover:bg-blue-200"
-            value={sportsDisciplineSelected?.id || ""}
-            onChange={(e) => handleSelectChange(e, sportsDisciplines, setSportsDisciplineSelected)}
+            value={formState.sportsDisciplineId ? formState.sportsDisciplineId.id.toString() : ""}
+            onChange={(e) => handleChange(e, "sportsDisciplineId")}
             options={[{ id: "" as unknown as number, name: "種目選択" }, ...sportsDisciplines]}
             placeholder="種目選択"
           />
@@ -75,25 +77,25 @@ export default function SearchForm ({
 
         {/* 都道府県選択 */}
         <SelectField
-          name="eventPrefecture"
+          name="prefectureId"
           className="ring-offset-2 ring-2 hover:bg-blue-200"
-          value={prefecturesSelected?.id || ""}
-          onChange={(e) => handleSelectChange(e, prefectures, setPrefecturesSelected)}
+          value={formState.prefectureId ? formState.prefectureId.id.toString() : ""}
+          onChange={(e) => handleChange(e, "prefectureId")}
           options={[{ id: "" as unknown as number, name: "都道府県選択" }, ...prefectures]}
           placeholder="都道府県選択"
         />
 
         {/* 対象年齢選択 */}
         <SelectField
-          name="eventTargetAge"
+          name="targetAgeId"
           className="ring-offset-2 ring-2 hover:bg-blue-200"
-          value={targetAgesSelected?.id || ""}
-          onChange={(e) => handleSelectChange(e, targetAges, setTargetAgesSelected)}
+          value={formState.targetAgeId ? formState.targetAgeId.id.toString() : ""}
+          onChange={(e) => handleChange(e, "targetAgeId")}
           options={[{ id: "" as unknown as number, name: "対象年齢選択" }, ...targetAges]}
           placeholder="対象年齢選択"
         />
 
-        <button type="submit" className="btn-ok my-4 md:mb-0 md:mr-4 w-full">検索</button>
+        <Button type="submit" variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">検索</Button>
       </form>
 
       {errors.length > 0 && (
