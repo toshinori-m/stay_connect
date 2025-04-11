@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import MouseCharacter from "@/components/layout/MouseCharacter"
+import Button from "@/components/ui/Button"
 
 export default function OpenHeader() {
   const navigate = useNavigate()
@@ -22,12 +23,12 @@ export default function OpenHeader() {
       </div>
 
       <div className="flex flex-col mt-3 md:-mt-10 md:flex-row justify-center md:justify-end items-center">
-        <button className="btn-ok mb-2 md:mb-0 md:mr-4" onClick={redirectToSignup}>
+        <Button type="submit" variant="primary" size="sm" className="md:mb-0 md:mr-4" onClick={redirectToSignup}>
           無料登録
-        </button>
-        <button className="btn-login" onClick={redirectToLogin}>
+        </Button>
+        <Button type="submit" variant="ghost" size="sm" className="mt-3 md:mt-0 md:mb-0 md:mr-4" onClick={redirectToLogin}>
           ログイン
-        </button>
+        </Button>
       </div>
     </div>
   )

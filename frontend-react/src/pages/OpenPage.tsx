@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom"
+import Button from "@/components/ui/Button"
 
 export default function OpenPage() {
   const navigate = useNavigate()
@@ -21,9 +22,9 @@ export default function OpenPage() {
               <li>チームの繋がり：開催者へ連絡出来る</li>
             </ul>
             <div className="mt-60 md:-px-16 md:text-left md:mt-20">
-              <button className="btn-signup" onClick={redirectToSignup}>
+              <Button type="submit" variant="primary" size="lg" className="btn-signup" onClick={redirectToSignup}>
                 会員登録（無料）
-              </button>
+              </Button>
             </div>
           </div>
         </div>
