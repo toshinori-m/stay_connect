@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useApiClient } from "@/hooks/useApiClient"
 import { SelectOption } from "@/types"
+import Button from "@/components/ui/Button"
 
 export default function EventList() {
   const [recruitments, setRecruitments] = useState<SelectOption[]>([])
   const [errors, setErrors] = useState<string[]>([])
   const apiClient = useApiClient()
+  const navigate = useNavigate()
 
   useEffect(() => {
     getRecruitment()
@@ -22,8 +25,8 @@ export default function EventList() {
     }
   }
 
-  const editRecruitment = () => {
-    console.log("イベント編集画面は次のissueで作成予定！") // TODO: 後続タスクで処理を追加
+  const editRecruitment = (id: number) => {
+    navigate(`/event_setting_edit/${id}`)
   }
 
   const deleteRecruitment = async (id: number) => {
@@ -54,9 +57,8 @@ export default function EventList() {
             >
               イベント名: {recruitment.name}
               <div className="flex justify-center mt-5">
-                {/* TODO: ボタンのデザインについては後続タスクで処理を追加 */}
-                <button className="update_button" onClick={() => editRecruitment()}>更新</button>
-                <button className="delete_button mx-5" onClick={() => deleteRecruitment(recruitment.id)}>削除</button>
+                <Button variant="yellow" size="sm" className="my-4 md:mb-0 md:mr-4 mx-3" onClick={() => editRecruitment(recruitment.id)}>編集</Button>
+                <Button variant="red" size="sm" className="my-4 md:mb-0 md:mr-4 mx-3" onClick={() => deleteRecruitment(recruitment.id)}>削除</Button>
               </div>
             </div>
           ))}
