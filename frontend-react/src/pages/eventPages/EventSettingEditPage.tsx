@@ -95,32 +95,32 @@ export default function EventSettingForm() {
   }
 
   useEffect(() => {
-    fetchAndSetDisciplines()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sportsDisciplines])
+    if (!recruitmentId || !formState.sportsTypeSelected || sportsDisciplines.length === 0) return
 
-  const fetchAndSetDisciplines = async () => {
-    try {
-      if (!recruitmentId || !formState.sportsTypeSelected || sportsDisciplines.length === 0) return
-
-      const sportsDisciplineIds = (
-        await apiClient.get(`/recruitments/${recruitmentId}/sports_disciplines`)
-      ).data.map((item: { sports_discipline_id: number }) => item.sports_discipline_id)
-
-      if (sportsDisciplineIds.length > 0 && sportsDisciplines.length > 0) {
-        const selectedSportsDisciplines = sportsDisciplines.filter(sportsDiscipline =>
-          sportsDisciplineIds.includes(sportsDiscipline.id)
+    apiClient
+      .get(`/recruitments/${recruitmentId}/sports_disciplines`)
+      .then((sportsDisciplineResponse) => {
+        const sportsDisciplineIdList = sportsDisciplineResponse.data.map(
+          (record: { sports_discipline_id: number }) => record.sports_discipline_id
         )
 
-        setFormState(prev => ({
-          ...prev,
-          sportsDisciplineSelected: selectedSportsDisciplines
-        }))
-      }
-    } catch {
-      setErrors(["種目の取得に失敗しました。"])
-    }
-  }
+        if (sportsDisciplineIdList.length > 0 && sportsDisciplines.length > 0) {
+          const selectedSportsDisciplines = sportsDisciplines.filter(sportsDiscipline =>
+            sportsDisciplineIdList.includes(sportsDiscipline.id)
+          )
+
+          setFormState(prev => ({
+            ...prev,
+            sportsDisciplineSelected: selectedSportsDisciplines,
+          }))
+        }
+      })
+      .catch(() => {
+        setErrors(["種目の取得に失敗しました。"])
+      })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recruitmentId, formState.sportsTypeSelected, sportsDisciplines])
+  
 
   const setSelectedSportsType = async (selectSportsTypeId?: number) => {
     try {
