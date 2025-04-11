@@ -2,6 +2,7 @@ import { SelectOption } from "@/types"
 import SelectField from "@/components/ui/SelectField"
 import Button from "@/components/ui/Button"
 import {FormState} from "@/pages/HomePage"
+import { useActionState, Dispatch, SetStateAction } from "react"
 
 interface SearchFormProps {
   sportsTypes: SelectOption[]
@@ -16,6 +17,7 @@ interface SearchFormProps {
   }
   onFormChange: (FormStateKey: keyof FormState, selectedOption: SelectOption | null) => void | Promise<void>
   onSearch: () => Promise<void>
+  setFormState: Dispatch<SetStateAction<FormState>>
   errors: string[]
 }
 
@@ -27,8 +29,25 @@ export default function SearchForm({
   formState,
   onFormChange,
   onSearch,
+  setFormState,
   errors
 }: SearchFormProps) {
+
+  const [, formAction] = useActionState(async () => {
+    await onSearch()
+
+    // 検索実行後、状態を復元
+    setTimeout(() => {
+      setFormState({
+        sportsTypeId: formState.sportsTypeId,
+        sportsDisciplineId: formState.sportsDisciplineId,
+        prefectureId: formState.prefectureId,
+        targetAgeId: formState.targetAgeId
+      })
+    }, 0)
+
+    return true
+  }, false)
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>, FormStateKey: keyof FormState) => {
     const formSelectedId = parseInt(e.target.value)
@@ -42,17 +61,12 @@ export default function SearchForm({
     onFormChange(FormStateKey, { id: formSelectedId, name: formSelectedName })
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    onSearch()
-  }
-
   return (
     <div className="rounded-lg bg-sky-100 drop-shadow-lg mb-4 md:w-1/4 md:mb-0 pb-3">
       <h2 className="mb-5 text-center pt-10 font-bold text-2xl text-blue-600">
         カテゴリー別検索
       </h2>
-      <form onSubmit={handleSubmit} className="my-5 text-center">
+      <form action={formAction} className="my-5 text-center">
         {/* 競技選択 */}
         <SelectField
           name="sportsTypeId"

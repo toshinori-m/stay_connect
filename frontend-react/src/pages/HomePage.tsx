@@ -147,6 +147,7 @@ export default function HomePage() {
         formState={formState}
         onFormChange={handleFormChange}
         onSearch={handleSearch}
+        setFormState={setFormState}
         errors={[...initialErrors, ...sportsDisciplineErrors, ...searchErrors]}
       />
 
@@ -157,6 +158,7 @@ export default function HomePage() {
             <p className="mt-2">条件を変更して再検索してください</p>
           </div>
         ) : (
+          // TODO: イベント表示画面への遷移については後日PRで実装する
           recruitments.map((recruitment) => (
             <div key={recruitment.id} className="max-w-4xl bg-white p-6 rounded-lg shadow-md mb-4">
               <div className="flex items-center justify-between">
