@@ -53,6 +53,7 @@ export default function EventSettingForm() {
     fetchRecruitmentData(recruitmentId)
     .then(recruitmentFormData => {
       if (!recruitmentFormData) return
+      setErrors([])
       
       const { recruitmentData, targetAgeIds } = recruitmentFormData
   
@@ -68,8 +69,6 @@ export default function EventSettingForm() {
   }, [recruitmentId, sportsTypes, prefectures, targetAges])
 
   const fetchRecruitmentData = async (recruitmentId: string) => {
-    if (!recruitmentId) return null
-
     try {
       const recruitmentData = (await apiClient.get(`/recruitments/${recruitmentId}`)).data.data
       const targetAgeIds = (await apiClient.get(`/recruitments/${recruitmentId}/target_ages`)).data.map(
@@ -83,7 +82,7 @@ export default function EventSettingForm() {
     }
   }
 
-  const setRecruitmentFormState = async (recruitmentData: RecruitmentData,) => {
+  const setRecruitmentFormState = (recruitmentData: RecruitmentData,) => {
     setFormState(prev => ({
       ...prev,
       eventName: recruitmentData.name || "",
@@ -92,6 +91,32 @@ export default function EventSettingForm() {
       eventUrl: recruitmentData.event_url || "",
       prefectureSelected: recruitmentData.prefecture_id ? recruitmentData.prefecture_id.toString() : null
     }))
+  }  
+
+  const setSelectedSportsType = (selectSportsTypeId?: number) => {
+    if (selectSportsTypeId) {
+      const selectedSportsType = sportsTypes.find((sportsType: SelectOption) => sportsType.id === selectSportsTypeId)
+
+      if (selectedSportsType) {
+        setFormState(prev => ({
+          ...prev,
+          sportsTypeSelected: selectedSportsType
+        }))
+      }
+    }
+  }
+
+  const setSelectedTargetAge = (targetAgeIds?: number[]) => {
+    if (targetAgeIds && targetAgeIds.length > 0 && targetAges.length > 0) {
+      const selectedTargetAges = targetAges.filter((targetAge: SelectOption) => 
+        targetAgeIds.includes(targetAge.id)
+      )
+      
+      setFormState(prev => ({
+        ...prev,
+        targetAgeSelected: selectedTargetAges
+      }))
+    }
   }
 
   useEffect(() => {
@@ -120,43 +145,6 @@ export default function EventSettingForm() {
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recruitmentId, formState.sportsTypeSelected, sportsDisciplines])
-  
-
-  const setSelectedSportsType = async (selectSportsTypeId?: number) => {
-    try {
-      setErrors([])
-
-      if (selectSportsTypeId) {
-        const selectedSportsType = sportsTypes.find((st: SelectOption) => st.id === selectSportsTypeId)
-
-        if (selectedSportsType) {
-          setFormState(prev => ({
-            ...prev,
-            sportsTypeSelected: selectedSportsType
-          }))
-        }
-      }
-    } catch {
-      setErrors(["競技を表示できませんでした。"])
-    }
-  }
-
-  const setSelectedTargetAge = async (targetAgeIds?: number[]) => {
-    try {
-      if (targetAgeIds && targetAgeIds.length > 0 && targetAges.length > 0) {
-        const selectedTargetAges = targetAges.filter((age: SelectOption) => 
-          targetAgeIds.includes(age.id)
-        )
-        
-        setFormState(prev => ({
-          ...prev,
-          targetAgeSelected: selectedTargetAges
-        }))
-      }
-    } catch {
-      setErrors(["対象年齢を表示できませんでした。"])
-    }
-  }
 
   const ErrorList = (errors: string[]) => {
     if (errors.length === 0) return null
