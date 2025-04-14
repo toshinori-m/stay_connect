@@ -165,7 +165,7 @@ export default function EventSettingPage() {
     { errors: [], formData: null }
   )
   
-  const renderErrorList = (errors: string[]) => {
+  const ErrorList = (errors: string[]) => {
     if (errors.length === 0) return null
   
     return (
@@ -395,7 +395,7 @@ export default function EventSettingPage() {
               </div>
             </li>
           </ul>
-          {renderErrorList([...initialErrors, ...disciplineErrors, ...actionState.errors])}
+          {ErrorList([...initialErrors, ...disciplineErrors, ...actionState.errors])}
           {/* 登録ボタン */}
           <div className="text-center mb-5">
             <Button variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">登録する</Button>

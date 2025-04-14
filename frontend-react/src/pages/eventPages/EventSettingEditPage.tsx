@@ -1,0 +1,301 @@
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { useApiClient } from "@/hooks/useApiClient"
+import { SelectOption } from "@/types"
+import InputField from "@/components/ui/InputField"
+import TextareaField from "@/components/ui/TextareaField"
+import SelectField from "@/components/ui/SelectField"
+import RadioGroupField from "@/components/ui/RadioGroupField"
+import useInitialFormData from "@/hooks/search/useInitialFormData"
+import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
+
+interface RecruitmentData {
+  name: string
+  area: string
+  sex: string
+  event_url: string
+  prefecture_id: number
+  sports_type_id: number
+}
+
+export default function EventSettingForm() {
+  const { id: recruitmentId = null } = useParams<{ id?: string }>()
+  const apiClient = useApiClient()
+
+  const [formState, setFormState] = useState({
+    sportsTypeSelected: null as SelectOption | null,
+    sportsDisciplineSelected: [] as SelectOption[],
+    targetAgeSelected: [] as SelectOption[],
+    prefectureSelected: null as string | null,
+    eventName: "",
+    eventUrl: "",
+    area: "",
+    sex: ""
+  })
+
+  const [errors, setErrors] = useState<string[]>([])
+  const [fetchedId, setFetchedId] = useState<string | null>(null)
+
+  const {
+    sportsTypes,
+    prefectures,
+    targetAges,
+    errors: initialErrors
+  } = useInitialFormData()
+
+  const { sportsDisciplines, errors: sportsDisciplineErrors } = useFetchDisciplines(formState.sportsTypeSelected)
+
+  useEffect(() => {
+    if (fetchedId === recruitmentId) return
+    if (sportsTypes.length === 0 || prefectures.length === 0 || targetAges.length === 0) return
+    if (!recruitmentId) return
+
+    fetchRecruitmentData(recruitmentId)
+    .then(recruitmentFormData => {
+      if (!recruitmentFormData) return
+      setErrors([])
+      
+      const { recruitmentData, targetAgeIds } = recruitmentFormData
+  
+      setRecruitmentFormState(recruitmentData)
+      setSelectedSportsType(recruitmentData.sports_type_id)
+      setSelectedTargetAge(targetAgeIds)
+      setFetchedId(recruitmentId)
+    })
+    .catch(() => {
+      setErrors(["イベントを表示できませんでした。"])
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recruitmentId, sportsTypes, prefectures, targetAges])
+
+  const fetchRecruitmentData = async (recruitmentId: string) => {
+    try {
+      const recruitmentData = (await apiClient.get(`/recruitments/${recruitmentId}`)).data.data
+      const targetAgeIds = (await apiClient.get(`/recruitments/${recruitmentId}/target_ages`)).data.map(
+        (item: { target_age_id: number }) => item.target_age_id
+      )
+
+      return { recruitmentData, targetAgeIds }
+    } catch {
+      setErrors(["イベントを表示できませんでした。"])
+      return null
+    }
+  }
+
+  const setRecruitmentFormState = (recruitmentData: RecruitmentData,) => {
+    setFormState(prev => ({
+      ...prev,
+      eventName: recruitmentData.name || "",
+      area: recruitmentData.area || "",
+      sex: recruitmentData.sex || "",
+      eventUrl: recruitmentData.event_url || "",
+      prefectureSelected: recruitmentData.prefecture_id ? recruitmentData.prefecture_id.toString() : null
+    }))
+  }  
+
+  const setSelectedSportsType = (selectSportsTypeId?: number) => {
+    if (selectSportsTypeId) {
+      const selectedSportsType = sportsTypes.find((sportsType: SelectOption) => sportsType.id === selectSportsTypeId)
+
+      if (selectedSportsType) {
+        setFormState(prev => ({
+          ...prev,
+          sportsTypeSelected: selectedSportsType
+        }))
+      }
+    }
+  }
+
+  const setSelectedTargetAge = (targetAgeIds?: number[]) => {
+    if (targetAgeIds && targetAgeIds.length > 0 && targetAges.length > 0) {
+      const selectedTargetAges = targetAges.filter((targetAge: SelectOption) => 
+        targetAgeIds.includes(targetAge.id)
+      )
+      
+      setFormState(prev => ({
+        ...prev,
+        targetAgeSelected: selectedTargetAges
+      }))
+    }
+  }
+
+  useEffect(() => {
+    if (!recruitmentId || !formState.sportsTypeSelected || sportsDisciplines.length === 0) return
+
+    apiClient
+      .get(`/recruitments/${recruitmentId}/sports_disciplines`)
+      .then((sportsDisciplineResponse) => {
+        const sportsDisciplineIdList = sportsDisciplineResponse.data.map(
+          (record: { sports_discipline_id: number }) => record.sports_discipline_id
+        )
+
+        if (sportsDisciplineIdList.length > 0 && sportsDisciplines.length > 0) {
+          const selectedSportsDisciplines = sportsDisciplines.filter(sportsDiscipline =>
+            sportsDisciplineIdList.includes(sportsDiscipline.id)
+          )
+
+          setFormState(prev => ({
+            ...prev,
+            sportsDisciplineSelected: selectedSportsDisciplines,
+          }))
+        }
+      })
+      .catch(() => {
+        setErrors(["種目の取得に失敗しました。"])
+      })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recruitmentId, formState.sportsTypeSelected, sportsDisciplines])
+
+  const ErrorList = (errors: string[]) => {
+    if (errors.length === 0) return null
+
+    return (
+      <div className="text-red-500 text-sm list-disc list-inside text-left md:pl-44 pl-12">
+        {errors.map((error, index) => (
+          <li key={index}>{error}</li>
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex items-center justify-center mt-32 md:mt-20">
+      <div className="w-full md:w-3/5 xl:w-2/5 shadow-gray-200 bg-sky-100 rounded-lg">
+        <h2 className="text-center mb-10 pt-10 font-bold text-3xl text-blue-600">イベント登録</h2>
+          <ul className="space-y-4 text-left">
+            {/* 競技種別 */}
+            <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <div className="md:col-span-12 md:ml-2 md:mr-4">
+                <SelectField
+                  name="eventSportsType"
+                  label="競技名"
+                  value={formState.sportsTypeSelected ? formState.sportsTypeSelected.id : ""}
+                  options={sportsTypes}
+                  // TODO: 後続PRで実装する編集・送信機能追加時に実装する
+                  onChange={() => {}}
+                />
+              </div>
+            </li>
+
+            {/* 種目 */}
+            {sportsDisciplines.length > 0 && (
+              <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+                <div className="md:col-span-12 md:ml-2 md:mr-4">
+                  <SelectField
+                    name="eventSportsDiscipline"
+                    multiple
+                    label={<>種目<br />（複数可）</>}
+                    value={formState.sportsDisciplineSelected.map(d => d.id.toString())}
+                    options={sportsDisciplines}
+                    // TODO: 後続PRで実装する編集・送信機能追加時に実装する
+                    onChange={() => {}}
+                  />
+                </div>
+              </li>
+            )}
+
+            {/* 都道府県 */}
+            <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <div className="md:col-span-12 md:ml-2 md:mr-4">
+                <SelectField
+                  name="eventPrefecture"
+                  label="都道府県"
+                  value={formState.prefectureSelected ? formState.prefectureSelected : ""}
+                  options={prefectures}
+                  // TODO: 後続PRで実装する編集・送信機能追加時に実装する
+                  onChange={() => {}}
+                />
+              </div>
+            </li>
+
+            {/* 対象年齢 */}
+            <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <div className="md:col-span-12 md:ml-2 md:mr-4">
+                <SelectField
+                  name="eventTargetAge"
+                  multiple
+                  label={
+                    <>
+                      対象年齢
+                      <br />
+                      （複数可）
+                    </>
+                  }
+                  value={formState.targetAgeSelected.map(age => age.id.toString())}
+                  options={targetAges}
+                  // TODO: 後続PRで実装する編集・送信機能追加時に実装する
+                  onChange={() => {}}
+                />
+              </div>
+            </li>
+
+            {/* イベント名 */}
+            <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <div className="md:col-span-12 md:ml-2 md:mr-4">
+                <InputField
+                  name="eventName"
+                  type="text"
+                  label="イベント名"
+                  placeholder="イベント名"
+                  value={formState.eventName}
+                  // TODO: 後続PRで実装する編集・送信機能追加時に実装する
+                  onChange={() => {}}
+                />
+              </div>
+            </li>
+
+            {/* イベントURL */}
+            <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <div className="md:col-span-12 md:ml-2 md:mr-4">
+                <InputField
+                  name="eventURL"
+                  type="url"
+                  label="イベントURL"
+                  placeholder="https://www.example.com"
+                  value={formState.eventUrl}
+                  // TODO: 後続PRで実装する編集・送信機能追加時に実装する
+                  onChange={() => {}}
+                />
+              </div>
+            </li>
+
+            {/* イベント開催場所 */}
+            <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <div className="md:col-span-12 md:ml-2 md:mr-4">
+                <TextareaField
+                  name="eventArea"
+                  label="イベント開催場所"
+                  placeholder="イベント開催場所"
+                  value={formState.area}
+                  rows={4}
+                  // TODO: 後続PRで実装する編集・送信機能追加時に実装する
+                  onChange={() => {}}
+                />
+              </div>
+            </li>
+
+            {/* 性別 */}
+            <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <div className="md:col-span-12 md:ml-2 md:mr-4">
+                <RadioGroupField
+                  name="eventSex"
+                  label="性別"
+                  options={[
+                    { label: "男", value: "man" },
+                    { label: "女", value: "woman" },
+                    { label: "男女", value: "mix" },
+                    { label: "混合", value: "man_and_woman" }
+                  ]}
+                  selected={formState.sex}
+                  // TODO: 後続PRで実装する編集・送信機能追加時に実装する
+                  onChange={() => {}}
+                />
+              </div>
+            </li>
+            {/* 「開始日付」「終了日付」「募集チーム数」「イベント目的」「その他」の追加及びこのページの編集・送信機能は次回PRで対応予定 */}
+          </ul>
+          {ErrorList([...initialErrors, ...sportsDisciplineErrors, ...errors])}
+      </div>
+    </div>
+  )
+}
