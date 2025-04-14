@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react"
 import { useApiClient } from "@/hooks/useApiClient"
 import SearchForm from "@/components/HomePage/SearchForm"
-import useInitialFormData from "@/hooks/search/useInitialFormData"
-import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
-import { SelectOption } from "@/types"
 
 interface Recruitment {
   id: number
@@ -16,100 +13,10 @@ interface Recruitment {
   target_age_name: { id: number; name: string }[]
 }
 
-export interface FormState {
-  sportsTypeId: SelectOption | null
-  sportsDisciplineId: SelectOption | null
-  prefectureId: SelectOption | null
-  targetAgeId: SelectOption | null
-}
-
 export default function HomePage() {
   const apiClient = useApiClient()
-
-  const [formState, setFormState] = useState<FormState>({
-    sportsTypeId: null as SelectOption | null,
-    sportsDisciplineId: null as SelectOption | null,
-    prefectureId: null as SelectOption | null,
-    targetAgeId: null as SelectOption | null
-  })
-
   const [recruitments, setRecruitments] = useState<Recruitment[]>([])
   const [searchErrors, setSearchErrors] = useState<string[]>([])
-
-  const {
-    sportsTypes,
-    prefectures,
-    targetAges,
-    errors: initialErrors,
-  } = useInitialFormData()
-
-  const { sportsDisciplines, errors: sportsDisciplineErrors } = useFetchDisciplines(formState.sportsTypeId)
-
-  const handleFormChange = async (FormStateKey: keyof FormState, selectedOption: SelectOption | null) => {
-    if (FormStateKey === "sportsTypeId") {
-      // 競技が変わったら、種目はリセット
-      setFormState(prev => ({
-        ...prev,
-        sportsTypeId: selectedOption,
-        sportsDisciplineId: null
-      }))
-    } else {
-      setFormState(prev => ({
-        ...prev,
-        [FormStateKey]: selectedOption
-      }))
-    }
-  }
-
-  const handleSearch = async () => {
-    setSearchErrors([])
-    setRecruitments([])
-
-    try {
-      const params: Record<string, string> = {}
-
-      // 現在のformStateを使用してパラメータを構築
-      if (formState.sportsTypeId) {
-        const selectedSportsTypeId = sportsTypes.find(sportsType => sportsType.id === formState.sportsTypeId!.id)
-        if (selectedSportsTypeId) {
-          params.sports_type_name = selectedSportsTypeId.name
-        }
-      }
-      
-      if (formState.sportsDisciplineId) {
-        const selectedDisciplineId = sportsDisciplines.find(
-          sportsDiscipline => sportsDiscipline.id === formState.sportsDisciplineId!.id
-        )
-        if (selectedDisciplineId) {
-          params.sports_discipline_name = selectedDisciplineId.name
-        }
-      }
-      
-      if (formState.prefectureId) {
-        const selectedPrefectureId = prefectures.find(
-          prefecture => prefecture.id === formState.prefectureId!.id
-        )
-        if (selectedPrefectureId) {
-          params.prefecture_name = selectedPrefectureId.name
-        }
-      }
-      
-      if (formState.targetAgeId) {
-        const selectedAgeId = targetAges.find(
-          age => age.id === formState.targetAgeId!.id
-        )
-        if (selectedAgeId) {
-          params.target_age_name = selectedAgeId.name
-        }
-      }
-      
-      const recruitmentResponse = await apiClient.get("/searches", { params })
-      setRecruitments(recruitmentResponse.data)
-
-    } catch {
-      setSearchErrors(["イベントのデータ取得に失敗しました。時間を置いて再試行してください。"])
-    }
-  }
 
   useEffect(() => {    
     initialSearch()
@@ -120,6 +27,18 @@ export default function HomePage() {
     try {
       const initialSearchResponse = await apiClient.get("/searches", { params: {} })
       setRecruitments(initialSearchResponse.data)
+    } catch {
+      setSearchErrors(["イベントのデータ取得に失敗しました。時間を置いて再試行してください。"])
+    }
+  }
+
+  const handleSearch = async (searchParams: Record<string, string>) => {
+    setSearchErrors([])
+    setRecruitments([])
+
+    try {
+      const recruitmentResponse = await apiClient.get("/searches", { params: searchParams })
+      setRecruitments(recruitmentResponse.data)
     } catch {
       setSearchErrors(["イベントのデータ取得に失敗しました。時間を置いて再試行してください。"])
     }
@@ -139,17 +58,7 @@ export default function HomePage() {
 
   return (
     <div className="mt-32 md:mt-20 mx-auto p-4 md:flex md:items-start">
-      <SearchForm
-        sportsTypes={sportsTypes}
-        sportsDisciplines={sportsDisciplines}
-        prefectures={prefectures}
-        targetAges={targetAges}
-        formState={formState}
-        onFormChange={handleFormChange}
-        onSearch={handleSearch}
-        setFormState={setFormState}
-        errors={[...initialErrors, ...sportsDisciplineErrors, ...searchErrors]}
-      />
+      <SearchForm onSearch={handleSearch} externalErrors={searchErrors} />
 
       <div className="md:w-5/6 md:ml-2">
         {recruitments.length === 0 ? (
