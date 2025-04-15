@@ -1,53 +1,25 @@
-import { useState, useEffect } from "react"
-import { useApiClient } from "@/hooks/useApiClient"
-import SearchForm from "@/components/HomePage/SearchForm"
+import SelectField from "@/components/ui/SelectField"
+import Button from "@/components/ui/Button"
+import useSearchForm from "@/hooks/useHomePageSearch"
 
-interface Recruitment {
-  id: number
-  name: string
-  sports_type_name: string
-  sports_discipline_name: { id: number; name: string }[]
-  prefecture_name: string
-  purpose_body: string
-  sex: string
-  target_age_name: { id: number; name: string }[]
+interface DetailItemProps {
+  label: string
+  value: string | null
 }
 
 export default function HomePage() {
-  const apiClient = useApiClient()
-  const [recruitments, setRecruitments] = useState<Recruitment[]>([])
-  const [searchErrors, setSearchErrors] = useState<string[]>([])
-
-  useEffect(() => {    
-    initialSearch()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const initialSearch = async () => {
-    try {
-      const initialSearchResponse = await apiClient.get("/searches", { params: {} })
-      setRecruitments(initialSearchResponse.data)
-    } catch {
-      setSearchErrors(["イベントのデータ取得に失敗しました。時間を置いて再試行してください。"])
-    }
-  }
-
-  const handleSearch = async (searchParams: Record<string, string>) => {
-    setSearchErrors([])
-    setRecruitments([])
-
-    try {
-      const recruitmentResponse = await apiClient.get("/searches", { params: searchParams })
-      setRecruitments(recruitmentResponse.data)
-    } catch {
-      setSearchErrors(["イベントのデータ取得に失敗しました。時間を置いて再試行してください。"])
-    }
-  }
-  
-  interface DetailItemProps {
-    label: string
-    value: string | null
-  }
+  const {
+    formState,
+    formAction,
+    handleChange,
+    FORM_FIELD_KEYS,
+    sportsTypes,
+    sportsDisciplines,
+    prefectures,
+    targetAges,
+    recruitments,
+    errors
+  } = useSearchForm()
 
   const DetailItem = ({ label, value }: DetailItemProps) => (
     <div className="mt-2 break-words w-full md:w-11/12">
@@ -58,7 +30,64 @@ export default function HomePage() {
 
   return (
     <div className="mt-32 md:mt-20 mx-auto p-4 md:flex md:items-start">
-      <SearchForm onSearch={handleSearch} externalErrors={searchErrors} />
+      <div className="rounded-lg bg-sky-100 drop-shadow-lg mb-4 md:w-1/4 md:mb-0 pb-3">
+        <h2 className="mb-5 text-center pt-10 font-bold text-2xl text-blue-600">
+          カテゴリー別検索
+        </h2>
+        <form action={formAction} className="my-5 text-center">
+          {/* 競技選択 */}
+          <SelectField
+            name={FORM_FIELD_KEYS.SPORTS_TYPE}
+            className="ring-offset-2 ring-2 hover:bg-blue-200"
+            value={formState.sportsTypeId ? formState.sportsTypeId.id.toString() : ""}
+            onChange={(e) => handleChange(e, FORM_FIELD_KEYS.SPORTS_TYPE)}
+            options={[{ id: "" as unknown as number, name: "競技選択" }, ...sportsTypes]}
+            placeholder="競技選択"
+          />
+
+          {/* 種目選択 */}
+          {sportsDisciplines.length > 0 && (
+            <SelectField
+              name={FORM_FIELD_KEYS.SPORTS_DISCIPLINE}
+              className="ring-offset-2 ring-2 hover:bg-blue-200"
+              value={formState.sportsDisciplineId ? formState.sportsDisciplineId.id.toString() : ""}
+              onChange={(e) => handleChange(e, FORM_FIELD_KEYS.SPORTS_DISCIPLINE)}
+              options={[{ id: "" as unknown as number, name: "種目選択" }, ...sportsDisciplines]}
+              placeholder="種目選択"
+            />
+          )}
+
+          {/* 都道府県選択 */}
+          <SelectField
+            name={FORM_FIELD_KEYS.PREFECTURE}
+            className="ring-offset-2 ring-2 hover:bg-blue-200"
+            value={formState.prefectureId ? formState.prefectureId.id.toString() : ""}
+            onChange={(e) => handleChange(e, FORM_FIELD_KEYS.PREFECTURE)}
+            options={[{ id: "" as unknown as number, name: "都道府県選択" }, ...prefectures]}
+            placeholder="都道府県選択"
+          />
+
+          {/* 対象年齢選択 */}
+          <SelectField
+            name={FORM_FIELD_KEYS.TARGET_AGE}
+            className="ring-offset-2 ring-2 hover:bg-blue-200"
+            value={formState.targetAgeId ? formState.targetAgeId.id.toString() : ""}
+            onChange={(e) => handleChange(e, FORM_FIELD_KEYS.TARGET_AGE)}
+            options={[{ id: "" as unknown as number, name: "対象年齢選択" }, ...targetAges]}
+            placeholder="対象年齢選択"
+          />
+
+          <Button type="submit" variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">検索</Button>
+        </form>
+
+        {errors.length > 0 && (
+          <div className="text-red-500 text-sm mt-2">
+            {errors.map((error, index) => (
+              <li key={index}>{error}</li>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="md:w-5/6 md:ml-2">
         {recruitments.length === 0 ? (
