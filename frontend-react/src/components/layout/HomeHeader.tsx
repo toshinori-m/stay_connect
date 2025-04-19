@@ -41,7 +41,7 @@ export default function HomeHeader() {
   { label: "ホーム", onClick: () => navigate("/home") },
   { label: "イベント作成", onClick: () => navigate("/event_setting") },
   { label: "イベント一覧", onClick: () => navigate("/event_setting_list") },
-  { label: "基本設定", onClick: () => console.log("基本設定画面は次のissueで作成予定！") }, // TODO: 後続タスクで処理を追加
+  { label: "基本設定", onClick: () => navigate("/basic_setting_edit") },
   { label: "チーム紹介一覧", onClick: () => navigate("/team_profile_list") },
   { label: "ログアウト", onClick: logOut, extraClass: "ml-2 lg:-mr-7" }
 ]

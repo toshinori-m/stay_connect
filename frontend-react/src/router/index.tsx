@@ -14,6 +14,7 @@ import EventSettingListPage from "@/pages/eventPages/EventSettingListPage"
 import TeamProfileListPage from "@/pages/teamPages/TeamProfileListPage"
 import ChatRoomListPage from "@/pages/chatPage/ChatRoomListPage"
 import EventSettingEditPage from "@/pages/eventPages/EventSettingEditPage"
+import BasicSettingEditPage from "@/pages/BasicSettingEditPage"
 
 function OpenLayout() {
   return (
@@ -67,6 +68,7 @@ export default function AppRouter() {
           <Route path="/team_profile_list" element={<TeamProfileListPage />} />
           <Route path="/chat_room_list" element={<ChatRoomListPage />} />
           <Route path="/event_setting_edit/:id" element={<EventSettingEditPage />} />
+          <Route path="/basic_setting_edit" element={<BasicSettingEditPage />} />
         </Route>
       </Route>
     </Routes>
