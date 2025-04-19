@@ -6,7 +6,6 @@ import InputField from "@/components/ui/InputField"
 import TextareaField from "@/components/ui/TextareaField"
 import RadioGroupField from "@/components/ui/RadioGroupField"
 import CheckboxField from "@/components/ui/CheckboxField"
-import ButtonField from "@/components/ui/ButtonField"
 import Button from "@/components/ui/Button"
 
 interface User {
@@ -28,10 +27,22 @@ interface FormState {
 
 export default function BasicSettingEditPage() {
   const SHOW_LIMIT_THRESHOLD = 5
+  const NAME_MIN_LENGTH = 2
   const NAME_MAX_LENGTH = 100
+  const SELF_INTRODUCTION_MIN_LENGTH = 1
   const MAX_LENGTH = 255
   const remainingNameCharacters = (input: string) => NAME_MAX_LENGTH - input.length
   const remainingCharacters = (input: string) => MAX_LENGTH - input.length
+
+  const USER_FIELDS = {
+    NAME: "name",
+    EMAIL: "email",
+    BIRTHDAY: "birthday",
+    SEX: "sex",
+    SELF_INTRODUCTION: "self_introduction",
+    EMAIL_NOTIFICATION: "email_notification",
+    IMAGE: "image"
+  }
 
   const navigate = useNavigate()
   const apiClient = useApiClient()
@@ -66,11 +77,11 @@ export default function BasicSettingEditPage() {
       const selfIntroduction = formState.user.self_introduction
 
       // バリデーション
-      if (name.trim().length < 2 || name.trim().length > 100) newErrors.push("ユーザー名を２文字〜１００文字で入力してください。")
+      if (name.trim().length < NAME_MIN_LENGTH || name.trim().length > NAME_MAX_LENGTH) newErrors.push(`ユーザー名を${NAME_MIN_LENGTH}文字〜${NAME_MAX_LENGTH}文字で入力してください。`)
       if (!email.trim()) newErrors.push("メールアドレスを入力してください。")
       if (!birthday.trim()) newErrors.push("誕生日を入力してください。")
       if (!sex.trim()) newErrors.push("性別を選択してください。")
-      if (selfIntroduction.trim().length === 0 || selfIntroduction.trim().length > 255) newErrors.push("自己紹介を１文字〜２５５文字で入力してください。")
+      if (selfIntroduction.trim().length === 0 || selfIntroduction.trim().length > MAX_LENGTH) newErrors.push(`自己紹介を${SELF_INTRODUCTION_MIN_LENGTH}文字〜${MAX_LENGTH}文字で入力してください。`)
       if (!formState.user?.id) newErrors.push("ユーザー情報が見つかりません。")
 
       const today = new Date()
@@ -173,8 +184,12 @@ export default function BasicSettingEditPage() {
     console.log("パスワード再設定メール送信画面は次のissueで作成予定！") // TODO: 後続タスクで処理を追加
   }
 
-  const getEmailNotificationStatus = () => {
-    return formState.user.email_notification === "receives" ? "受信する" : "受信しない"
+  const isEmailNotificationEnabled = () => {
+    return formState.user.email_notification === "receives"
+  }  
+
+  const getEmailNotificationLabel = () => {
+    return isEmailNotificationEnabled() ? "受信する" : "受信しない"
   }
 
   const updateFormState = (field: string, value: unknown) => {
@@ -185,16 +200,6 @@ export default function BasicSettingEditPage() {
         [field]: value
       }
     }))
-  }
-
-  const USER_FIELDS = {
-    NAME: "name",
-    EMAIL: "email",
-    BIRTHDAY: "birthday",
-    SEX: "sex",
-    SELF_INTRODUCTION: "self_introduction",
-    EMAIL_NOTIFICATION: "email_notification",
-    IMAGE: "image"
   }
 
   const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -305,10 +310,13 @@ export default function BasicSettingEditPage() {
 
             {/* パスワード */}
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
-              <div className="md:col-span-12 md:ml-2 md:mr-4">
-                <ButtonField label="パスワード" variant="yellow" size="sm" type="button" onClick={redirectToSendEmail}>
-                  （変更する）
-                </ButtonField>
+              <div className="w-full flex md:px-8 items-center md:col-span-12 md:ml-2 md:mr-4">
+                <label className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm">パスワード</label>
+                <div className="w-full my-2">
+                  <Button variant="yellow" size="sm" type="button" onClick={redirectToSendEmail}>
+                    （変更する）
+                  </Button>
+                </div>
               </div>
             </li>
 
@@ -333,10 +341,10 @@ export default function BasicSettingEditPage() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <CheckboxField
-                  name={USER_FIELDS.EMAIL_NOTIFICATION}
+                  name={USER_FIELDS.SELF_INTRODUCTION}
                   label="メール通知"
-                  statusText={getEmailNotificationStatus()}
-                  checked={formState.user.email_notification === "receives"}
+                  statusText={getEmailNotificationLabel()}
+                  checked={isEmailNotificationEnabled()}
                   onChange={toggleEmailNotification}
                 />
               </div>

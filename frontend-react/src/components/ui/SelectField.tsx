@@ -42,9 +42,9 @@ export default function SelectField({
   return (
     <div className="w-full md:flex md:px-8 items-center">
       {label && (
-        <p className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm">
+        <label className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm">
           {label}
-        </p>
+        </label>
       )}
       <select
         name={name}

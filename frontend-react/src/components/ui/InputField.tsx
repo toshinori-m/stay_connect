@@ -25,7 +25,7 @@ export default function InputField({
 }: InputFieldProps) {
   return (
     <div className="w-full md:flex md:px-8 items-center">
-      <p className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm">{label}</p>
+      <label className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm">{label}</label>
       <input
         className={`w-full py-3 px-1.5 my-2 border-2 border-gray-200 rounded-lg ${className}`}
         name={name}

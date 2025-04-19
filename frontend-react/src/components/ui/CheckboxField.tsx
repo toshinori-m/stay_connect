@@ -3,7 +3,7 @@ import { ChangeEvent } from "react"
 interface CheckboxFieldProps {
   name: string
   label: string
-  statusText?: string
+  statusText?: string // 受信する / 受信しない
   checked: boolean
   onChange: (e: ChangeEvent<HTMLInputElement>) => void
   className?: string
@@ -19,7 +19,7 @@ export default function CheckboxField({
 }: CheckboxFieldProps) {
   return (
     <div className={`flex md:px-8 items-center ${className}`}>
-      <p className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm">{label}</p>
+      <label className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm">{label}</label>
       <div className="flex items-center">
         <input
           type="checkbox"
@@ -28,11 +28,9 @@ export default function CheckboxField({
           onChange={onChange}
           className="border-gray-200"
         />
-        {statusText && (
-          <label htmlFor={name} className="ml-2 mt-1">
-            {statusText}
-          </label>
-        )}
+        <span className="ml-2 mt-1 text-sm text-gray-700">
+          {statusText}
+        </span>
       </div>
     </div>
   )

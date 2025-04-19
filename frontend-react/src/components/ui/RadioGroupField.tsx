@@ -16,7 +16,7 @@ export default function RadioGroupField({
 }: RadioGroupFieldProps) {
   return (
     <div className="w-full md:flex md:px-8 items-center">
-      <p className="w-40 md:-ml-3 pl-2 pb-3 md:pb-0 tracking-tighter text-sm">{label}</p>
+      <label className="w-40 md:-ml-3 pl-2 pb-3 md:pb-0 tracking-tighter text-sm">{label}</label>
       <div className="w-full ml-1">
         {options.map((option) => (
             <label key={option.value} className="w-full py-3 px-3 my-2 mx-1">
