@@ -1,9 +1,9 @@
-import { ChangeEvent } from "react"
+import { ChangeEvent, useId } from "react"
 
 interface CheckboxFieldProps {
   name: string
-  label: string
-  statusText?: string // 受信する / 受信しない
+  title: string
+  statusText?: string
   checked: boolean
   onChange: (e: ChangeEvent<HTMLInputElement>) => void
   className?: string
@@ -11,17 +11,25 @@ interface CheckboxFieldProps {
 
 export default function CheckboxField({
   name,
-  label,
+  title,
   statusText,
   checked,
   onChange,
   className = ""
 }: CheckboxFieldProps) {
+  const id = useId()
+
   return (
     <div className={`flex md:px-8 items-center ${className}`}>
-      <label className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm">{label}</label>
+      <label
+        htmlFor={id}
+        className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm"
+      >
+        {title}
+      </label>
       <div className="flex items-center">
         <input
+          id={id}
           type="checkbox"
           name={name}
           checked={checked}

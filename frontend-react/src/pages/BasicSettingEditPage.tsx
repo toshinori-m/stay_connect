@@ -47,7 +47,7 @@ export default function BasicSettingEditPage() {
   const navigate = useNavigate()
   const apiClient = useApiClient()
   const { user } = useAuth()
-  const userId = user? user.uid : null
+  const userId = user?.uid ?? null
 
   const [fetchedId, setFetchedId] = useState<string | null>(null)
   const [errors, setErrors] = useState<string[]>([])
@@ -91,7 +91,7 @@ export default function BasicSettingEditPage() {
       if (selectedStartDate > today) newErrors.push("誕生日は今日以前の日付を選択してください。")
 
       if (newErrors.length > 0) {
-        return { errors: newErrors, formState: currentFormState }
+        return { errors: newErrors, formData: currentFormState }
       }
       
       const formData = new FormData()
@@ -111,7 +111,10 @@ export default function BasicSettingEditPage() {
         navigate("/home")
         return { errors: [] }
       } catch {
-        return { errors: ["基本設定に誤りがあります。"] }
+        return {
+          errors: ["基本設定に誤りがあります。"],
+          formData: currentFormState
+        }
       }
     },
     { errors: [] }
@@ -119,7 +122,12 @@ export default function BasicSettingEditPage() {
 
   useEffect(() => {
     if (fetchedId === userId) return
-    if (!userId) return
+
+    if (!userId) {
+      navigate("/login")
+      return
+    }
+
     fetchUserBasicSettings(userId)
     .then(userSettingData => {
       if (!userSettingData) return
@@ -133,18 +141,13 @@ export default function BasicSettingEditPage() {
   }, [userId])
   
   const fetchUserBasicSettings = async (userId: string) => {
-    try {
-      const userSettingData = (await apiClient.get(`/users/${userId}`)).data.data
-      setFormState(prev => ({
-        ...prev,
-        user: userSettingData,
-        error: null
-      }))
-      return userSettingData
-    } catch {
-      navigate("/login")
-      return null
-    }
+    const userSettingData = (await apiClient.get(`/users/${userId}`)).data.data
+    setFormState(prev => ({
+      ...prev,
+      user: userSettingData,
+      error: null
+    }))
+    return userSettingData
   }
 
   const setImage = (event: ChangeEvent<HTMLInputElement>) => {
@@ -234,7 +237,7 @@ export default function BasicSettingEditPage() {
                 <InputField
                   name={USER_FIELDS.NAME}
                   type="text"
-                  label="名前"
+                  title="名前"
                   placeholder="名前"
                   value={formState.user.name}
                   onChange={handleInputChange(USER_FIELDS.NAME)}
@@ -251,7 +254,7 @@ export default function BasicSettingEditPage() {
                 <InputField
                   name={USER_FIELDS.IMAGE}
                   type="file"
-                  label="アイコン"
+                  title="アイコン"
                   onChange={setImage}
                 />
               </div>
@@ -270,7 +273,7 @@ export default function BasicSettingEditPage() {
                 <InputField
                   name={USER_FIELDS.BIRTHDAY}
                   type="date"
-                  label="誕生日"
+                  title="誕生日"
                   placeholder="誕生日"
                   value={formState.user.birthday}
                   onChange={handleInputChange(USER_FIELDS.BIRTHDAY)}
@@ -283,10 +286,10 @@ export default function BasicSettingEditPage() {
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <RadioGroupField
                   name={USER_FIELDS.SEX}
-                  label="性別"
+                  title="性別"
                   options={[
-                    { label: "男", value: "man" },
-                    { label: "女", value: "woman" }
+                    { title: "男", value: "man" },
+                    { title: "女", value: "woman" }
                   ]}
                   selected={formState.user.sex}
                   onChange={handleSexChange}
@@ -300,7 +303,7 @@ export default function BasicSettingEditPage() {
                 <InputField
                   name={USER_FIELDS.EMAIL}
                   type={USER_FIELDS.EMAIL}
-                  label="メールアドレス"
+                  title="メールアドレス"
                   placeholder="メールアドレス"
                   value={formState.user.email}
                   onChange={handleInputChange(USER_FIELDS.EMAIL)}
@@ -325,7 +328,7 @@ export default function BasicSettingEditPage() {
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <TextareaField
                   name={USER_FIELDS.SELF_INTRODUCTION}
-                  label="自己紹介"
+                  title="自己紹介"
                   placeholder="自己紹介"
                   value={formState.user.self_introduction}
                   onChange={handleInputChange(USER_FIELDS.SELF_INTRODUCTION)}
@@ -341,8 +344,8 @@ export default function BasicSettingEditPage() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <CheckboxField
-                  name={USER_FIELDS.SELF_INTRODUCTION}
-                  label="メール通知"
+                  name={USER_FIELDS.EMAIL_NOTIFICATION}
+                  title="メール通知"
                   statusText={getEmailNotificationLabel()}
                   checked={isEmailNotificationEnabled()}
                   onChange={toggleEmailNotification}

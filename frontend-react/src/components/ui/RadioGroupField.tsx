@@ -1,5 +1,7 @@
+import { useId } from "react"
+
 interface RadioOption {
-  label: string;
+  title: string;
   value: string;
 }
 
@@ -8,19 +10,27 @@ interface RadioGroupFieldProps {
   options: RadioOption[];
   selected: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  label: string;
+  title: string;
 }
 
 export default function RadioGroupField({
-  name, options, selected, onChange, label
+  name, options, selected, onChange, title
 }: RadioGroupFieldProps) {
+  const id = useId()
+
   return (
     <div className="w-full md:flex md:px-8 items-center">
-      <label className="w-40 md:-ml-3 pl-2 pb-3 md:pb-0 tracking-tighter text-sm">{label}</label>
+      <label
+        htmlFor={id}
+        className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm"
+      >
+        {title}
+      </label>
       <div className="w-full ml-1">
         {options.map((option) => (
             <label key={option.value} className="w-full py-3 px-3 my-2 mx-1">
               <input
+                id={id}
                 type="radio"
                 name={name}
                 value={option.value}
@@ -28,7 +38,7 @@ export default function RadioGroupField({
                 onChange={onChange}
                 className="mr-1"
               />
-              {option.label}
+              {option.title}
             </label>
         ))}
       </div>
