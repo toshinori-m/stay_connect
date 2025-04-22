@@ -1,7 +1,7 @@
 import React from "react"
 import clsx from "clsx"
 
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "ghost" | "yellow" | "red"
   size?: "lg" | "sm"
 }

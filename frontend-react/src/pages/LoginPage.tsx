@@ -108,14 +108,14 @@ export default function LoginPage() {
         <div className="my-10">
           <form className="my-5 text-center" onSubmit={handleLogin}>
             <InputField
-              label="メールアドレス"
+              title="メールアドレス"
               type="email"
               placeholder="メールアドレス"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <InputField
-              label="パスワード"
+              title="パスワード"
               type="password"
               placeholder="パスワード"
               value={password}

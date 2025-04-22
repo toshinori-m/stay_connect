@@ -85,7 +85,7 @@ export default function RegisterPage() {
         <div className="my-10">
           <form className="my-5 text-center" onSubmit={handleSignUp}>
             <InputField
-              label={
+              title={
                 <>
                   名前
                   <br />
@@ -103,14 +103,14 @@ export default function RegisterPage() {
               </div>
             )}
             <InputField
-              label="メールアドレス"
+              title="メールアドレス"
               type="email"
               placeholder="メールアドレス"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <InputField
-              label={
+              title={
                 <>
                   パスワード
                   <br />
@@ -123,7 +123,7 @@ export default function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
             <InputField
-              label={
+              title={
                 <>
                   パスワード
                   <br />

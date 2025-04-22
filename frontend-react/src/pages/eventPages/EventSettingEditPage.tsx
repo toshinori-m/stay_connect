@@ -83,17 +83,12 @@ export default function EventSettingForm() {
   }, [recruitmentId, sportsTypes, prefectures, targetAges])
 
   const fetchRecruitmentData = async (recruitmentId: string) => {
-    try {
-      const recruitmentData = (await apiClient.get(`/recruitments/${recruitmentId}`)).data.data
-      const targetAgeIds = (await apiClient.get(`/recruitments/${recruitmentId}/target_ages`)).data.map(
-        (item: { target_age_id: number }) => item.target_age_id
-      )
+    const recruitmentData = (await apiClient.get(`/recruitments/${recruitmentId}`)).data.data
+    const targetAgeIds = (await apiClient.get(`/recruitments/${recruitmentId}/target_ages`)).data.map(
+      (item: { target_age_id: number }) => item.target_age_id
+    )
 
-      return { recruitmentData, targetAgeIds }
-    } catch {
-      setErrors(["イベントを表示できませんでした。"])
-      return null
-    }
+    return { recruitmentData, targetAgeIds }
   }
 
   const setRecruitmentFormState = (recruitmentData: RecruitmentData,) => {
@@ -326,8 +321,8 @@ export default function EventSettingForm() {
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <SelectField
                   name="eventSportsType"
-                  label="競技名"
-                  value={formState.sportsTypeSelected ? formState.sportsTypeSelected.id : ""}
+                  title="競技名"
+                  value={formState.sportsTypeSelected?.id ?? ""}
                   options={sportsTypes}
                   onChange={handleSportsTypeChange}
                 />
@@ -341,7 +336,7 @@ export default function EventSettingForm() {
                   <SelectField
                     name="eventSportsDiscipline"
                     multiple
-                    label={<>種目<br />（複数可）</>}
+                    title={<>種目<br />（複数可）</>}
                     value={formState.sportsDisciplineSelected.map(d => d.id.toString())}
                     options={sportsDisciplines}
                     onChange={(e) => handleMultiSelectChange(e, sportsDisciplines, 'sportsDisciplineSelected')}
@@ -356,7 +351,7 @@ export default function EventSettingForm() {
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <SelectField
                   name="eventPrefecture"
-                  label="都道府県"
+                  title="都道府県"
                   value={formState.prefectureSelected ? formState.prefectureSelected : ""}
                   options={prefectures}
                   onChange={handlePrefectureChange}
@@ -370,7 +365,7 @@ export default function EventSettingForm() {
                 <SelectField
                   name="eventTargetAge"
                   multiple
-                  label={<>対象年齢<br />（複数可）</>}
+                  title={<>対象年齢<br />（複数可）</>}
                   value={formState.targetAgeSelected.map(age => age.id.toString())}
                   options={targetAges}
                   onChange={(e) => handleMultiSelectChange(e, targetAges, 'targetAgeSelected')}
@@ -385,7 +380,7 @@ export default function EventSettingForm() {
                 <InputField
                   name="eventName"
                   type="text"
-                  label="イベント名"
+                  title="イベント名"
                   placeholder="イベント名"
                   value={formState.eventName}
                   onChange={handleInputChange('eventName')}
@@ -402,7 +397,7 @@ export default function EventSettingForm() {
                 <InputField
                   name="eventURL"
                   type="url"
-                  label="イベントURL"
+                  title="イベントURL"
                   placeholder="https://www.example.com"
                   value={formState.eventUrl}
                   onChange={handleInputChange('eventUrl')}
@@ -415,7 +410,7 @@ export default function EventSettingForm() {
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <TextareaField
                   name="eventArea"
-                  label="イベント開催場所"
+                  title="イベント開催場所"
                   placeholder="イベント開催場所"
                   value={formState.area}
                   rows={4}
@@ -429,12 +424,12 @@ export default function EventSettingForm() {
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <RadioGroupField
                   name="eventSex"
-                  label="性別"
+                  title="性別"
                   options={[
-                    { label: "男", value: "man" },
-                    { label: "女", value: "woman" },
-                    { label: "男女", value: "mix" },
-                    { label: "混合", value: "man_and_woman" }
+                    { title: "男", value: "man" },
+                    { title: "女", value: "woman" },
+                    { title: "男女", value: "mix" },
+                    { title: "混合", value: "man_and_woman" }
                   ]}
                   selected={formState.sex}
                   onChange={handleSexChange}
@@ -448,7 +443,7 @@ export default function EventSettingForm() {
                 <InputField
                   name="eventStartDate"
                   type="date"
-                  label="開始日付"
+                  title="開始日付"
                   value={formState.startDate}
                   onChange={handleInputChange('startDate')}
                   min={new Date().toISOString().split("T")[0]}
@@ -462,7 +457,7 @@ export default function EventSettingForm() {
                 <InputField
                   name="eventEndDate"
                   type="date"
-                  label="終了日付"
+                  title="終了日付"
                   value={formState.endDate}
                   onChange={handleInputChange('endDate')}
                 />
@@ -475,7 +470,7 @@ export default function EventSettingForm() {
                 <InputField
                   name="eventNumber"
                   type="number"
-                  label="募集チーム数"
+                  title="募集チーム数"
                   placeholder="募集チーム数"
                   value={formState.eventNumber}
                   onChange={handleInputChange('eventNumber')}
@@ -488,7 +483,7 @@ export default function EventSettingForm() {
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <TextareaField
                   name="eventPurposeBody"
-                  label="イベント目的"
+                  title="イベント目的"
                   placeholder="イベント目的"
                   value={formState.purposeBody}
                   onChange={handleInputChange('purposeBody')}
@@ -502,7 +497,7 @@ export default function EventSettingForm() {
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <TextareaField
                   name="eventOtherBody"
-                  label="その他"
+                  title="その他"
                   placeholder="その他"
                   value={formState.otherBody}
                   onChange={handleInputChange('otherBody')}

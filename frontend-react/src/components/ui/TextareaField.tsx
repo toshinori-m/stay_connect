@@ -1,8 +1,8 @@
-import { ReactNode } from "react"
+import { useId } from "react"
 
 interface TextareaFieldProps {
   name?: string
-  label: ReactNode
+  title: string
   placeholder?: string
   value: string
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
@@ -13,7 +13,7 @@ interface TextareaFieldProps {
 
 export default function TextareaField({
   name,
-  label,
+  title,
   placeholder = "",
   value,
   onChange,
@@ -21,11 +21,19 @@ export default function TextareaField({
   className = "",
   rows = 4,
 }: TextareaFieldProps) {
+  const id = useId()
+
   return (
     <div className="w-full md:flex md:px-8 items-center">
-      <p className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm">{label}</p>
+      <label
+        htmlFor={id}
+        className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm"
+      >
+        {title}
+      </label>
       <textarea
         className={`w-full py-3 px-1.5 my-2 border-2 border-gray-200 resize-none rounded-lg ${className}`}
+        id={id}
         name={name}
         placeholder={placeholder}
         value={value}

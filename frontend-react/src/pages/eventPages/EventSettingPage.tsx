@@ -195,7 +195,7 @@ export default function EventSettingPage() {
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <SelectField
                   name="eventSportsType"
-                  label="競技名"
+                  title="競技名"
                   value={formState.sportsTypeSelected ? formState.sportsTypeSelected.id : ""}
                   onChange={handleSportsTypeChange}
                   options={sportsTypes}
@@ -210,13 +210,7 @@ export default function EventSettingPage() {
                   <SelectField
                     name="eventSportsDiscipline"
                     multiple
-                    label={
-                      <>
-                        種目
-                        <br />
-                        （複数可）
-                      </>
-                    }
+                    title={<>種目<br />（複数可）</>}
                     value={formState.sportsDisciplineSelected.map(d => d.id.toString())}
                     onChange={(e) => handleMultiSelectChange(e, sportsDisciplines, 'sportsDisciplineSelected')}
                     options={sportsDisciplines}
@@ -231,7 +225,7 @@ export default function EventSettingPage() {
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <SelectField
                   name="eventPrefecture"
-                  label="都道府県"
+                  title="都道府県"
                   value={formState.prefectureSelected ? formState.prefectureSelected : ""}
                   onChange={handlePrefectureChange}
                   options={prefectures}
@@ -245,13 +239,7 @@ export default function EventSettingPage() {
                 <SelectField
                   name="eventTargetAge"
                   multiple
-                  label={
-                    <>
-                      対象年齢
-                      <br />
-                      （複数可）
-                    </>
-                  }
+                  title={<>対象年齢<br />（複数可）</>}
                   value={formState.targetAgeSelected.map(age => age.id.toString())}
                   onChange={(e) => handleMultiSelectChange(e, targetAges, 'targetAgeSelected')}
                   options={targetAges}
@@ -266,7 +254,7 @@ export default function EventSettingPage() {
                 <InputField
                   name="eventName"
                   type="text"
-                  label="イベント名"
+                  title="イベント名"
                   placeholder="イベント名"
                   value={formState.eventName}
                   onChange={handleInputChange('eventName')}
@@ -283,7 +271,7 @@ export default function EventSettingPage() {
                 <InputField
                   name="eventURL"
                   type="url"
-                  label="イベントURL"
+                  title="イベントURL"
                   placeholder="https://www.example.com"
                   value={formState.eventUrl}
                   onChange={handleInputChange('eventUrl')}
@@ -296,7 +284,7 @@ export default function EventSettingPage() {
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <TextareaField
                   name="eventArea"
-                  label="イベント開催場所"
+                  title="イベント開催場所"
                   placeholder="イベント開催場所"
                   value={formState.area}
                   onChange={handleInputChange('area')}
@@ -313,12 +301,12 @@ export default function EventSettingPage() {
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <RadioGroupField
                   name="eventSex"
-                  label="性別"
+                  title="性別"
                   options={[
-                    { label: "男", value: "man" },
-                    { label: "女", value: "woman" },
-                    { label: "男女", value: "mix" },
-                    { label: "混合", value: "man_and_woman" }
+                    { title: "男", value: "man" },
+                    { title: "女", value: "woman" },
+                    { title: "男女", value: "mix" },
+                    { title: "混合", value: "man_and_woman" }
                   ]}
                   selected={formState.sex}
                   onChange={handleSexChange}
@@ -332,7 +320,7 @@ export default function EventSettingPage() {
                 <InputField
                   name="eventStartDate"
                   type="date"
-                  label="開始日付"
+                  title="開始日付"
                   value={formState.startDate}
                   onChange={handleInputChange('startDate')}
                   min={new Date().toISOString().split("T")[0]}
@@ -346,7 +334,7 @@ export default function EventSettingPage() {
                 <InputField
                   name="eventEndDate"
                   type="date"
-                  label="終了日付"
+                  title="終了日付"
                   value={formState.endDate}
                   onChange={handleInputChange('endDate')}
                 />
@@ -359,7 +347,7 @@ export default function EventSettingPage() {
                 <InputField
                   name="eventNumber"
                   type="number"
-                  label="募集チーム数"
+                  title="募集チーム数"
                   placeholder="募集チーム数"
                   value={formState.number}
                   onChange={handleInputChange('number')}
@@ -372,7 +360,7 @@ export default function EventSettingPage() {
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <TextareaField
                   name="eventPurposeBody"
-                  label="イベント目的"
+                  title="イベント目的"
                   placeholder="イベント目的"
                   value={formState.purposeBody}
                   onChange={handleInputChange('purposeBody')}
@@ -386,7 +374,7 @@ export default function EventSettingPage() {
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <TextareaField
                   name="eventOtherBody"
-                  label="その他"
+                  title="その他"
                   placeholder="その他"
                   value={formState.otherBody}
                   onChange={handleInputChange('otherBody')}

@@ -43,7 +43,7 @@ export default function ResetPassword() {
           </p>
           <form className="text-center mx-7 md:mx-0" onSubmit={handleSubmit}>
             <InputField
-              label="メールアドレス"
+              title="メールアドレス"
               type="email"
               placeholder="メールアドレス"
               value={email}

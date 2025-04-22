@@ -1,9 +1,9 @@
-import React, { ReactNode } from "react"
+import React, { ReactNode, useId } from "react"
 import { SelectOption } from "@/types"
 
 interface SelectFieldProps {
   name?: string
-  label?: ReactNode
+  title?: ReactNode
   value: string | number | string[]  
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
   options: SelectOption[]
@@ -31,7 +31,7 @@ const renderOptions = (options: SelectOption[]) => {
 
 export default function SelectField({
   name,
-  label,
+  title,
   value,
   onChange,
   options,
@@ -39,14 +39,17 @@ export default function SelectField({
   className = "",
   multiple = false
 }: SelectFieldProps) {
+  const id = useId()
+
   return (
     <div className="w-full md:flex md:px-8 items-center">
-      {label && (
+      {title && (
         <p className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm">
-          {label}
+          {title}
         </p>
       )}
       <select
+        id={id}
         name={name}
         value={value}
         onChange={onChange}
