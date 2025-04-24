@@ -20,6 +20,10 @@ class PrefecturesController < ApplicationController
     render json: { message: '成功しました', data: prefectures }, status: 200
   end
 
+  def show
+    @prefecture = Prefecture.find(params[:id])
+  end
+
   def destroy
     prefecture = Prefecture.find(params[:id])
     return render json: { message: '削除に成功しました' }, status: 200 if prefecture.destroy

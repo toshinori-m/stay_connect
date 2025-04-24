@@ -20,6 +20,10 @@ class SportsTypesController < ApplicationController
     render json: { message: '成功しました', data: sports_types }, status: 200
   end
 
+  def show
+    @sports_type = SportsType.find(params[:id])
+  end
+
   def destroy
     sports_type = SportsType.find(params[:id])
     return render json: { message: '削除に成功しました' }, status: 200 if sports_type.destroy
