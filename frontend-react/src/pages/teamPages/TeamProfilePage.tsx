@@ -15,10 +15,10 @@ export default function TeamProfilePage() {
   const navigate = useNavigate()
 
   const [formState, setFormState] = useState({
-    sportsTypeSelected: null as SelectOption | null,
+    sportsTypeSelected: null as SelectOption | null, // TODO: sportsTypeSelectedの初期値を空文字へ修正する対応については後日PRで実施予定
     sportsDisciplineSelected: [] as SelectOption[],
     targetAgeSelected: [] as SelectOption[],
-    prefectureSelected: null as string | null,
+    prefectureSelected: "",
     teamName: "",
     area: "",
     sex: "",
@@ -37,9 +37,6 @@ export default function TeamProfilePage() {
 
   const SHOW_LIMIT_THRESHOLD = 5
   const MAX_LENGTH = 255
-  const remainingCharactersTeamName = MAX_LENGTH - formState.teamName.length
-  const remainingCharactersArea = MAX_LENGTH - formState.area.length
-  const remainingCharactersTrackRecord = MAX_LENGTH - formState.trackRecord.length
 
   const TEAM_FIELDS = {
     SPORTS_TYPE: "teamSportsType",
@@ -52,6 +49,10 @@ export default function TeamProfilePage() {
     TARGET_RECORD: "trackRecord",
     OTHER_BODY: "otherBody"
   }
+
+  const remainingCharactersTeamName = MAX_LENGTH - formState.teamName.length
+  const remainingCharactersArea = MAX_LENGTH - formState.area.length
+  const remainingCharactersTrackRecord = MAX_LENGTH - formState.trackRecord.length
 
   const updateFormState = (field: string, value: unknown) => {
     setFormState(prev => ({ ...prev, [field]: value }))
@@ -204,7 +205,7 @@ export default function TeamProfilePage() {
                   <SelectField
                     name={TEAM_FIELDS.PREFECTURE}
                     title="都道府県"
-                    value={formState.prefectureSelected ? formState.prefectureSelected : ""}
+                    value={formState.prefectureSelected}
                     onChange={handlePrefectureChange}
                     options={prefectures}
                   />
