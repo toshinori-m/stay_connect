@@ -30,22 +30,14 @@ export default function EventPage() {
   const [errors, setErrors] = useState<string[]>([])
   const { id: eventId } = useParams()
 
-  const sportsDisciplinesNames = () => {
-    if (eventDetails && eventDetails.sports_disciplines?.length > 0) {
-      return eventDetails.sports_disciplines.map(sd => sd.name).join(", ")
-    }
-    return ""
+  const formatOptionNames = (options?: { name: string }[] | null): string => {
+    return options?.length ? options.map(opt => opt.name).join(", ") : ""
   }
 
-  const targetAgesNames = () => {
-    if (eventDetails && eventDetails.target_ages?.length > 0) {
-      return eventDetails.target_ages.map(age => age.name).join(", ")
-    }
-    return ""
-  }
+  const sportsDisciplinesNames = () => formatOptionNames(eventDetails?.sports_disciplines)
+  const targetAgesNames = () => formatOptionNames(eventDetails?.target_ages)
 
   useEffect(() => {
-
     setErrors([])
 
     if (!eventId || fetchedEventId === eventId) return
@@ -87,11 +79,11 @@ export default function EventPage() {
     return prefectureData
   }
 
-  const goToUserProfile = () => {
+  const handleUserProfileClick = () => {
     console.log("代表紹介編集画面は次のissueで作成予定！") // TODO: 後続タスクで処理を追加
   }
 
-  const TitleAndText = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  const TitleAndValue = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <p className="mb-5">
       <span className="font-semibold text-blue-600">{title}:</span> {children}
     </p>
@@ -114,7 +106,7 @@ export default function EventPage() {
           variant="primary"
           size="sm"
           className="mr-4"
-          onClick={() => goToUserProfile()}
+          onClick={() => handleUserProfileClick()}
         >
           代表紹介
         </Button>
@@ -122,21 +114,21 @@ export default function EventPage() {
       {errors.map((errMsg, index) => (
         <div key={index} className="text-sm text-red-400">{errMsg}</div>
       ))}
-      <TitleAndText title="競技">{sportsType}</TitleAndText>
+      <TitleAndValue title="競技">{sportsType}</TitleAndValue>
 
       {eventDetails.sports_disciplines?.length > 0 && (
-        <TitleAndText title="種目">{sportsDisciplinesNames()}</TitleAndText>
+        <TitleAndValue title="種目">{sportsDisciplinesNames()}</TitleAndValue>
       )}
 
-      <TitleAndText title="都道府県">{prefecture}</TitleAndText>
-      <TitleAndText title="開催地">{eventDetails.area}</TitleAndText>
-      <TitleAndText title="対象年齢">{targetAgesNames()}</TitleAndText>
-      <TitleAndText title="目的">{eventDetails.purpose_body}</TitleAndText>
-      <TitleAndText title="開始日">{eventDetails.start_date}</TitleAndText>
-      <TitleAndText title="終了日">{eventDetails.end_date}</TitleAndText>
-      <TitleAndText title="性別">{eventDetails.sex}</TitleAndText>
-      <TitleAndText title="チーム数">{eventDetails.number}</TitleAndText>
-      <TitleAndText title="その他">{eventDetails.other_body}</TitleAndText>
+      <TitleAndValue title="都道府県">{prefecture}</TitleAndValue>
+      <TitleAndValue title="開催地">{eventDetails.area}</TitleAndValue>
+      <TitleAndValue title="対象年齢">{targetAgesNames()}</TitleAndValue>
+      <TitleAndValue title="目的">{eventDetails.purpose_body}</TitleAndValue>
+      <TitleAndValue title="開始日">{eventDetails.start_date}</TitleAndValue>
+      <TitleAndValue title="終了日">{eventDetails.end_date}</TitleAndValue>
+      <TitleAndValue title="性別">{eventDetails.sex}</TitleAndValue>
+      <TitleAndValue title="チーム数">{eventDetails.number}</TitleAndValue>
+      <TitleAndValue title="その他">{eventDetails.other_body}</TitleAndValue>
     </div>
   )
 }

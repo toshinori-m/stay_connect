@@ -63,8 +63,6 @@ export default function SearchForm() {
 
   const { sportsDisciplines, errors: sportsDisciplineErrors } = useFetchDisciplines(formState.sportsTypeId)
 
-  const errors = [...initialErrors, ...sportsDisciplineErrors, ...searchErrors]
-
   useEffect(() => {    
     initialSearch()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -208,6 +206,22 @@ export default function SearchForm() {
     }
   }
 
+  const formatOptionNames = (options?: { name: string }[] | null): string => {
+    return options?.length ? options.map(opt => opt.name).join(", ") : ""
+  }
+
+  const ErrorList = (errors: string[]) => {
+    if (errors.length === 0) return null
+
+    return (
+      <div className="text-red-500 text-sm mt-2">
+        {errors.map((error, index) => (
+          <li key={index}>{error}</li>
+        ))}
+      </div>
+    )
+  }
+
   // DetailItemコンポーネントの定義
   const DetailItem = ({ title, value }: DetailItemProps) => (
     <div className="mt-2 break-words w-full md:w-11/12">
@@ -267,14 +281,7 @@ export default function SearchForm() {
 
           <Button type="submit" variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">検索</Button>
         </form>
-
-        {errors.length > 0 && (
-          <div className="text-red-500 text-sm mt-2">
-            {errors.map((error, index) => (
-              <li key={index}>{error}</li>
-            ))}
-          </div>
-        )}
+        {ErrorList([...initialErrors, ...sportsDisciplineErrors, ...searchErrors])}
       </div>
 
       <div className="md:w-5/6 md:ml-2">
@@ -301,12 +308,12 @@ export default function SearchForm() {
               {recruitment.sports_discipline_name?.length > 0 && (
                 <DetailItem
                   title="種目"
-                  value={recruitment.sports_discipline_name?.map(d => d.name).join(", ") || "なし"}
+                  value={formatOptionNames(recruitment.sports_discipline_name) || "なし"}
                 />
               )}
               <DetailItem title="イベント目的" value={recruitment.purpose_body} />
               <DetailItem title="性別" value={recruitment.sex} />
-              <DetailItem title="対象年齢" value={recruitment.target_age_name?.map(d => d.name).join(", ") || "なし"} />
+              <DetailItem title="対象年齢" value={formatOptionNames(recruitment.target_age_name) || "なし"} />
             </div>
           ))
         )}
