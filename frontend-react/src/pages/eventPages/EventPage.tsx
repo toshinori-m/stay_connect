@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import { useApiClient } from "@/hooks/useApiClient"
 import { SelectOption } from "@/types"
 import Button from "@/components/ui/Button"
@@ -23,6 +23,7 @@ interface EventDetails {
 
 export default function EventPage() {
   const apiClient = useApiClient()
+  const navigate = useNavigate()
   const [eventDetails, setEventDetails] = useState<EventDetails | null>(null)
   const [fetchedEventId, setFetchedEventId] = useState<string | null>(null)
   const [sportsType, setSportsType] = useState("")
@@ -41,7 +42,6 @@ export default function EventPage() {
     setErrors([])
 
     if (!eventId || fetchedEventId === eventId) return
-    console.log("getSportsType")
 
     fetchEventDetails(eventId)
     .then(eventData => {
@@ -69,8 +69,8 @@ export default function EventPage() {
 
   const fetchSportsType = async (sportsTypeId: number | null) => {
     if (!sportsTypeId) return Promise.resolve(null)
-    const sportsTypeDate = (await apiClient.get(`/sports_types/${sportsTypeId}`)).data.data
-    return sportsTypeDate
+    const sportsTypeData = (await apiClient.get(`/sports_types/${sportsTypeId}`)).data.data
+    return sportsTypeData
   }
 
   const fetchPrefecture = async (prefectureId: number | null) => {
@@ -80,7 +80,9 @@ export default function EventPage() {
   }
 
   const handleUserProfileClick = () => {
-    console.log("代表紹介編集画面は次のissueで作成予定！") // TODO: 後続タスクで処理を追加
+    if (eventDetails?.user_id) {
+      navigate(`/user_profile/${eventDetails.user_id}`)
+    }
   }
 
   const TitleAndValue = ({ title, children }: { title: string; children: React.ReactNode }) => (
