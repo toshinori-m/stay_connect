@@ -13,6 +13,7 @@
     "@egoist/tailwindcss-icons": "^1.9.0",
     "@iconify-json/lucide": "^1.2.26",
     "@iconify-json/tabler": "^1.2.16",
+    "@rails/actioncable": "^8.0.200",
     "@tanstack/react-query": "^5.69.0",
     "axios": "^1.7.9",
     "clsx": "^2.1.1",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
+    "@types/actioncable": "^5.2.11",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@types/react-router-dom": "^5.3.3",
