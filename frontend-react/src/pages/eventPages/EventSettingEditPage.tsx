@@ -298,6 +298,10 @@ export default function EventSettingForm() {
     }
   }
 
+  const formatOptionNames = (options?: { name: string }[] | null): string => {
+    return options?.length ? options.map(opt => opt.name).join(", ") : ""
+  }
+
   const ErrorList = (errors: string[]) => {
     if (errors.length === 0) return null
 
@@ -337,7 +341,7 @@ export default function EventSettingForm() {
                     name="eventSportsDiscipline"
                     multiple
                     title={<>種目<br />（複数可）</>}
-                    value={formState.sportsDisciplineSelected.map(d => d.id.toString())}
+                    value={formatOptionNames(formState?.sportsDisciplineSelected)}
                     options={sportsDisciplines}
                     onChange={(e) => handleMultiSelectChange(e, sportsDisciplines, 'sportsDisciplineSelected')}
                   />

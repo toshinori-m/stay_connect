@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { useActionState } from "react"
+import { useEffect, useState, useActionState } from "react"
+import { useNavigate } from 'react-router-dom'
 import SelectField from "@/components/ui/SelectField"
 import Button from "@/components/ui/Button"
 import { useApiClient } from "@/hooks/useApiClient"
@@ -8,7 +8,7 @@ import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
 import { SelectOption } from "@/types"
 
 interface DetailItemProps {
-  label: string
+  title: string
   value: string | null
 }
 
@@ -43,6 +43,7 @@ const FORM_FIELD_KEYS = {
 
 export default function SearchForm() {
   const apiClient = useApiClient()
+  const navigate = useNavigate()
   const [recruitments, setRecruitments] = useState<Recruitment[]>([])
   const [searchErrors, setSearchErrors] = useState<string[]>([])
   
@@ -61,8 +62,6 @@ export default function SearchForm() {
   } = useInitialFormData()
 
   const { sportsDisciplines, errors: sportsDisciplineErrors } = useFetchDisciplines(formState.sportsTypeId)
-
-  const errors = [...initialErrors, ...sportsDisciplineErrors, ...searchErrors]
 
   useEffect(() => {    
     initialSearch()
@@ -98,7 +97,7 @@ export default function SearchForm() {
           return null
         }
 
-        const selectedOptionName = selectedOption ? selectedOption.name : ""
+        const selectedOptionName = selectedOption?.name ?? ""
         return { id: selectedOptionId, name: selectedOptionName }
       }
 
@@ -198,10 +197,35 @@ export default function SearchForm() {
     }
   }
 
+  const navigateToEventDetail = async (recruitmentId: number) => {
+    try {
+      setSearchErrors([])
+      navigate(`/events/${recruitmentId}`)
+    } catch {
+      setSearchErrors(["イベントを表示できませんでした。"])
+    }
+  }
+
+  const formatOptionNames = (options?: { name: string }[] | null): string => {
+    return options?.length ? options.map(opt => opt.name).join(", ") : ""
+  }
+
+  const ErrorList = (errors: string[]) => {
+    if (errors.length === 0) return null
+
+    return (
+      <div className="text-red-500 text-sm mt-2">
+        {errors.map((error, index) => (
+          <li key={index}>{error}</li>
+        ))}
+      </div>
+    )
+  }
+
   // DetailItemコンポーネントの定義
-  const DetailItem = ({ label, value }: DetailItemProps) => (
+  const DetailItem = ({ title, value }: DetailItemProps) => (
     <div className="mt-2 break-words w-full md:w-11/12">
-      <span className="text-sm font-semibold text-blue-600">{label}: </span>
+      <span className="text-sm font-semibold text-blue-600">{title}: </span>
       <span className="text-sm mr-2">{value ?? "なし"}</span>
     </div>
   )
@@ -217,7 +241,7 @@ export default function SearchForm() {
           <SelectField
             name={FORM_FIELD_KEYS.SPORTS_TYPE}
             className="ring-offset-2 ring-2 hover:bg-blue-200"
-            value={formState.sportsTypeId ? formState.sportsTypeId.id.toString() : ""}
+            value={formState.sportsTypeId?.id?.toString() ?? ""}
             onChange={(e) => handleChange(e, FORM_FIELD_KEYS.SPORTS_TYPE)}
             options={[{ id: "" as unknown as number, name: "競技選択" }, ...sportsTypes]}
             placeholder="競技選択"
@@ -228,7 +252,7 @@ export default function SearchForm() {
             <SelectField
               name={FORM_FIELD_KEYS.SPORTS_DISCIPLINE}
               className="ring-offset-2 ring-2 hover:bg-blue-200"
-              value={formState.sportsDisciplineId ? formState.sportsDisciplineId.id.toString() : ""}
+              value={formState.sportsDisciplineId?.id?.toString() ?? ""}
               onChange={(e) => handleChange(e, FORM_FIELD_KEYS.SPORTS_DISCIPLINE)}
               options={[{ id: "" as unknown as number, name: "種目選択" }, ...sportsDisciplines]}
               placeholder="種目選択"
@@ -239,7 +263,7 @@ export default function SearchForm() {
           <SelectField
             name={FORM_FIELD_KEYS.PREFECTURE}
             className="ring-offset-2 ring-2 hover:bg-blue-200"
-            value={formState.prefectureId ? formState.prefectureId.id.toString() : ""}
+            value={formState.prefectureId?.id?.toString() ?? ""}
             onChange={(e) => handleChange(e, FORM_FIELD_KEYS.PREFECTURE)}
             options={[{ id: "" as unknown as number, name: "都道府県選択" }, ...prefectures]}
             placeholder="都道府県選択"
@@ -249,7 +273,7 @@ export default function SearchForm() {
           <SelectField
             name={FORM_FIELD_KEYS.TARGET_AGE}
             className="ring-offset-2 ring-2 hover:bg-blue-200"
-            value={formState.targetAgeId ? formState.targetAgeId.id.toString() : ""}
+            value={formState.targetAgeId?.id?.toString() ?? ""}
             onChange={(e) => handleChange(e, FORM_FIELD_KEYS.TARGET_AGE)}
             options={[{ id: "" as unknown as number, name: "対象年齢選択" }, ...targetAges]}
             placeholder="対象年齢選択"
@@ -257,14 +281,7 @@ export default function SearchForm() {
 
           <Button type="submit" variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">検索</Button>
         </form>
-
-        {errors.length > 0 && (
-          <div className="text-red-500 text-sm mt-2">
-            {errors.map((error, index) => (
-              <li key={index}>{error}</li>
-            ))}
-          </div>
-        )}
+        {ErrorList([...initialErrors, ...sportsDisciplineErrors, ...searchErrors])}
       </div>
 
       <div className="md:w-5/6 md:ml-2">
@@ -274,9 +291,12 @@ export default function SearchForm() {
             <p className="mt-2">条件を変更して再検索してください</p>
           </div>
         ) : (
-          // TODO: イベント表示画面への遷移については後日PRで実装する
           recruitments.map((recruitment) => (
-            <div key={recruitment.id} className="max-w-4xl bg-white p-6 rounded-lg shadow-md mb-4">
+            <div
+              key={recruitment.id}
+              className="max-w-4xl bg-white p-6 rounded-lg shadow-md mb-4 hover:bg-blue-200"
+              onClick={() => navigateToEventDetail(recruitment.id)}
+            >
               <div className="flex items-center justify-between">
                 <span className="ml-4 text-sm text-gray-600">{recruitment.prefecture_name}</span>
               </div>
@@ -284,16 +304,16 @@ export default function SearchForm() {
               <h3 className="text-lg font-bold text-blue-600 break-words w-full md:w-11/12">
                 {recruitment.name}
               </h3>
-              <DetailItem label="競技" value={recruitment.sports_type_name} />
+              <DetailItem title="競技" value={recruitment.sports_type_name} />
               {recruitment.sports_discipline_name?.length > 0 && (
                 <DetailItem
-                  label="種目"
-                  value={recruitment.sports_discipline_name?.map(d => d.name).join(", ") || "なし"}
+                  title="種目"
+                  value={formatOptionNames(recruitment.sports_discipline_name) || "なし"}
                 />
               )}
-              <DetailItem label="イベント目的" value={recruitment.purpose_body} />
-              <DetailItem label="性別" value={recruitment.sex} />
-              <DetailItem label="対象年齢" value={recruitment.target_age_name?.map(d => d.name).join(", ") || "なし"} />
+              <DetailItem title="イベント目的" value={recruitment.purpose_body} />
+              <DetailItem title="性別" value={recruitment.sex} />
+              <DetailItem title="対象年齢" value={formatOptionNames(recruitment.target_age_name) || "なし"} />
             </div>
           ))
         )}
