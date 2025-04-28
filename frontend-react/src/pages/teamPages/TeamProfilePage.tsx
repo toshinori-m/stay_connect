@@ -15,9 +15,9 @@ export default function TeamProfilePage() {
   const navigate = useNavigate()
 
   const [formState, setFormState] = useState({
-    sportsTypeSelected: null as SelectOption | null, // TODO: sportsTypeSelectedの初期値を空文字へ修正する対応については後日PRで実施予定
-    sportsDisciplineSelected: [] as SelectOption[],
-    targetAgeSelected: [] as SelectOption[],
+    sportsTypeSelected: "",
+    sportsDisciplineSelected: [] as string[],
+    targetAgeSelected: [] as string[],
     prefectureSelected: "",
     teamName: "",
     area: "",
@@ -59,19 +59,16 @@ export default function TeamProfilePage() {
   }
 
   const handleSportsTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = sportsTypes.find(sportsType => sportsType.id.toString() === e.target.value) || null
-    updateFormState("sportsTypeSelected", selected)
+    updateFormState("sportsTypeSelected", e.target.value)
     updateFormState("sportsDisciplineSelected", [])
   }
 
   const handleMultiSelectChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
-    options: SelectOption[],
     field: string
   ) => {
     const selectedIds = Array.from(e.target.selectedOptions).map(selectedOption => selectedOption.value)
-    const selectedOptions = options.filter(option => selectedIds.includes(option.id.toString()))
-    updateFormState(field, selectedOptions)
+    updateFormState(field, selectedIds)
   }
 
 
@@ -87,15 +84,19 @@ export default function TeamProfilePage() {
     updateFormState("sex", e.target.value)
   }
 
-  const formatSelectedNames = (selected: SelectOption[]) => {
-    if (selected.length === 0) return null
+  const formatSelectedNames = (selectedIds: string[], options: SelectOption[]) => {
+    if (selectedIds.length === 0) return null
+  
+    const selectedNames = options
+      .filter(option => selectedIds.includes(option.id.toString()))
+      .map(option => option.name)
   
     return (
       <div className="mt-2 py-2 px-3 border-2 border-gray-200 rounded-lg bg-white text-gray-700">
-        {selected.map((s) => s.name).join(", ")}
+        {selectedNames.join(", ")}
       </div>
     )
-  }
+  }  
 
   const [actionState, action] = useActionState(
     async () => {
@@ -114,8 +115,8 @@ export default function TeamProfilePage() {
       }
 
       try {
-        const disciplineIds = formState.sportsDisciplineSelected.map(discipline => discipline.id)
-        const targetAgeIds = formState.targetAgeSelected.map(target => target.id)
+        const disciplineIds = formState.sportsDisciplineSelected.map(disciplineId => disciplineId)
+        const targetAgeIds = formState.targetAgeSelected.map(targetAgeId => targetAgeId)
         
         await apiClient.post("/teams", {
           team: { 
@@ -124,7 +125,7 @@ export default function TeamProfilePage() {
             sex: formState.sex,
             track_record: formState.trackRecord,
             other_body: formState.otherBody,
-            sports_type_id: formState.sportsTypeSelected?.id,
+            sports_type_id: formState.sportsTypeSelected,
             sports_discipline_ids: disciplineIds,
             prefecture_id: formState.prefectureSelected,
             target_age_ids: targetAgeIds
@@ -175,7 +176,7 @@ export default function TeamProfilePage() {
                   <SelectField
                     name={TEAM_FIELDS.SPORTS_TYPE}
                     title="競技名"
-                    value={formState.sportsTypeSelected?.id?? ""}
+                    value={formState.sportsTypeSelected}
                     onChange={handleSportsTypeChange}
                     options={sportsTypes}
                   />
@@ -190,11 +191,11 @@ export default function TeamProfilePage() {
                       name={TEAM_FIELDS.SPORTS_DISCIPLINE}
                       multiple
                       title={<>種目<br />（複数可）</>}
-                      value={formState.sportsDisciplineSelected.map(d => d.id.toString())}
-                      onChange={(e) => handleMultiSelectChange(e, sportsDisciplines, "sportsDisciplineSelected")}
+                      value={formState.sportsDisciplineSelected}
+                      onChange={(e) => handleMultiSelectChange(e, "sportsDisciplineSelected")}
                       options={sportsDisciplines}
                     />
-                    {formatSelectedNames(formState.sportsDisciplineSelected)}
+                    {formatSelectedNames(formState.sportsDisciplineSelected, sportsDisciplines)}
                   </div>
                 </li>
               )}
@@ -275,11 +276,11 @@ export default function TeamProfilePage() {
                     name={TEAM_FIELDS.TARGET_AGE}
                     multiple
                     title={<>対象年齢<br />（複数可）</>}
-                    value={formState.targetAgeSelected.map(age => age.id.toString())}
-                    onChange={(e) => handleMultiSelectChange(e, targetAges, "targetAgeSelected")}
+                    value={formState.targetAgeSelected}
+                    onChange={(e) => handleMultiSelectChange(e, "targetAgeSelected")}
                     options={targetAges}
                   />
-                  {formatSelectedNames(formState.targetAgeSelected)}
+                  {formatSelectedNames(formState.targetAgeSelected, targetAges)}
                 </div>
               </li>
 

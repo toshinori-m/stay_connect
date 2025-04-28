@@ -2,19 +2,19 @@ import { useEffect, useState } from "react"
 import { useApiClient } from "@/hooks/useApiClient"
 import { SelectOption } from "@/types"
 
-export default function useFetchDisciplines(sportsTypeSelected: SelectOption | null) {
+export default function useFetchDisciplines(sportsTypeId: string) {
   const apiClient = useApiClient()
   const [sportsDisciplines, setSportsDisciplines] = useState<SelectOption[]>([])
   const [errors, setErrors] = useState<string[]>([])
 
   const fetchDisciplines = async () => {
-    if (!sportsTypeSelected) {
+    if (!sportsTypeId) {
       setSportsDisciplines([])
       return
     }
     try {
       const res = await apiClient.get("/sports_disciplines", {
-        params: { sports_type_id: sportsTypeSelected.id },
+        params: { sports_type_id: sportsTypeId },
       })
       setSportsDisciplines(res.data.data)
     } catch {
@@ -25,7 +25,7 @@ export default function useFetchDisciplines(sportsTypeSelected: SelectOption | n
   useEffect(() => {
     fetchDisciplines()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sportsTypeSelected])
+  }, [sportsTypeId])
 
   return { sportsDisciplines, errors }
 }
