@@ -44,9 +44,9 @@ export default function SelectField({
   return (
     <div className="w-full md:flex md:px-8 items-center">
       {title && (
-        <p className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm">
+        <label htmlFor={id} className="w-40 md:-ml-3 pl-2 tracking-tighter text-sm">
           {title}
-        </p>
+        </label>
       )}
       <select
         id={id}
