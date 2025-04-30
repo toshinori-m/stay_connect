@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useEffect, useState, useActionState } from "react"
+import { useParams, useNavigate } from "react-router-dom"
 import { useApiClient } from "@/hooks/useApiClient"
 import { SelectOption } from "@/types"
 import InputField from "@/components/ui/InputField"
@@ -8,15 +8,13 @@ import SelectField from "@/components/ui/SelectField"
 import RadioGroupField from "@/components/ui/RadioGroupField"
 import useInitialFormData from "@/hooks/search/useInitialFormData"
 import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
-import { useActionState } from "react"
-import { useNavigate } from "react-router-dom"
 import Button from "@/components/ui/Button"
 
 interface RecruitmentData {
   name: string
   area: string
   sex: string
-  event_url: string
+  image: string
   prefecture_id: number
   sports_type_id: number
   start_date: string
@@ -32,10 +30,10 @@ export default function EventSettingForm() {
   const navigate = useNavigate()
 
   const [formState, setFormState] = useState({
-    sportsTypeSelected: null as SelectOption | null,
-    sportsDisciplineSelected: [] as SelectOption[],
-    targetAgeSelected: [] as SelectOption[],
-    prefectureSelected: null as string | null,
+    sportsTypeSelected: "",
+    sportsDisciplineSelected: [] as string[],
+    targetAgeSelected: [] as string[],
+    prefectureSelected: "",
     eventName: "",
     eventUrl: "",
     area: "",
@@ -49,6 +47,27 @@ export default function EventSettingForm() {
 
   const [errors, setErrors] = useState<string[]>([])
   const [fetchedId, setFetchedId] = useState<string | null>(null)
+  const [pendingSportsDisciplineIds, setPendingSportsDisciplineIds] = useState<number[] | null>(null)
+
+  const EVENT_FIELDS = {
+    SPORTS_TYPE: "eventSportsType",
+    SPORTS_DISCIPLINE: "eventSportsDiscipline",
+    PREFECTURE: "eventPrefecture",
+    TARGET_AGE: "eventTargetAge",
+    NAME: "eventName",
+    URL: "eventURL",
+    AREA: "eventArea",
+    SEX: "eventSex",
+    START_DATE: "eventStartDate",
+    END_DATE: "eventEndDate",
+    NUMBER: "eventNumber",
+    PURPOSE_BODY: "eventPurposeBody",
+    OTHER_BODY: "eventOtherBody"
+  }
+
+  const SHOW_LIMIT_THRESHOLD = 5
+  const MAX_LENGTH = 255
+  const remainingCharacters = (input: string) => MAX_LENGTH - input.length
 
   const {
     sportsTypes,
@@ -60,20 +79,19 @@ export default function EventSettingForm() {
   const { sportsDisciplines, errors: sportsDisciplineErrors } = useFetchDisciplines(formState.sportsTypeSelected)
 
   useEffect(() => {
+    setErrors([])
     if (fetchedId === recruitmentId) return
     if (sportsTypes.length === 0 || prefectures.length === 0 || targetAges.length === 0) return
     if (!recruitmentId) return
 
     fetchRecruitmentData(recruitmentId)
-    .then(recruitmentFormData => {
-      if (!recruitmentFormData) return
-      setErrors([])
-      
-      const { recruitmentData, targetAgeIds } = recruitmentFormData
+    .then(({ recruitmentData, sportsDisciplineIds, targetAgeIds }) => {
+      if (!recruitmentData) return
   
       setRecruitmentFormState(recruitmentData)
       setSelectedSportsType(recruitmentData.sports_type_id)
       setSelectedTargetAge(targetAgeIds)
+      setPendingSportsDisciplineIds(sportsDisciplineIds)
       setFetchedId(recruitmentId)
     })
     .catch(() => {
@@ -83,13 +101,18 @@ export default function EventSettingForm() {
   }, [recruitmentId, sportsTypes, prefectures, targetAges])
 
   const fetchRecruitmentData = async (recruitmentId: string) => {
-    const recruitmentData = (await apiClient.get(`/recruitments/${recruitmentId}`)).data.data
-    const targetAgeIds = (await apiClient.get(`/recruitments/${recruitmentId}/target_ages`)).data.map(
-      (item: { target_age_id: number }) => item.target_age_id
-    )
+    const recruitmentResponse = await apiClient.get(`/recruitments/${recruitmentId}`)
+    const recruitmentData = recruitmentResponse.data.data
 
-    return { recruitmentData, targetAgeIds }
-  }
+    const sportsDisciplineIds = recruitmentData.sports_disciplines.map(
+      (item: { id: number; name: string }) => item.id
+    )
+    const targetAgeIds = recruitmentData.target_ages.map(
+      (item: { id: number; name: string }) => item.id
+    )
+  
+    return { recruitmentData, sportsDisciplineIds, targetAgeIds }
+  }  
 
   const setRecruitmentFormState = (recruitmentData: RecruitmentData,) => {
     setFormState(prev => ({
@@ -97,8 +120,8 @@ export default function EventSettingForm() {
       eventName: recruitmentData.name || "",
       area: recruitmentData.area || "",
       sex: recruitmentData.sex || "",
-      eventUrl: recruitmentData.event_url || "",
-      prefectureSelected: recruitmentData.prefecture_id ? recruitmentData.prefecture_id.toString() : null,
+      eventUrl: recruitmentData.image || "",
+      prefectureSelected: recruitmentData.prefecture_id ? recruitmentData.prefecture_id.toString() : "",
       startDate: recruitmentData.start_date || "2023-01-01",
       endDate: recruitmentData.end_date || "2023-01-01",
       eventNumber: recruitmentData.number || "",
@@ -109,93 +132,48 @@ export default function EventSettingForm() {
 
   const setSelectedSportsType = (selectSportsTypeId?: number) => {
     if (selectSportsTypeId) {
-      const selectedSportsType = sportsTypes.find((sportsType: SelectOption) => sportsType.id === selectSportsTypeId)
-
-      if (selectedSportsType) {
-        setFormState(prev => ({
-          ...prev,
-          sportsTypeSelected: selectedSportsType
-        }))
-      }
+      updateFormState("sportsTypeSelected", selectSportsTypeId.toString())
     }
   }
 
   const setSelectedTargetAge = (targetAgeIds?: number[]) => {
-    if (targetAgeIds && targetAgeIds.length > 0 && targetAges.length > 0) {
-      const selectedTargetAges = targetAges.filter((targetAge: SelectOption) => 
-        targetAgeIds.includes(targetAge.id)
-      )
-      
-      setFormState(prev => ({
-        ...prev,
-        targetAgeSelected: selectedTargetAges
-      }))
+    if (targetAgeIds && targetAgeIds.length > 0) {
+      const selectedIds = targetAgeIds.map(targetAgeId => targetAgeId.toString())
+      updateFormState("targetAgeSelected", selectedIds)
     }
   }
 
   useEffect(() => {
-    if (!recruitmentId || !formState.sportsTypeSelected || sportsDisciplines.length === 0) return
-
-    apiClient
-      .get(`/recruitments/${recruitmentId}/sports_disciplines`)
-      .then((sportsDisciplineResponse) => {
-        const sportsDisciplineIdList = sportsDisciplineResponse.data.map(
-          (record: { sports_discipline_id: number }) => record.sports_discipline_id
-        )
-
-        if (sportsDisciplineIdList.length > 0 && sportsDisciplines.length > 0) {
-          const selectedSportsDisciplines = sportsDisciplines.filter(sportsDiscipline =>
-            sportsDisciplineIdList.includes(sportsDiscipline.id)
-          )
-
-          setFormState(prev => ({
-            ...prev,
-            sportsDisciplineSelected: selectedSportsDisciplines,
-          }))
-        }
-      })
-      .catch(() => {
-        setErrors(["種目の取得に失敗しました。"])
-      })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recruitmentId, formState.sportsTypeSelected, sportsDisciplines])
-
-  const SHOW_LIMIT_THRESHOLD = 5
-  const MAX_LENGTH = 255
-  const remainingCharacters = (input: string) => MAX_LENGTH - input.length
-
-  const formatSelectedNames = (selectedOptions: SelectOption[]) => {
-    if (selectedOptions.length === 0) return null
+    if (!pendingSportsDisciplineIds || sportsDisciplines.length === 0) return
   
-    return (
-      <div className="mt-2 py-2 px-3 md:mx-8 border-2 border-gray-200 rounded-lg bg-white text-gray-700">
-        {selectedOptions.map((selectedOption) => selectedOption.name).join(", ")}
-      </div>
-    )
-  }
+    const selectedIds = sportsDisciplines
+      .filter(discipline => pendingSportsDisciplineIds.includes(discipline.id))
+      .map(discipline => discipline.id.toString())
+  
+    updateFormState("sportsDisciplineSelected", selectedIds)
+  
+    setPendingSportsDisciplineIds(null) // セット後クリア
+  }, [pendingSportsDisciplineIds, sportsDisciplines])
 
   const updateFormState = (field: string, value: unknown) => {
     setFormState(prev => ({ ...prev, [field]: value }))
   }
 
   const handleSportsTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = sportsTypes.find(s => s.id.toString() === e.target.value) || null
-    updateFormState('sportsTypeSelected', selected)
-    updateFormState('sportsDisciplineSelected', [])
+    updateFormState("sportsTypeSelected", e.target.value)
+    updateFormState("sportsDisciplineSelected", [])
   }
 
   const handleMultiSelectChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
-    options: SelectOption[],
     field: string
   ) => {
     const selectedIds = Array.from(e.target.selectedOptions).map(opt => opt.value)
-    const selectedOptions = options.filter(opt => selectedIds.includes(opt.id.toString()))
-    updateFormState(field, selectedOptions)
+    updateFormState(field, selectedIds)
   }
 
   const handlePrefectureChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateFormState('prefectureSelected', e.target.value)
+    updateFormState("prefectureSelected", e.target.value)
   }
 
   const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -203,8 +181,22 @@ export default function EventSettingForm() {
   }
   
   const handleSexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateFormState('sex', e.target.value)
+    updateFormState("sex", e.target.value)
   }
+
+  const formatSelectedNames = (selectedIds: string[], options: SelectOption[]) => {
+    if (selectedIds.length === 0) return null
+  
+    const selectedNames = options
+      .filter(option => selectedIds.includes(option.id.toString()))
+      .map(option => option.name)
+  
+    return (
+      <div className="mt-2 py-2 px-3 border-2 border-gray-200 rounded-lg bg-white text-gray-700">
+        {selectedNames.join(", ")}
+      </div>
+    )
+  }  
 
   const [actionState, action] = useActionState(
     async (_prevState:  { errors: string[] }, formData: FormData) => {
@@ -212,26 +204,26 @@ export default function EventSettingForm() {
       const currentFormState = { ...formState }
       
       // FormDataから値を取得
-      const eventName = formData.get('eventName') as string
-      const eventUrl = formData.get('eventURL') as string
-      const area = formData.get('eventArea') as string
-      const sex = formData.get('eventSex') as string
-      const startDate = formData.get('eventStartDate') as string
-      const endDate = formData.get('eventEndDate') as string
-      const number = formData.get('eventNumber') as string
-      const purposeBody = formData.get('eventPurposeBody') as string
-      const otherBody = formData.get('eventOtherBody') as string
+      const eventName = formData.get("eventName") as string
+      const eventUrl = formData.get("eventURL") as string
+      const area = formData.get("eventArea") as string
+      const sex = formData.get("eventSex") as string
+      const startDate = formData.get("eventStartDate") as string
+      const endDate = formData.get("eventEndDate") as string
+      const number = formData.get("eventNumber") as string
+      const purposeBody = formData.get("eventPurposeBody") as string
+      const otherBody = formData.get("eventOtherBody") as string
 
       // 選択項目は状態から取得
-      const sportsTypeSelected = formState.sportsTypeSelected
-      const disciplineIds = formState.sportsDisciplineSelected.map(d => d.id)
-      const targetAgeIds = formState.targetAgeSelected.map(t => t.id)
-      const prefectureSelected = formState.prefectureSelected
+      const sportsTypeId = formState.sportsTypeSelected
+      const sportsDisciplineIds = formState.sportsDisciplineSelected
+      const targetAgeIds = formState.targetAgeSelected
+      const prefectureId = formState.prefectureSelected
 
       // バリデーション
-      if (!sportsTypeSelected) newErrors.push("競技名を選択してください。")
-      if (sportsDisciplines.length > 0 && disciplineIds.length === 0) newErrors.push("種目名を選択してください。")
-      if (!prefectureSelected) newErrors.push("都道府県を選択してください。")
+      if (!sportsTypeId) newErrors.push("競技名を選択してください。")
+      if (sportsDisciplines.length > 0 && sportsDisciplineIds.length === 0) newErrors.push("種目名を選択してください。")
+      if (!prefectureId) newErrors.push("都道府県を選択してください。")
       if (targetAgeIds.length === 0) newErrors.push("対象年齢を選択してください。")
       if (!eventName.trim()) newErrors.push("イベント名を入力してください。")
       if (!area.trim()) newErrors.push("イベント開催場所を入力してください。")
@@ -263,9 +255,9 @@ export default function EventSettingForm() {
             end_date: endDate,
             purpose_body: purposeBody,
             other_body: otherBody,
-            sports_type_id: sportsTypeSelected?.id,
-            sports_discipline_ids: disciplineIds,
-            prefecture_id: prefectureSelected,
+            sports_type_id: sportsTypeId,
+            sports_discipline_ids: sportsDisciplineIds,
+            prefecture_id: prefectureId,
             target_age_ids: targetAgeIds,
           }
         })
@@ -292,14 +284,10 @@ export default function EventSettingForm() {
     
     try {
       await apiClient.delete(`/recruitments/${recruitmentId}`)
-      navigate('/event_setting_list')
+      navigate("/event_setting_list")
     } catch {
       setErrors(["イベントを削除できませんでした。"])
     }
-  }
-
-  const formatOptionNames = (options?: { name: string }[] | null): string => {
-    return options?.length ? options.map(opt => opt.name).join(", ") : ""
   }
 
   const ErrorList = (errors: string[]) => {
@@ -324,9 +312,9 @@ export default function EventSettingForm() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <SelectField
-                  name="eventSportsType"
+                  name={EVENT_FIELDS.SPORTS_TYPE}
                   title="競技名"
-                  value={formState.sportsTypeSelected?.id ?? ""}
+                  value={formState.sportsTypeSelected}
                   options={sportsTypes}
                   onChange={handleSportsTypeChange}
                 />
@@ -338,14 +326,14 @@ export default function EventSettingForm() {
               <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
                 <div className="md:col-span-12 md:ml-2 md:mr-4">
                   <SelectField
-                    name="eventSportsDiscipline"
+                    name={EVENT_FIELDS.SPORTS_DISCIPLINE}
                     multiple
                     title={<>種目<br />（複数可）</>}
-                    value={formatOptionNames(formState?.sportsDisciplineSelected)}
+                    value={formState.sportsDisciplineSelected}
                     options={sportsDisciplines}
-                    onChange={(e) => handleMultiSelectChange(e, sportsDisciplines, 'sportsDisciplineSelected')}
+                    onChange={(e) => handleMultiSelectChange(e, "sportsDisciplineSelected")}
                   />
-                  {formatSelectedNames(formState.sportsDisciplineSelected)}
+                  {formatSelectedNames(formState.sportsDisciplineSelected, sportsDisciplines)}
                 </div>
               </li>
             )}
@@ -354,9 +342,9 @@ export default function EventSettingForm() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <SelectField
-                  name="eventPrefecture"
+                  name={EVENT_FIELDS.PREFECTURE}
                   title="都道府県"
-                  value={formState.prefectureSelected ? formState.prefectureSelected : ""}
+                  value={formState.prefectureSelected}
                   options={prefectures}
                   onChange={handlePrefectureChange}
                 />
@@ -367,14 +355,14 @@ export default function EventSettingForm() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <SelectField
-                  name="eventTargetAge"
+                  name={EVENT_FIELDS.TARGET_AGE}
                   multiple
                   title={<>対象年齢<br />（複数可）</>}
-                  value={formState.targetAgeSelected.map(age => age.id.toString())}
+                  value={formState.targetAgeSelected}
                   options={targetAges}
-                  onChange={(e) => handleMultiSelectChange(e, targetAges, 'targetAgeSelected')}
+                  onChange={(e) => handleMultiSelectChange(e, "targetAgeSelected")}
                 />
-                {formatSelectedNames(formState.targetAgeSelected)}
+                {formatSelectedNames(formState.targetAgeSelected, targetAges)}
               </div>
             </li>
 
@@ -382,12 +370,12 @@ export default function EventSettingForm() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <InputField
-                  name="eventName"
+                  name={EVENT_FIELDS.NAME}
                   type="text"
                   title="イベント名"
                   placeholder="イベント名"
                   value={formState.eventName}
-                  onChange={handleInputChange('eventName')}
+                  onChange={handleInputChange("eventName")}
                 />
                 {remainingCharacters(formState.eventName) <= SHOW_LIMIT_THRESHOLD && (
                   <div className="text-red-500 text-sm">イベント名はあと{remainingCharacters(formState.eventName)}文字までです。</div>
@@ -399,12 +387,12 @@ export default function EventSettingForm() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <InputField
-                  name="eventURL"
+                  name={EVENT_FIELDS.URL}
                   type="url"
                   title="イベントURL"
                   placeholder="https://www.example.com"
                   value={formState.eventUrl}
-                  onChange={handleInputChange('eventUrl')}
+                  onChange={handleInputChange("eventUrl")}
                 />
               </div>
             </li>
@@ -413,13 +401,16 @@ export default function EventSettingForm() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <TextareaField
-                  name="eventArea"
+                  name={EVENT_FIELDS.AREA}
                   title="イベント開催場所"
                   placeholder="イベント開催場所"
                   value={formState.area}
                   rows={4}
-                  onChange={handleInputChange('area')}
+                  onChange={handleInputChange("area")}
                 />
+                {remainingCharacters(formState.area) <= SHOW_LIMIT_THRESHOLD && (
+                  <div className="text-red-500 text-sm">地域はあと{remainingCharacters(formState.area)}文字までです。</div>
+                )}
               </div>
             </li>
 
@@ -427,7 +418,7 @@ export default function EventSettingForm() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <RadioGroupField
-                  name="eventSex"
+                  name={EVENT_FIELDS.SEX}
                   title="性別"
                   options={[
                     { title: "男", value: "man" },
@@ -445,11 +436,11 @@ export default function EventSettingForm() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <InputField
-                  name="eventStartDate"
+                  name={EVENT_FIELDS.START_DATE}
                   type="date"
                   title="開始日付"
                   value={formState.startDate}
-                  onChange={handleInputChange('startDate')}
+                  onChange={handleInputChange("startDate")}
                   min={new Date().toISOString().split("T")[0]}
                 />
               </div>
@@ -459,11 +450,11 @@ export default function EventSettingForm() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <InputField
-                  name="eventEndDate"
+                  name={EVENT_FIELDS.END_DATE}
                   type="date"
                   title="終了日付"
                   value={formState.endDate}
-                  onChange={handleInputChange('endDate')}
+                  onChange={handleInputChange("endDate")}
                 />
               </div>
             </li>
@@ -472,12 +463,12 @@ export default function EventSettingForm() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <InputField
-                  name="eventNumber"
+                  name={EVENT_FIELDS.NUMBER}
                   type="number"
                   title="募集チーム数"
                   placeholder="募集チーム数"
                   value={formState.eventNumber}
-                  onChange={handleInputChange('eventNumber')}
+                  onChange={handleInputChange("eventNumber")}
                 />
               </div>
             </li>
@@ -486,11 +477,11 @@ export default function EventSettingForm() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <TextareaField
-                  name="eventPurposeBody"
+                  name={EVENT_FIELDS.PURPOSE_BODY}
                   title="イベント目的"
                   placeholder="イベント目的"
                   value={formState.purposeBody}
-                  onChange={handleInputChange('purposeBody')}
+                  onChange={handleInputChange("purposeBody")}
                   rows={5}
                 />
               </div>
@@ -500,11 +491,11 @@ export default function EventSettingForm() {
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <TextareaField
-                  name="eventOtherBody"
+                  name={EVENT_FIELDS.OTHER_BODY}
                   title="その他"
                   placeholder="その他"
                   value={formState.otherBody}
-                  onChange={handleInputChange('otherBody')}
+                  onChange={handleInputChange("otherBody")}
                   rows={5}
                 />
               </div>

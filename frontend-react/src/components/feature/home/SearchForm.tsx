@@ -13,10 +13,10 @@ interface DetailItemProps {
 }
 
 interface FormState {
-  sportsTypeId: SelectOption | null
-  sportsDisciplineId: SelectOption | null
-  prefectureId: SelectOption | null
-  targetAgeId: SelectOption | null
+  sportsTypeId: string
+  sportsDisciplineId: string
+  prefectureId: string
+  targetAgeId: string
 }
 
 interface ActionState {
@@ -48,10 +48,10 @@ export default function SearchForm() {
   const [searchErrors, setSearchErrors] = useState<string[]>([])
   
   const [formState, setFormState] = useState<FormState>({
-    sportsTypeId: null,
-    sportsDisciplineId: null,
-    prefectureId: null,
-    targetAgeId: null
+    sportsTypeId: "",
+    sportsDisciplineId: "",
+    prefectureId: "",
+    targetAgeId: ""
   })
 
   const {
@@ -80,33 +80,22 @@ export default function SearchForm() {
     async (_prevState: ActionState, formData: FormData): Promise<ActionState> => {
       handleSearchSubmit()
 
-      const formFieldOptionsMap: Record<keyof FormState, SelectOption[]> = {
-        sportsTypeId: sportsTypes,
-        sportsDisciplineId: sportsDisciplines,
-        prefectureId: prefectures,
-        targetAgeId: targetAges,
-      }
-
-      const getSelectedOptionFromFormData = (formFieldKey: keyof FormState): SelectOption | null => {
-        const selectedOptionId = Number(formData.get(formFieldKey))
-        const selectedOption = formFieldOptionsMap[formFieldKey].find(
-          (formFieldOption) => formFieldOption.id === selectedOptionId
-        )
-
-        if (!selectedOption || isNaN(selectedOptionId)) {
-          return null
+      const getSelectedIdFromFormData = (formFieldKey: keyof FormState): string => {
+        const selectedOptionId = formData.get(formFieldKey)
+      
+        if (!selectedOptionId) {
+          return ""
         }
-
-        const selectedOptionName = selectedOption?.name ?? ""
-        return { id: selectedOptionId, name: selectedOptionName }
+      
+        return selectedOptionId.toString()
       }
 
       return {
         formData: {
-          sportsTypeId: getSelectedOptionFromFormData(FORM_FIELD_KEYS.SPORTS_TYPE),
-          sportsDisciplineId: getSelectedOptionFromFormData(FORM_FIELD_KEYS.SPORTS_DISCIPLINE),
-          prefectureId: getSelectedOptionFromFormData(FORM_FIELD_KEYS.PREFECTURE),
-          targetAgeId: getSelectedOptionFromFormData(FORM_FIELD_KEYS.TARGET_AGE)
+          sportsTypeId: getSelectedIdFromFormData(FORM_FIELD_KEYS.SPORTS_TYPE),
+          sportsDisciplineId: getSelectedIdFromFormData(FORM_FIELD_KEYS.SPORTS_DISCIPLINE),
+          prefectureId: getSelectedIdFromFormData(FORM_FIELD_KEYS.PREFECTURE),
+          targetAgeId: getSelectedIdFromFormData(FORM_FIELD_KEYS.TARGET_AGE)
         }
       }
     },
@@ -119,71 +108,44 @@ export default function SearchForm() {
     }
   }, [actionState.formData])
 
-  const handleFormChange = (formStateKey: keyof FormState, selectedOption: SelectOption | null) => {
-    if (formStateKey === FORM_FIELD_KEYS.SPORTS_TYPE) {
-      // 競技が変わったら、種目はリセット
-      setFormState(prev => ({
-        ...prev,
-        sportsTypeId: selectedOption,
-        sportsDisciplineId: null
-      }))
-    } else {
-      setFormState(prev => ({
-        ...prev,
-        [formStateKey]: selectedOption
-      }))
-    }
+  const updateFormState = (field: string, value: unknown) => {
+    setFormState(prev => ({ ...prev, [field]: value }))
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>, formStateKey: keyof FormState) => {
-  
-    if (e.target.value === "") {
-      handleFormChange(formStateKey, null)
-      return
-    }
-  
-    handleFormChange(formStateKey, { id: parseInt(e.target.value), name: e.target.options[e.target.selectedIndex].text })
+    updateFormState(formStateKey, e.target.value)
+    setFormState(prev => ({
+      ...prev,
+      [formStateKey]: e.target.value
+    }))
   }
 
+  // 現在のformStateを使用してパラメータを構築
   const handleSearchSubmit = () => {
     const params: Record<string, string> = {}
-
-    // 現在のformStateを使用してパラメータを構築
-    if (formState.sportsTypeId) {
-      const selectedSportsType = sportsTypes.find(sportsType => sportsType.id === formState.sportsTypeId!.id)
-      if (selectedSportsType) {
-        params.sports_type_name = selectedSportsType.name
-      }
-    }
-    
-    if (formState.sportsDisciplineId) {
-      const selectedDiscipline = sportsDisciplines.find(
-        sportsDiscipline => sportsDiscipline.id === formState.sportsDisciplineId!.id
-      )
-      if (selectedDiscipline) {
-        params.sports_discipline_name = selectedDiscipline.name
-      }
-    }
-    
-    if (formState.prefectureId) {
-      const selectedPrefecture = prefectures.find(
-        prefecture => prefecture.id === formState.prefectureId!.id
-      )
-      if (selectedPrefecture) {
-        params.prefecture_name = selectedPrefecture.name
-      }
-    }
-    
-    if (formState.targetAgeId) {
-      const selectedAge = targetAges.find(
-        age => age.id === formState.targetAgeId!.id
-      )
-      if (selectedAge) {
-        params.target_age_name = selectedAge.name
-      }
-    }
-
+  
+    setParamIfSelected(params, sportsTypes, formState.sportsTypeId, "sports_type_name")
+    setParamIfSelected(params, sportsDisciplines, formState.sportsDisciplineId, "sports_discipline_name")
+    setParamIfSelected(params, prefectures, formState.prefectureId, "prefecture_name")
+    setParamIfSelected(params, targetAges, formState.targetAgeId, "target_age_name")
+  
     handleSearch(params)
+  }
+
+  const setParamIfSelected = (
+    params: Record<string, string>,
+    options: SelectOption[],
+    selectedId: string,
+    paramKey: string
+  ) => {
+    const selected = findSelectedOption(options, selectedId)
+    if (selected) {
+      params[paramKey] = selected.name
+    }
+  }
+
+  const findSelectedOption = (options: SelectOption[], selectedId: string): SelectOption | undefined => {
+    return options.find(option => option.id.toString() === selectedId)
   }
 
   const handleSearch = async (searchParams: Record<string, string>) => {
@@ -241,7 +203,7 @@ export default function SearchForm() {
           <SelectField
             name={FORM_FIELD_KEYS.SPORTS_TYPE}
             className="ring-offset-2 ring-2 hover:bg-blue-200"
-            value={formState.sportsTypeId?.id?.toString() ?? ""}
+            value={formState.sportsTypeId}
             onChange={(e) => handleChange(e, FORM_FIELD_KEYS.SPORTS_TYPE)}
             options={[{ id: "" as unknown as number, name: "競技選択" }, ...sportsTypes]}
             placeholder="競技選択"
@@ -252,7 +214,7 @@ export default function SearchForm() {
             <SelectField
               name={FORM_FIELD_KEYS.SPORTS_DISCIPLINE}
               className="ring-offset-2 ring-2 hover:bg-blue-200"
-              value={formState.sportsDisciplineId?.id?.toString() ?? ""}
+              value={formState.sportsDisciplineId}
               onChange={(e) => handleChange(e, FORM_FIELD_KEYS.SPORTS_DISCIPLINE)}
               options={[{ id: "" as unknown as number, name: "種目選択" }, ...sportsDisciplines]}
               placeholder="種目選択"
@@ -263,7 +225,7 @@ export default function SearchForm() {
           <SelectField
             name={FORM_FIELD_KEYS.PREFECTURE}
             className="ring-offset-2 ring-2 hover:bg-blue-200"
-            value={formState.prefectureId?.id?.toString() ?? ""}
+            value={formState.prefectureId}
             onChange={(e) => handleChange(e, FORM_FIELD_KEYS.PREFECTURE)}
             options={[{ id: "" as unknown as number, name: "都道府県選択" }, ...prefectures]}
             placeholder="都道府県選択"
@@ -273,7 +235,7 @@ export default function SearchForm() {
           <SelectField
             name={FORM_FIELD_KEYS.TARGET_AGE}
             className="ring-offset-2 ring-2 hover:bg-blue-200"
-            value={formState.targetAgeId?.id?.toString() ?? ""}
+            value={formState.targetAgeId}
             onChange={(e) => handleChange(e, FORM_FIELD_KEYS.TARGET_AGE)}
             options={[{ id: "" as unknown as number, name: "対象年齢選択" }, ...targetAges]}
             placeholder="対象年齢選択"
