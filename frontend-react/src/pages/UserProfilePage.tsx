@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
 import { useApiClient } from "@/hooks/useApiClient"
@@ -39,15 +39,13 @@ export default function UserProfilePage() {
     },
   })
 
-  // エラー処理
-  useEffect(() => {
-    const newErrors = []
-
-    if (profileError) {newErrors.push("自己紹介画面を表示できませんでした。")}
-    if (teamsError) {newErrors.push("チーム情報を取得できませんでした。")}
-    if (currentUserError) {newErrors.push("ユーザー情報を取得できませんでした。")}
-    if (newErrors.length > 0) {setErrors(newErrors)}
-  }, [profileError, teamsError, currentUserError])
+  // エラーを直接構築
+  const errorMessages = [
+    profileError && "自己紹介画面を表示できませんでした。",
+    teamsError && "チーム情報を取得できませんでした。",
+    currentUserError && "ユーザー情報を取得できませんでした。",
+    ...errors
+  ].filter(Boolean) as string[]
 
   // チーム紹介ページへ
   const handleTeamIntroduction = (teamId: number) => {
@@ -98,7 +96,7 @@ export default function UserProfilePage() {
 
   return (
     <div className="mt-40 md:mt-20 max-w-2xl mx-auto p-6 bg-sky-100 shadow-lg rounded-lg break-words">
-      {ErrorList([...errors])}
+      {ErrorList(errorMessages)}
 
       <div className="flex items-center">
         <div className="w-32 h-32 rounded-full overflow-hidden">
