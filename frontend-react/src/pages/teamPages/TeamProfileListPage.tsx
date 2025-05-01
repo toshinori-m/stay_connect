@@ -19,19 +19,25 @@ export default function TeamProfileList() {
   const fetchTeamProfile = async () => {
     try {
       setErrors([])
-      const res = await apiClient.get('/teams')
-      setTeams(res.data.data)
+      const TeamProfileRes = (await apiClient.get('/teams')).data.data
+      setTeams(TeamProfileRes)
     } catch {
       setErrors(["チーム名を表示できませんでした。"])
     }
   }
 
-  const editTeamProfile = () => {
-    console.log("チーム紹介編集画面は次のissueで作成予定！") // TODO: 後続タスクで処理を追加
+  const editTeamProfile = (id: number) => {
+    navigate(`/team_profile_edit/${id}`)
   }
 
-  const deleteTeamProfile = () => {
-    console.log("チーム紹介削除は次のissueで作成予定！") // TODO: 後続タスクで処理を追加
+  const deleteTeamProfile = async (id: number) => {
+    setErrors([])
+    try {
+      const deleteTeamProfileRes = (await apiClient.delete(`/teams/${id}`)).data
+      setTeams(deleteTeamProfileRes)
+    } catch {
+      setErrors(["イベントを削除できませんでした。"])
+    }
   }
 
   const createTeamProfile = () => {
@@ -69,8 +75,8 @@ export default function TeamProfileList() {
               >
                 チーム名: {team.name}
                 <div className="flex justify-center mt-5">
-                  <Button variant="yellow" size="sm" className="my-4 md:mb-0 md:mr-4 mx-3" onClick={() => editTeamProfile()}>編集</Button>
-                  <Button variant="red" size="sm" className="my-4 md:mb-0 md:mr-4 mx-3" onClick={() => deleteTeamProfile()}>削除</Button>
+                  <Button variant="yellow" size="sm" className="my-4 md:mb-0 md:mr-4 mx-3" onClick={() => editTeamProfile(team.id)}>編集</Button>
+                  <Button variant="red" size="sm" className="my-4 md:mb-0 md:mr-4 mx-3" onClick={() => deleteTeamProfile(team.id)}>削除</Button>
                 </div>
               </div>
             ))}
