@@ -17,6 +17,7 @@ import TeamProfileListPage from "@/pages/teamPages/TeamProfileListPage"
 import TeamProfilePage from "@/pages/teamPages/TeamProfilePage"
 import ChatRoomListPage from "@/pages/chatPage/ChatRoomListPage"
 import BasicSettingEditPage from "@/pages/BasicSettingEditPage"
+import UserProfilePage from "@/pages/UserProfilePage"
 
 function OpenLayout() {
   return (
@@ -73,6 +74,7 @@ export default function AppRouter() {
           <Route path="/team_profile" element={<TeamProfilePage />} />
           <Route path="/chat_room_list" element={<ChatRoomListPage />} />
           <Route path="/basic_setting_edit" element={<BasicSettingEditPage />} />
+          <Route path="/user_profile/:userId" element={<UserProfilePage />} />
         </Route>
       </Route>
     </Routes>
