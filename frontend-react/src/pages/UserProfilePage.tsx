@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import { useApiClient } from "@/hooks/useApiClient"
 import Button from "@/components/ui/Button"
 import { SelectOption } from "@/types"
@@ -9,13 +9,14 @@ export default function UserProfilePage() {
   const [errors, setErrors] = useState<string[]>([])
   const { userId } = useParams()
   const apiClient = useApiClient()
+  const navigate = useNavigate()
 
   // ユーザープロフィール取得
   const { data: userProfile, error: profileError } = useQuery({
     queryKey: ["userProfile", userId],
     queryFn: async () => {
-      const userProfileRes = (await apiClient.get(`/users_profile/${userId}`)).data.data
-      return userProfileRes
+      const userProfileData = (await apiClient.get(`/users_profile/${userId}`)).data.data
+      return userProfileData
     },
     enabled: !!userId,
   })
@@ -24,8 +25,8 @@ export default function UserProfilePage() {
   const { data: teams = [], error: teamsError } = useQuery<SelectOption[]>({
     queryKey: ["userTeams", userProfile?.id],
     queryFn: async () => {
-      const teamsRes = (await apiClient.get(`/users/${userProfile.id}/teams_profile`)).data
-      return teamsRes
+      const teamsData = (await apiClient.get(`/users/${userProfile.id}/teams_profile`)).data
+      return teamsData
     },
     enabled: !!userProfile?.id,
   })
@@ -34,8 +35,8 @@ export default function UserProfilePage() {
   const { data: currentUser, error: currentUserError } = useQuery({
     queryKey: ["currentUser"],
     queryFn: async () => {
-      const currentUserRes = (await apiClient.get("/users/show")).data.data
-      return currentUserRes
+      const currentUserData = (await apiClient.get("/users/show")).data.data
+      return currentUserData
     },
   })
 
@@ -69,7 +70,12 @@ export default function UserProfilePage() {
         setErrors(prev => [...prev, "ユーザーIDが取得できませんでした。"])
         return
       }
-      console.log("パスワード再設定メール送信画面は次のissueで作成予定！") // TODO: 後続タスクで処理を追加
+
+      // API でチャットルームの取得または作成
+      const chatRoomId = (await apiClient.post(`/chat_rooms`, {
+        other_user_id: userProfile.id
+      })).data.data.id
+      navigate(`/chat_room/${chatRoomId}`)
     } catch {
       setErrors(prev => [...prev, "チャットルーム画面を表示できませんでした。"])
     }
