@@ -30,7 +30,6 @@ export default function ChatRoomPage() {
   const [otherUserName, setOtherUserName] = useState("")
   const [errors, setErrors] = useState<string[]>([])
   const [formState, setFormState] = useState({ message: "" })
-  const [userIdNumber, setUserIdNumber] = useState<number | null>()
   
   const navigate = useNavigate()
   const { id: chatRoomId = "" } = useParams<{ id?: string }>()
@@ -48,9 +47,7 @@ export default function ChatRoomPage() {
       return
     }
 
-    if (!user || userIdNumber !== undefined) return
-
-    findUserIdFromMessages()
+    if (!user) return
 
     fetchChatRoom(chatRoomId)
       .then(() => {
@@ -80,16 +77,8 @@ export default function ChatRoomPage() {
         messageChannelRef.current.unsubscribe()
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chatRoomId, userId, userIdNumber, messages])
-
-  // 自分のメッセージから user_id を取得する関数
-  const findUserIdFromMessages = () => {
-    const found = messages.find((msg) => msg.email === user?.email)
-    if (found) {
-      setUserIdNumber(found.user_id)
-    }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatRoomId, userId])
 
   const fetchChatRoom = async (chatRoomId: string) => {
     const chatRoomsData = (await apiClient.get(`/chat_rooms/${chatRoomId}`)).data
@@ -107,13 +96,8 @@ export default function ChatRoomPage() {
       const errors: string[] = []
       const message = formData.get("chat_message[message]") as string
   
-      if (!message?.trim()) {
-        errors.push("メッセージを入力してください。")
-      }
-  
-      if (errors.length > 0) {
-        return { errors }
-      }
+      if (!message?.trim()) { errors.push("メッセージを入力してください。") }
+      if (errors.length > 0) { return { errors } }
   
       try {
         await apiClient.post(`/chat_rooms/${chatRoomId}/chat_messages`, formData)
