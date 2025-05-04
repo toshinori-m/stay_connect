@@ -36,17 +36,15 @@ export default function TeamProfileEditPage() {
     OTHER_BODY: "teamOtherBody"
   }
 
-  const [formState, setFormState] = useState({
-    sportsTypeSelected: "",
-    sportsDisciplineSelected: [],
-    targetAgeSelected: [],
-    prefectureSelected: "",
-    name: "",
-    area: "",
-    sex: "",
-    trackRecord: "",
-    otherBody: ""
-  })
+  const [sportsTypeSelected, setSportsTypeSelected] = useState("")
+  const [sportsDisciplineSelected, setSportsDisciplineSelected] = useState<string[]>([])
+  const [targetAgeSelected, setTargetAgeSelected] = useState<string[]>([])
+  const [prefectureSelected, setPrefectureSelected] = useState("")
+  const [name, setName] = useState("")
+  const [area, setArea] = useState("")
+  const [sex, setSex] = useState("")
+  const [trackRecord, setTrackRecord] = useState("")
+  const [otherBody, setOtherBody] = useState("")
   
   const [errors, setErrors] = useState<string[]>([])
   const [fetchedId, setFetchedId] = useState<string | null>(null)
@@ -59,7 +57,7 @@ export default function TeamProfileEditPage() {
     errors: initialErrors
   } = useInitialFormData()
 
-  const { sportsDisciplines, errors: sportsDisciplineErrors } = useFetchDisciplines(formState.sportsTypeSelected)
+  const { sportsDisciplines, errors: sportsDisciplineErrors } = useFetchDisciplines(sportsTypeSelected)
 
   useEffect(() => {
     setErrors([])
@@ -68,19 +66,19 @@ export default function TeamProfileEditPage() {
     if (!teamId) return
 
     fetchTeamData(teamId)
-    .then(({ teamData, sportsDisciplineIds, targetAgeIds }) => {
-      if (!teamData) return
+      .then(({ teamData, sportsDisciplineIds, targetAgeIds }) => {
+        if (!teamData) return
 
-      setTeamFormState(teamData)
-      setSelectedSportsType(teamData.sports_type_id)
-      setSelectedTargetAge(targetAgeIds)
-      setPendingSportsDisciplineIds(sportsDisciplineIds)
-      setFetchedId(teamId)
-    })
-    .catch(() => {
-      setErrors(["チーム紹介を表示できませんでした。"])
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        setTeamFormState(teamData)
+        setSelectedSportsType(teamData.sports_type_id)
+        setSelectedTargetAge(targetAgeIds)
+        setPendingSportsDisciplineIds(sportsDisciplineIds)
+        setFetchedId(teamId)
+      })
+      .catch(() => {
+        setErrors(["チーム紹介を表示できませんでした。"])
+      })
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamId, sportsTypes, prefectures, targetAges])
 
   const fetchTeamData = async (teamId: string) => {
@@ -91,27 +89,23 @@ export default function TeamProfileEditPage() {
   }  
 
   const setTeamFormState = (teamData: TeamData) => {
-    setFormState(prev => ({
-      ...prev,
-      name: teamData.name || "",
-      area: teamData.area || "",
-      sex: teamData.sex || "",
-      prefectureSelected: teamData.prefecture_id ? teamData.prefecture_id.toString() : "",
-      trackRecord: teamData.track_record || "",
-      otherBody: teamData.other_body || ""
-    }))
-  }  
+    setName(teamData.name || "")
+    setArea(teamData.area || "")
+    setSex(teamData.sex || "")
+    setPrefectureSelected(teamData.prefecture_id ? teamData.prefecture_id.toString() : "")
+    setTrackRecord(teamData.track_record || "")
+    setOtherBody(teamData.other_body || "")
+  }
 
   const setSelectedSportsType = (selectSportsTypeId?: number) => {
     if (selectSportsTypeId) {
-      updateFormState("sportsTypeSelected", selectSportsTypeId.toString())
+      setSportsTypeSelected(selectSportsTypeId.toString())
     }
   }
 
   const setSelectedTargetAge = (targetAgeIds?: number[]) => {
     if (targetAgeIds && targetAgeIds.length > 0) {
-      const selectedIds = targetAgeIds.map(targetAgeId => targetAgeId.toString())
-      updateFormState("targetAgeSelected", selectedIds)
+      setTargetAgeSelected(targetAgeIds.map(id => id.toString()))
     }
   }
 
@@ -122,46 +116,29 @@ export default function TeamProfileEditPage() {
       .filter(discipline => pendingSportsDisciplineIds.includes(discipline.id))
       .map(discipline => discipline.id.toString())
   
-    updateFormState("sportsDisciplineSelected", selectedIds)
-  
+    setSportsDisciplineSelected(selectedIds)
     setPendingSportsDisciplineIds(null) // セット後クリア
   }, [pendingSportsDisciplineIds, sportsDisciplines])
 
-  const updateFormState = (field: string, value: unknown) => {
-    setFormState(prev => ({ ...prev, [field]: value }))
-  }
-
-  const handleSportsTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateFormState("sportsTypeSelected", e.target.value)
-    updateFormState("sportsDisciplineSelected", [])
-  }
-
   const handleMultiSelectChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
-    field: string
+    setter: React.Dispatch<React.SetStateAction<string[]>>
   ) => {
-    const selectedIds = Array.from(e.target.selectedOptions).map(opt => opt.value)
-    updateFormState(field, selectedIds)
+    const selected = Array.from(e.target.selectedOptions).map(opt => opt.value)
+    setter(selected)
   }
 
-  const handlePrefectureChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateFormState("prefectureSelected", e.target.value)
-  }
-
-  const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    updateFormState(field, e.target.value)
-  }
-  
-  const handleSexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateFormState("sex", e.target.value)
+  const handleTextChange = (
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setter(e.target.value)
+    }
   }
   
   const formatSelectedNames = (selectedIds: string[], options: SelectOption[]) => {
     if (selectedIds.length === 0) return null
-  
-    const selectedNames = options
-      .filter(option => selectedIds.includes(option.id.toString()))
-      .map(option => option.name)
+    const selectedNames = options.filter(o => selectedIds.includes(o.id.toString())).map(o => o.name)
   
     return (
       <div className="mt-2 py-2 px-3 border-2 border-gray-200 rounded-lg bg-white text-gray-700">
@@ -193,9 +170,12 @@ export default function TeamProfileEditPage() {
               <SelectField
                 name={EVENT_FIELDS.SPORTS_TYPE}
                 title="競技名"
-                value={formState.sportsTypeSelected}
+                value={sportsTypeSelected}
                 options={sportsTypes}
-                onChange={handleSportsTypeChange}
+                onChange={(e) => {
+                  setSportsTypeSelected(e.target.value)
+                  setSportsDisciplineSelected([])
+                }}
               />
             </div>
           </li>
@@ -208,11 +188,11 @@ export default function TeamProfileEditPage() {
                   name={EVENT_FIELDS.SPORTS_DISCIPLINE}
                   multiple
                   title={<>種目<br />（複数可）</>}
-                  value={formState.sportsDisciplineSelected}
+                  value={sportsDisciplineSelected}
                   options={sportsDisciplines}
-                  onChange={(e) => handleMultiSelectChange(e, "sportsDisciplineSelected")}
+                  onChange={(e) => handleMultiSelectChange(e, setSportsDisciplineSelected)}
                 />
-                {formatSelectedNames(formState.sportsDisciplineSelected, sportsDisciplines)}
+                {formatSelectedNames(sportsDisciplineSelected, sportsDisciplines)}
               </div>
             </li>
           )}
@@ -223,9 +203,9 @@ export default function TeamProfileEditPage() {
               <SelectField
                 name={EVENT_FIELDS.PREFECTURE}
                 title="都道府県"
-                value={formState.prefectureSelected}
+                value={prefectureSelected}
                 options={prefectures}
-                onChange={handlePrefectureChange}
+                onChange={(e) => setPrefectureSelected(e.target.value)}
               />
             </div>
           </li>
@@ -238,8 +218,8 @@ export default function TeamProfileEditPage() {
                 type="text"
                 title="チーム名"
                 placeholder="チーム名"
-                value={formState.name}
-                onChange={handleInputChange("name")}
+                value={name}
+                onChange={handleTextChange(setName)}
               />
             </div>
           </li>
@@ -251,9 +231,9 @@ export default function TeamProfileEditPage() {
                 name={EVENT_FIELDS.AREA}
                 title="活動地域"
                 placeholder="活動地域"
-                value={formState.area}
+                value={area}
                 rows={4}
-                onChange={handleInputChange("area")}
+                onChange={handleTextChange(setArea)}
               />
             </div>
           </li>
@@ -270,8 +250,8 @@ export default function TeamProfileEditPage() {
                   { title: "男女", value: "mix" },
                   { title: "混合", value: "man_and_woman" }
                 ]}
-                selected={formState.sex}
-                onChange={handleSexChange}
+                selected={sex}
+                onChange={(e) => setSex(e.target.value)}
               />
             </div>
           </li>
@@ -283,11 +263,11 @@ export default function TeamProfileEditPage() {
                 name={EVENT_FIELDS.TARGET_AGE}
                 multiple
                 title={<>対象年齢<br />（複数可）</>}
-                value={formState.targetAgeSelected}
+                value={targetAgeSelected}
                 options={targetAges}
-                onChange={(e) => handleMultiSelectChange(e, "targetAgeSelected")}
+                onChange={(e) => handleMultiSelectChange(e, setTargetAgeSelected)}
               />
-              {formatSelectedNames(formState.targetAgeSelected, targetAges)}
+              {formatSelectedNames(targetAgeSelected, targetAges)}
             </div>
           </li>
 
@@ -298,9 +278,9 @@ export default function TeamProfileEditPage() {
                 name={EVENT_FIELDS.TRACK_RECORD}
                 title="活動実績"
                 placeholder="活動実績"
-                value={formState.trackRecord}
+                value={trackRecord}
                 rows={5}
-                onChange={handleInputChange("trackRecord")}
+                onChange={handleTextChange(setTrackRecord)}
               />
             </div>
           </li>
@@ -312,9 +292,9 @@ export default function TeamProfileEditPage() {
                 name={EVENT_FIELDS.OTHER_BODY}
                 title="その他"
                 placeholder="その他"
-                value={formState.otherBody}
+                value={otherBody}
                 rows={5}
-                onChange={handleInputChange("otherBody")}
+                onChange={handleTextChange(setOtherBody)}
               />
             </div>
           </li>
