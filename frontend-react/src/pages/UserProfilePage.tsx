@@ -49,12 +49,13 @@ export default function UserProfilePage() {
   ].filter(Boolean) as string[]
 
   // チーム紹介ページへ
-  const handleTeamIntroduction = (teamId: number) => {
+  const handleTeamIntroduction = async(teamId: number) => {
     if (!teamId) {
       setErrors(prev => [...prev, "チームIDが指定されていません。"])
       return
     }
-    console.log("チーム紹介画面は次のissueで作成予定！") // TODO: 後続タスクで処理を追加
+
+    navigate(`/team_profile_introduction/${teamId}`)
   }
 
   // チャットボタン表示条件
