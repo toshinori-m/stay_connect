@@ -70,8 +70,8 @@ export default function TeamProfileEditPage() {
         if (!teamData) return
 
         setTeamFormState(teamData)
-        setSelectedSportsType(teamData.sports_type_id)
-        setSelectedTargetAge(targetAgeIds)
+        setSportsTypeSelected(teamData.sports_type_id?.toString() ?? "")
+        setTargetAgeSelected((targetAgeIds || []).map(String))
         setPendingSportsDisciplineIds(sportsDisciplineIds)
         setFetchedId(teamId)
       })
@@ -97,18 +97,6 @@ export default function TeamProfileEditPage() {
     setOtherBody(teamData.other_body || "")
   }
 
-  const setSelectedSportsType = (selectSportsTypeId?: number) => {
-    if (selectSportsTypeId) {
-      setSportsTypeSelected(selectSportsTypeId.toString())
-    }
-  }
-
-  const setSelectedTargetAge = (targetAgeIds?: number[]) => {
-    if (targetAgeIds && targetAgeIds.length > 0) {
-      setTargetAgeSelected(targetAgeIds.map(id => id.toString()))
-    }
-  }
-
   useEffect(() => {
     if (!pendingSportsDisciplineIds || sportsDisciplines.length === 0) return
   
@@ -120,7 +108,7 @@ export default function TeamProfileEditPage() {
     setPendingSportsDisciplineIds(null) // セット後クリア
   }, [pendingSportsDisciplineIds, sportsDisciplines])
 
-  const handleMultiSelectChange = (
+  const handleSelectedValuesChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
     setter: React.Dispatch<React.SetStateAction<string[]>>
   ) => {
@@ -190,7 +178,7 @@ export default function TeamProfileEditPage() {
                   title={<>種目<br />（複数可）</>}
                   value={sportsDisciplineSelected}
                   options={sportsDisciplines}
-                  onChange={(e) => handleMultiSelectChange(e, setSportsDisciplineSelected)}
+                  onChange={(e) => handleSelectedValuesChange(e, setSportsDisciplineSelected)}
                 />
                 {formatSelectedNames(sportsDisciplineSelected, sportsDisciplines)}
               </div>
@@ -265,7 +253,7 @@ export default function TeamProfileEditPage() {
                 title={<>対象年齢<br />（複数可）</>}
                 value={targetAgeSelected}
                 options={targetAges}
-                onChange={(e) => handleMultiSelectChange(e, setTargetAgeSelected)}
+                onChange={(e) => handleSelectedValuesChange(e, setTargetAgeSelected)}
               />
               {formatSelectedNames(targetAgeSelected, targetAges)}
             </div>
