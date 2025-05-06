@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useEffect, useState, useActionState } from "react"
+import { useParams, useNavigate } from "react-router-dom"
 import { useApiClient } from "@/hooks/useApiClient"
 import { SelectOption } from "@/types"
 import useInitialFormData from "@/hooks/search/useInitialFormData"
@@ -8,6 +8,7 @@ import InputField from "@/components/ui/InputField"
 import TextareaField from "@/components/ui/TextareaField"
 import SelectField from "@/components/ui/SelectField"
 import RadioGroupField from "@/components/ui/RadioGroupField"
+import Button from "@/components/ui/Button"
 
 interface TeamData {
   id: number
@@ -19,28 +20,37 @@ interface TeamData {
   sports_type_id: number
   prefecture_id: number
 }
-// まずは表示側の実装部分のみレビューをお願いします。編集・保存処理は次のコミットで追加予定です。
+
 export default function TeamProfileEditPage() {
+  const SHOW_LIMIT_THRESHOLD = 5
+  const NAME_MIN_LENGTH = 2
+  const NAME_MAX_LENGTH = 100
+  const MIN_LENGTH = 1
+  const MAX_LENGTH = 255
+  const remainingNameCharacters = (input: string) => NAME_MAX_LENGTH - input.length
+  const remainingCharacters = (input: string) => MAX_LENGTH - input.length
+
+  const TEAM_FIELDS = {
+    SPORTS_TYPE: "sports_type_id",
+    SPORTS_DISCIPLINE: "sports_discipline_ids",
+    PREFECTURE: "prefecture_id",
+    NAME: "name",
+    AREA: "area",
+    SEX: "sex",
+    TARGET_AGE: "target_age_ids",
+    TARGET_RECORD: "track_record",
+    OTHER_BODY: "other_body"
+  }
+
   const { id: teamId } = useParams<{ id: string }>()
   const apiClient = useApiClient()
-
-  const EVENT_FIELDS = {
-    SPORTS_TYPE: "teamSportsType",
-    SPORTS_DISCIPLINE: "teamSportsDiscipline",
-    PREFECTURE: "teamPrefecture",
-    TARGET_AGE: "teamTargetAge",
-    NAME: "teamName",
-    AREA: "teamArea",
-    SEX: "teamSex",
-    TRACK_RECORD: "teamTrackRecord",
-    OTHER_BODY: "teamOtherBody"
-  }
+  const navigate = useNavigate()
 
   const [sportsTypeSelected, setSportsTypeSelected] = useState("")
   const [sportsDisciplineSelected, setSportsDisciplineSelected] = useState<string[]>([])
   const [targetAgeSelected, setTargetAgeSelected] = useState<string[]>([])
   const [prefectureSelected, setPrefectureSelected] = useState("")
-  const [name, setName] = useState("")
+  const [teamName, setTeamName] = useState("")
   const [area, setArea] = useState("")
   const [sex, setSex] = useState("")
   const [trackRecord, setTrackRecord] = useState("")
@@ -79,7 +89,7 @@ export default function TeamProfileEditPage() {
         setErrors(["チーム紹介を表示できませんでした。"])
       })
       // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [teamId, sportsTypes, prefectures, targetAges])
+  }, [teamId, sportsTypes, prefectures, targetAges, fetchedId])
 
   const fetchTeamData = async (teamId: string) => {
     const teamData = (await apiClient.get(`/teams/${teamId}`)).data.data
@@ -89,10 +99,10 @@ export default function TeamProfileEditPage() {
   }  
 
   const setTeamFormState = (teamData: TeamData) => {
-    setName(teamData.name || "")
+    setTeamName(teamData.name || "")
     setArea(teamData.area || "")
     setSex(teamData.sex || "")
-    setPrefectureSelected(teamData.prefecture_id ? teamData.prefecture_id.toString() : "")
+    setPrefectureSelected(teamData.prefecture_id?.toString() || "")
     setTrackRecord(teamData.track_record || "")
     setOtherBody(teamData.other_body || "")
   }
@@ -108,6 +118,57 @@ export default function TeamProfileEditPage() {
     setPendingSportsDisciplineIds(null) // セット後クリア
   }, [pendingSportsDisciplineIds, sportsDisciplines])
 
+  const [actionState, action] = useActionState(
+    async () => {
+      const newErrors: string[] = []
+
+      // バリデーション
+      if (teamName.trim().length < NAME_MIN_LENGTH || teamName.trim().length > NAME_MAX_LENGTH) {
+        newErrors.push(`チーム名を${NAME_MIN_LENGTH}文字〜${NAME_MAX_LENGTH}文字で入力してください。`)
+      }
+      if (!sportsTypeSelected) newErrors.push("競技を選択してください。")
+      if (!prefectureSelected) newErrors.push("都道府県を選択してください。")
+      if (targetAgeSelected.length === 0) newErrors.push("対象年齢を選択してください。")
+      if (!sex.trim()) newErrors.push("性別を選択してください。")
+      if (area.trim().length < MIN_LENGTH || area.trim().length > MAX_LENGTH) {
+        newErrors.push(`活動地域を${MIN_LENGTH}文字〜${MAX_LENGTH}文字で入力してください。`)
+      }
+      if (trackRecord.trim().length === 0 || trackRecord.trim().length > MAX_LENGTH) {
+        newErrors.push(`活動実績を${MIN_LENGTH}文字〜${MAX_LENGTH}文字で入力してください。`)
+      }
+
+      if (newErrors.length > 0) {
+        return { errors: newErrors }
+      }
+
+      const formData = new FormData()
+      formData.append(`team[${TEAM_FIELDS.SPORTS_TYPE}]`, sportsTypeSelected)
+      formData.append(`team[${TEAM_FIELDS.PREFECTURE}]`, prefectureSelected)      
+      formData.append(`team[${TEAM_FIELDS.NAME}]`, teamName)
+      formData.append(`team[${TEAM_FIELDS.AREA}]`, area)
+      formData.append(`team[${TEAM_FIELDS.SEX}]`, sex)
+      formData.append(`team[${TEAM_FIELDS.TARGET_RECORD}]`, trackRecord)
+      formData.append(`team[${TEAM_FIELDS.OTHER_BODY}]`, otherBody)
+
+      targetAgeSelected.forEach(ageId => {
+        formData.append(`team[${TEAM_FIELDS.TARGET_AGE}][]`, ageId)
+      })
+
+      sportsDisciplineSelected.forEach(disciplineId => {
+        formData.append(`team[${TEAM_FIELDS.SPORTS_DISCIPLINE}][]`, disciplineId)
+      })
+
+      try {        
+        await apiClient.patch(`/teams/${teamId}`, formData)
+        navigate("/team_profile_list")
+        return { errors: [] }
+      } catch {
+        return { errors: ["チーム情報の更新に失敗しました。"] }
+      }
+    },
+    { errors: [] }
+  )
+
   const handleSelectedValuesChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
     setter: React.Dispatch<React.SetStateAction<string[]>>
@@ -116,14 +177,6 @@ export default function TeamProfileEditPage() {
     setter(selected)
   }
 
-  const handleTextChange = (
-    setter: React.Dispatch<React.SetStateAction<string>>
-  ) => {
-    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setter(e.target.value)
-    }
-  }
-  
   const formatSelectedNames = (selectedIds: string[], options: SelectOption[]) => {
     if (selectedIds.length === 0) return null
     const selectedNames = options.filter(o => selectedIds.includes(o.id.toString())).map(o => o.name)
@@ -134,7 +187,18 @@ export default function TeamProfileEditPage() {
       </div>
     )
   }  
-  
+
+  const teamProfileHandleDelete = async () => {
+    if (!teamId) return
+    
+    try {
+      await apiClient.delete(`/teams/${teamId}`)
+      navigate("/team_profile_list")
+    } catch {
+      setErrors(["チーム紹介を削除できませんでした。"])
+    }
+  }
+
   const ErrorList = (errors: string[]) => {
     if (errors.length === 0) return null
 
@@ -151,143 +215,161 @@ export default function TeamProfileEditPage() {
     <div className="flex items-center justify-center mt-32 md:mt-20">
       <div className="w-full md:w-3/5 xl:w-2/5 shadow-gray-200 bg-sky-100 rounded-lg">
         <h2 className="text-center mb-10 pt-10 font-bold text-3xl text-blue-600">チーム紹介編集</h2>
-        <ul className="space-y-4 text-left">
-          {/* 競技種別 */}
-          <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
-            <div className="md:col-span-12 md:ml-2 md:mr-4">
-              <SelectField
-                name={EVENT_FIELDS.SPORTS_TYPE}
-                title="競技名"
-                value={sportsTypeSelected}
-                options={sportsTypes}
-                onChange={(e) => {
-                  setSportsTypeSelected(e.target.value)
-                  setSportsDisciplineSelected([])
-                }}
-              />
-            </div>
-          </li>
-          
-          {/* 種目 */}
-          {sportsDisciplines.length > 0 && (
+        <form className="px-4 md:px-0 text-center" action={action}>
+          <ul className="space-y-4 text-left">
+            {/* 競技種別 */}
             <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
               <div className="md:col-span-12 md:ml-2 md:mr-4">
                 <SelectField
-                  name={EVENT_FIELDS.SPORTS_DISCIPLINE}
-                  multiple
-                  title={<>種目<br />（複数可）</>}
-                  value={sportsDisciplineSelected}
-                  options={sportsDisciplines}
-                  onChange={(e) => handleSelectedValuesChange(e, setSportsDisciplineSelected)}
+                  name={TEAM_FIELDS.SPORTS_TYPE}
+                  title="競技名"
+                  value={sportsTypeSelected}
+                  options={sportsTypes}
+                  onChange={(e) => {
+                    setSportsTypeSelected(e.target.value)
+                    setSportsDisciplineSelected([])
+                  }}
                 />
-                {formatSelectedNames(sportsDisciplineSelected, sportsDisciplines)}
               </div>
             </li>
-          )}
+            
+            {/* 種目 */}
+            {sportsDisciplines.length > 0 && (
+              <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+                <div className="md:col-span-12 md:ml-2 md:mr-4">
+                  <SelectField
+                    name={TEAM_FIELDS.SPORTS_DISCIPLINE}
+                    multiple
+                    title={<>種目<br />（複数可）</>}
+                    value={sportsDisciplineSelected}
+                    options={sportsDisciplines}
+                    onChange={(e) => handleSelectedValuesChange(e, setSportsDisciplineSelected)}
+                  />
+                  {formatSelectedNames(sportsDisciplineSelected, sportsDisciplines)}
+                </div>
+              </li>
+            )}
 
-          {/* 都道府県 */}
-          <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
-            <div className="md:col-span-12 md:ml-2 md:mr-4">
-              <SelectField
-                name={EVENT_FIELDS.PREFECTURE}
-                title="都道府県"
-                value={prefectureSelected}
-                options={prefectures}
-                onChange={(e) => setPrefectureSelected(e.target.value)}
-              />
-            </div>
-          </li>
+            {/* 都道府県 */}
+            <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <div className="md:col-span-12 md:ml-2 md:mr-4">
+                <SelectField
+                  name={TEAM_FIELDS.PREFECTURE}
+                  title="都道府県"
+                  value={prefectureSelected}
+                  options={prefectures}
+                  onChange={(e) => setPrefectureSelected(e.target.value)}
+                />
+              </div>
+            </li>
 
-          {/* チーム名 */}
-          <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
-            <div className="md:col-span-12 md:ml-2 md:mr-4">
-              <InputField
-                name={EVENT_FIELDS.NAME}
-                type="text"
-                title="チーム名"
-                placeholder="チーム名"
-                value={name}
-                onChange={handleTextChange(setName)}
-              />
-            </div>
-          </li>
+            {/* チーム名 */}
+            <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <div className="md:col-span-12 md:ml-2 md:mr-4">
+                <InputField
+                  name={TEAM_FIELDS.NAME}
+                  type="text"
+                  title="チーム名"
+                  placeholder="チーム名"
+                  value={teamName}
+                  onChange={(e) => setTeamName(e.target.value)}
+                />
+              </div>
+            </li>
+            {remainingNameCharacters(teamName) <= SHOW_LIMIT_THRESHOLD && (
+              <div className="text-red-500 text-sm">チーム名はあと{remainingNameCharacters(teamName)}文字までです。</div>
+            )}
 
-          {/* 活動地域 */}
-          <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
-            <div className="md:col-span-12 md:ml-2 md:mr-4">
-              <TextareaField
-                name={EVENT_FIELDS.AREA}
-                title="活動地域"
-                placeholder="活動地域"
-                value={area}
-                rows={4}
-                onChange={handleTextChange(setArea)}
-              />
-            </div>
-          </li>
+            {/* 活動地域 */}
+            <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <div className="md:col-span-12 md:ml-2 md:mr-4">
+                <TextareaField
+                  name={TEAM_FIELDS.AREA}
+                  title="活動地域"
+                  placeholder="活動地域"
+                  value={area}
+                  rows={4}
+                  onChange={(e) => setArea(e.target.value)}
+                />
+              </div>
+            </li>
+            {remainingCharacters(area) <= SHOW_LIMIT_THRESHOLD && (
+              <div className="text-red-500 text-sm">活動地域はあと{remainingCharacters(area)}文字までです。</div>
+            )}
 
-          {/* 性別 */}
-          <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
-            <div className="md:col-span-12 md:ml-2 md:mr-4">
-              <RadioGroupField
-                name={EVENT_FIELDS.SEX}
-                title="性別"
-                options={[
-                  { title: "男", value: "man" },
-                  { title: "女", value: "woman" },
-                  { title: "男女", value: "mix" },
-                  { title: "混合", value: "man_and_woman" }
-                ]}
-                selected={sex}
-                onChange={(e) => setSex(e.target.value)}
-              />
-            </div>
-          </li>
+            {/* 性別 */}
+            <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <div className="md:col-span-12 md:ml-2 md:mr-4">
+                <RadioGroupField
+                  name={TEAM_FIELDS.SEX}
+                  title="性別"
+                  options={[
+                    { title: "男", value: "man" },
+                    { title: "女", value: "woman" },
+                    { title: "男女", value: "mix" },
+                    { title: "混合", value: "man_and_woman" }
+                  ]}
+                  selected={sex}
+                  onChange={(e) => setSex(e.target.value)}
+                />
+              </div>
+            </li>
 
-          {/* 対象年齢 */}
-          <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
-            <div className="md:col-span-12 md:ml-2 md:mr-4">
-              <SelectField
-                name={EVENT_FIELDS.TARGET_AGE}
-                multiple
-                title={<>対象年齢<br />（複数可）</>}
-                value={targetAgeSelected}
-                options={targetAges}
-                onChange={(e) => handleSelectedValuesChange(e, setTargetAgeSelected)}
-              />
-              {formatSelectedNames(targetAgeSelected, targetAges)}
-            </div>
-          </li>
+            {/* 対象年齢 */}
+            <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <div className="md:col-span-12 md:ml-2 md:mr-4">
+                <SelectField
+                  name={TEAM_FIELDS.TARGET_AGE}
+                  multiple
+                  title={<>対象年齢<br />（複数可）</>}
+                  value={targetAgeSelected}
+                  options={targetAges}
+                  onChange={(e) => handleSelectedValuesChange(e, setTargetAgeSelected)}
+                />
+                {formatSelectedNames(targetAgeSelected, targetAges)}
+              </div>
+            </li>
 
-          {/* 活動実績 */}
-          <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
-            <div className="md:col-span-12 md:ml-2 md:mr-4">
-              <TextareaField
-                name={EVENT_FIELDS.TRACK_RECORD}
-                title="活動実績"
-                placeholder="活動実績"
-                value={trackRecord}
-                rows={5}
-                onChange={handleTextChange(setTrackRecord)}
-              />
-            </div>
-          </li>
+            {/* 活動実績 */}
+            <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <div className="md:col-span-12 md:ml-2 md:mr-4">
+                <TextareaField
+                  name={TEAM_FIELDS.TARGET_RECORD}
+                  title="活動実績"
+                  placeholder="活動実績"
+                  value={trackRecord}
+                  rows={5}
+                  onChange={(e) => setTrackRecord(e.target.value)}
+                />
+              </div>
+            </li>
+            {remainingCharacters(trackRecord) <= SHOW_LIMIT_THRESHOLD && (
+              <div className="text-red-500 text-sm">活動実績{remainingCharacters(trackRecord)}文字までです。</div>
+            )}
 
-          {/* その他 */}
-          <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
-            <div className="md:col-span-12 md:ml-2 md:mr-4">
-              <TextareaField
-                name={EVENT_FIELDS.OTHER_BODY}
-                title="その他"
-                placeholder="その他"
-                value={otherBody}
-                rows={5}
-                onChange={handleTextChange(setOtherBody)}
-              />
-            </div>
-          </li>
-        </ul>
-        {ErrorList([...initialErrors, ...sportsDisciplineErrors, ...errors])}
+            {/* その他 */}
+            <li className="md:grid md:grid-cols-12 md:gap-4 md:items-center">
+              <div className="md:col-span-12 md:ml-2 md:mr-4">
+                <TextareaField
+                  name={TEAM_FIELDS.OTHER_BODY}
+                  title="その他"
+                  placeholder="その他"
+                  value={otherBody}
+                  rows={5}
+                  onChange={(e) => setOtherBody(e.target.value)}
+                />
+              </div>
+            </li>
+            {remainingCharacters(otherBody) <= SHOW_LIMIT_THRESHOLD && (
+              <div className="text-red-500 text-sm">その他はあと{remainingCharacters(otherBody)}文字までです。</div>
+            )}
+          </ul>
+          {ErrorList([...initialErrors, ...sportsDisciplineErrors, ...errors, ...actionState.errors])}
+          <div className="text-center my-5">
+            <Button type="submit" variant="primary" size="sm" className="mr-4">更新</Button>
+            <Button type="button" variant="red" size="sm" onClick={teamProfileHandleDelete}>削除</Button>
+          </div>
+        </form>
       </div>
     </div>
   )
