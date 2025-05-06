@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { useApiClient } from "@/hooks/useApiClient"
 import { SelectOption } from "@/types"
+import useInitialFormData from "@/hooks/search/useInitialFormData"
 import Button from "@/components/ui/Button"
 
 interface EventDetails {
@@ -38,46 +39,45 @@ export default function EventPage() {
   const sportsDisciplinesNames = () => formatOptionNames(eventDetails?.sports_disciplines)
   const targetAgesNames = () => formatOptionNames(eventDetails?.target_ages)
 
+  const {
+    sportsTypes,
+    prefectures,
+    errors: initialErrors
+  } = useInitialFormData()
+
   useEffect(() => {
     setErrors([])
 
     if (!eventId || fetchedEventId === eventId) return
+    if (sportsTypes.length === 0 || prefectures.length === 0 ) return
 
     fetchEventDetails(eventId)
-    .then(eventData => {
-      setEventDetails(eventData)
-      setFetchedEventId(eventId)
-      return Promise.all([
-        fetchSportsType(eventData.sports_type_id),
-        fetchPrefecture(eventData.prefecture_id)
-      ])
-    })
-    .then(([foundSportsType, foundPrefecture]) => {
-      setSportsType(foundSportsType?.name || "")
-      setPrefecture(foundPrefecture?.name || "")
-    })
-    .catch(() => {
-      setErrors(["基本設定を表示できませんでした。"])
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eventId])
+      .then(eventData => {
+        setEventDetails(eventData)
+        setFetchedEventId(eventId)
+        setSportsType(eventData.sports_type_id?.toString() ?? "")
+        setPrefecture(eventData.prefecture_id?.toString() ?? "")
+      })
+      .catch(() => {
+        setErrors(["基本設定を表示できませんでした。"])
+      })
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eventId, sportsTypes, prefectures])
 
   const fetchEventDetails = async (eventId: string) => {
     const eventData = (await apiClient.get(`/recruitments/${eventId}`)).data.data
     return eventData
   }
 
-  const fetchSportsType = async (sportsTypeId: number | null) => {
-    if (!sportsTypeId) return Promise.resolve(null)
-    const sportsTypeData = (await apiClient.get(`/sports_types/${sportsTypeId}`)).data.data
-    return sportsTypeData
+  const mapSelectedIdToName = (
+    selectedId: string,
+    options: SelectOption[]
+  ): string => {
+    return options.find((option) => option.id.toString() === selectedId)?.name || ""
   }
-
-  const fetchPrefecture = async (prefectureId: number | null) => {
-    if (!prefectureId) return Promise.resolve(null)
-    const prefectureData = (await apiClient.get(`/prefectures/${prefectureId}`)).data.data
-    return prefectureData
-  }
+  
+  const selectedSportsTypeName = mapSelectedIdToName(sportsType, sportsTypes)
+  const selectedPrefectureName = mapSelectedIdToName(prefecture, prefectures)
 
   const handleUserProfileClick = () => {
     if (eventDetails?.user_id) {
@@ -92,6 +92,18 @@ export default function EventPage() {
   )
 
   if (!eventDetails) return
+  
+  const ErrorList = (errors: string[]) => {
+    if (errors.length === 0) return null
+
+    return (
+      <ul className="text-red-500 text-sm list-disc list-inside text-left md:pl-44 pl-12">
+        {errors.map((error, index) => (
+          <li key={index}>{error}</li>
+        ))}
+      </ul>
+    )
+  }
 
   return (
     <div className="mt-40 md:mt-20 max-w-2xl mx-auto p-6 bg-sky-100 shadow-lg rounded-lg break-words">
@@ -103,26 +115,19 @@ export default function EventPage() {
         <img src={eventDetails.image} alt="Event Image" className="w-full h-auto mb-4" />
       )}
       <div className="text-right">
-        <Button
-          type="submit"
-          variant="primary"
-          size="sm"
-          className="mr-4"
-          onClick={() => handleUserProfileClick()}
-        >
+        <Button type="submit" variant="primary" size="sm" className="mr-4" onClick={() => handleUserProfileClick()}>
           代表紹介
         </Button>
       </div>
-      {errors.map((errMsg, index) => (
-        <div key={index} className="text-sm text-red-400">{errMsg}</div>
-      ))}
-      <TitleAndValue title="競技">{sportsType}</TitleAndValue>
+      {/* エラーメッセージの表示 */}
+      {ErrorList([...initialErrors, ...errors])}
+      <TitleAndValue title="競技">{selectedSportsTypeName}</TitleAndValue>
 
       {eventDetails.sports_disciplines?.length > 0 && (
         <TitleAndValue title="種目">{sportsDisciplinesNames()}</TitleAndValue>
       )}
 
-      <TitleAndValue title="都道府県">{prefecture}</TitleAndValue>
+      <TitleAndValue title="都道府県">{selectedPrefectureName}</TitleAndValue>
       <TitleAndValue title="開催地">{eventDetails.area}</TitleAndValue>
       <TitleAndValue title="対象年齢">{targetAgesNames()}</TitleAndValue>
       <TitleAndValue title="目的">{eventDetails.purpose_body}</TitleAndValue>
