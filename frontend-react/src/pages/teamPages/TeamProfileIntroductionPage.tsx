@@ -6,18 +6,6 @@ import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
 import Button from "@/components/ui/Button"
 import { SelectOption } from "@/types"
 
-interface TeamProfile {
-  id: string
-  name: string
-  sports_type_id: number
-  prefecture_id: number
-  area: string
-  sex: string
-  track_record: string
-  other_body: string
-  user_id: string
-}
-
 interface ValueLabelOption {
   value: string
   title: string
@@ -42,6 +30,13 @@ export default function TeamProfileIntroduction() {
   const [errors, setErrors] = useState<string[]>([])
   const [fetchedTeamProfileId, setFetchedTeamProfileId] = useState<string | null>(null)
   const [pendingSportsDisciplineIds, setPendingSportsDisciplineIds] = useState<number[] | null>(null)
+  
+  const SEX_OPTIONS: ValueLabelOption[] = [
+    { value: "男", title: "man" },
+    { value: "女", title: "woman" },
+    { value: "男女", title: "mix" },
+    { value: "混合", title: "man_and_woman" }
+  ]
 
   const {
     sportsTypes,
@@ -62,9 +57,18 @@ export default function TeamProfileIntroduction() {
       .then(({ TeamProfileData, sportsDisciplineIds, targetAgeIds }) => {
         if (!TeamProfileData) return
 
-        applyTeamProfileData(TeamProfileData)
-        setSelectedSportsType(TeamProfileData.sports_type_id?.toString() ?? "")
-        setSelectedTargetAges((targetAgeIds || []).map(String))
+        // プロフィール関連のデータをセット
+        setName(TeamProfileData.name || "")
+        setArea(TeamProfileData.area || "")
+        setSex(TeamProfileData.sex || "")
+        setPrefectureSelected(TeamProfileData.prefecture_id ? TeamProfileData.prefecture_id.toString() : "")
+        setTrackRecord(TeamProfileData.track_record || "")
+        setOtherBody(TeamProfileData.other_body || "")
+        setUserId(TeamProfileData.user_id || "")
+
+        // 関連 ID をセット
+        setSportsTypeSelected(TeamProfileData.sports_type_id?.toString() ?? "")
+        setTargetAgeSelected((targetAgeIds || []).map(String))
         setPendingSportsDisciplineIds(sportsDisciplineIds)
         setFetchedTeamProfileId(TeamProfileId)
       })
@@ -81,28 +85,6 @@ export default function TeamProfileIntroduction() {
       const sportsDisciplineIds = TeamProfileData.sports_disciplines
       const targetAgeIds = TeamProfileData.target_ages
       return { TeamProfileData, sportsDisciplineIds, targetAgeIds }
-  }
-
-  const applyTeamProfileData = (teamProfileData: TeamProfile) => {
-    setName(teamProfileData.name || "")
-    setArea(teamProfileData.area || "")
-    setSex(teamProfileData.sex || "")
-    setPrefectureSelected(teamProfileData.prefecture_id ? teamProfileData.prefecture_id.toString() : "")
-    setTrackRecord(teamProfileData.track_record || "")
-    setOtherBody(teamProfileData.other_body || "")
-    setUserId(teamProfileData.user_id || "")
-  }
-
-  const setSelectedSportsType = (selectSportsTypeId?: number) => {
-    if (selectSportsTypeId) {
-      setSportsTypeSelected(selectSportsTypeId.toString())
-    }
-  }
-
-  const setSelectedTargetAges = (targetAgeIds?: number[]) => {
-    if (targetAgeIds && targetAgeIds.length > 0) {
-      setTargetAgeSelected(targetAgeIds.map(id => id.toString()))
-    }
   }
 
   useEffect(() => {
@@ -126,31 +108,24 @@ export default function TeamProfileIntroduction() {
     navigate(`/user_profile/${userId}`)
   }
 
-  const mapSelectedValueToTitle = (
+  const findValueByTitle = (
     selectedValue: string,
     options: ValueLabelOption[]
   ): string => {
     return options.find((option) => option.title === selectedValue)?.value || ""
   }
-  
-  const sexOptions: ValueLabelOption[]= [
-    { value: "男", title: "man" },
-    { value: "女", title: "woman" },
-    { value: "男女", title: "mix" },
-    { value: "混合", title: "man_and_woman" }
-  ]
 
-  const mapSelectedIdToName = (
+  const findNameById = (
     selectedId: string,
     options: SelectOption[]
   ): string => {
     return options.find((option) => option.id.toString() === selectedId)?.name || ""
   }
   
-  const selectedSportsTypeName = mapSelectedIdToName(sportsTypeSelected, sportsTypes)
-  const selectedPrefectureName = mapSelectedIdToName(prefectureSelected, prefectures)
+  const selectedSportsTypeName = findNameById(sportsTypeSelected, sportsTypes)
+  const selectedPrefectureName = findNameById(prefectureSelected, prefectures)
 
-  const mapSelectedIdsToNames = (
+  const findNamesByIds = (
     selectedIds: string[],
     options: SelectOption[]
   ): string[] => {
@@ -159,8 +134,8 @@ export default function TeamProfileIntroduction() {
       .map((option) => option.name)
   }
 
-  const selectedSportsDisciplineNames = mapSelectedIdsToNames(sportsDisciplineSelected, sportsDisciplines)
-  const selectedTargetAgeNames = mapSelectedIdsToNames(targetAgeSelected, targetAges)
+  const selectedSportsDisciplineNames = findNamesByIds(sportsDisciplineSelected, sportsDisciplines)
+  const selectedTargetAgeNames = findNamesByIds(targetAgeSelected, targetAges)
 
   const ErrorList = (errors: string[]) => {
     if (errors.length === 0) return null
@@ -221,7 +196,7 @@ export default function TeamProfileIntroduction() {
         </li>
         <li>
           <span className={labelClass}>性別: </span>
-          <span className={infoTagClass}>{mapSelectedValueToTitle(sex, sexOptions)}</span>
+          <span className={infoTagClass}>{findValueByTitle(sex, SEX_OPTIONS)}</span>
         </li>
         <li className="flex items-center gap-2 flex-wrap">
           <span className={labelClass}>対象年齢: </span>
