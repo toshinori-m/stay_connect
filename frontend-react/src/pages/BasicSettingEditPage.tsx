@@ -31,8 +31,8 @@ export default function BasicSettingEditPage() {
   const NAME_MAX_LENGTH = 100
   const SELF_INTRODUCTION_MIN_LENGTH = 1
   const MAX_LENGTH = 255
-  const remainingNameCharacters = (input: string) => NAME_MAX_LENGTH - input.length
-  const remainingCharacters = (input: string) => MAX_LENGTH - input.length
+  const remainingNameCharacters = (input: string | null) => NAME_MAX_LENGTH - (input?.length ?? 0)
+  const remainingCharacters = (input: string | null) => MAX_LENGTH - (input?.length ?? 0)
 
   const USER_FIELDS = {
     NAME: "name",
@@ -129,14 +129,14 @@ export default function BasicSettingEditPage() {
     }
 
     fetchUserBasicSettings(userId)
-    .then(userSettingData => {
-      if (!userSettingData) return
-      setErrors([])
-      setFetchedId(userId)
-    })
-    .catch(() => {
-      setErrors(["基本設定を表示できませんでした。"])
-    })
+      .then(userSettingData => {
+        if (!userSettingData) return
+        setErrors([])
+        setFetchedId(userId)
+      })
+      .catch(() => {
+        setErrors(["基本設定を表示できませんでした。"])
+      })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
   
@@ -144,7 +144,16 @@ export default function BasicSettingEditPage() {
     const userSettingData = (await apiClient.get(`/users/${userId}`)).data.data
     setFormState(prev => ({
       ...prev,
-      user: userSettingData,
+      user: {
+        ...userSettingData,
+        name: userSettingData.name ?? "",
+        email: userSettingData.email ?? "",
+        birthday: userSettingData.birthday ?? "",
+        sex: userSettingData.sex ?? "man",
+        self_introduction: userSettingData.self_introduction ?? "",
+        email_notification: userSettingData.email_notification ?? "receives",
+        image_url: userSettingData.image_url ?? ""
+      },
       error: null
     }))
     return userSettingData
