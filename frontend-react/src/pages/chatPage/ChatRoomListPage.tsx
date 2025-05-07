@@ -1,34 +1,63 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { useApiClient } from "@/hooks/useApiClient"
-import { SelectOption } from "@/types"
 import Button from "@/components/ui/Button"
 
+interface ChatRoom {
+  id: number
+  other_user_name: string
+}
+
 export default function ChatRoomListPage() {
-  const [chatRooms, setChatRooms] = useState<SelectOption[]>([])
+  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([])
   const [errors, setErrors] = useState<string[]>([])
   const apiClient = useApiClient()
+  const navigate = useNavigate()
 
   useEffect(() => {
-    getChatRoomList()
+    fetchChatRoomList()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const getChatRoomList = async () => {
+  const fetchChatRoomList = async () => {
+    setErrors([])
     try {
-      setErrors([])
-      const res = await apiClient.get('/chat_rooms')
-      setChatRooms(res.data)
+      const chatRoomsData = (await apiClient.get("/chat_rooms")).data
+      setChatRooms(chatRoomsData)
+    } catch {
+      setErrors(["チャットルームリストを表示できませんでした。"])
+    }
+  }
+
+  const editChatRoom = async (chatRoomId: number) => {
+    setErrors([])
+    try {
+      navigate(`/chat_room/${chatRoomId}`)
     } catch {
       setErrors(["チャットルームを表示できませんでした。"])
     }
   }
 
-  const deleteChatRoom = async () => {
-    console.log("チーム紹介削除は次のissueで作成予定！") // TODO: 後続タスクで処理を追加
+  const deleteChatRoom = async (chatRoomId: number) => {
+    setErrors([])
+    try {
+      await apiClient.delete(`/chat_rooms/${chatRoomId}`)
+      setChatRooms((currentChatRooms) => currentChatRooms.filter((chatRoom) => chatRoom.id !== chatRoomId))
+    } catch {
+      setErrors(["チャットルームを削除できませんでした。"])
+    }
   }
 
-  const editChatRoom = () => {
-    console.log("チャットルーム画面は次のissueで作成予定！") // TODO: 後続タスクで処理を追加
+  const ErrorList = (errors: string[]) => {
+    if (errors.length === 0) return null
+  
+    return (
+      <ul className="text-red-500 text-sm my-4">
+        {errors.map((error, index) => (
+          <li key={index}>{error}</li>
+        ))}
+      </ul>
+    )
   }
 
   return (
@@ -36,21 +65,17 @@ export default function ChatRoomListPage() {
       <div className="w-full md:w-3/5 xl:w-2/5 pb-7 shadow-gray-200 bg-sky-100 rounded-lg">
         <h2 className="text-center mb-7 pt-10 font-bold text-3xl text-blue-600">チャットルーム一覧</h2>
         <div className="flex flex-col items-center">
-          {errors.length > 0 && (
-            <div className="text-red-500 text-sm my-4">
-              {errors.map((err, index) => ( <div key={index}>{err}</div> ))}
-            </div>
-          )}
+          {ErrorList([...errors])}
 
           {chatRooms.map((chatRoom) => (
             <div 
               key={chatRoom.id} 
-              className="text-left my-3 sm:ml-4 sm:mr-6 w-72 pt-3 ring-offset-2 ring-2 rounded-lg break-words"
+              className="text-left my-3 sm:ml-4 sm:mr-6 w-72 p-4 ring-offset-2 ring-2 rounded-lg break-words"
             >
-              チャット名: {chatRoom.name}
+              チャット名: {chatRoom.other_user_name}
               <div className="flex justify-center mt-5">
-                <Button variant="yellow" size="sm" className="my-4 md:mb-0 md:mr-4" onClick={() => editChatRoom()}>連絡</Button>
-                <Button variant="red" size="sm" className="my-4 md:mb-0 md:mr-4" onClick={() => deleteChatRoom()}>削除</Button>
+                <Button variant="yellow" size="sm" className="my-4 md:mb-0 md:mr-4" onClick={() => editChatRoom(chatRoom.id)}>連絡</Button>
+                <Button variant="red" size="sm" className="my-4 md:mb-0 md:mr-4" onClick={() => deleteChatRoom(chatRoom.id)}>削除</Button>
               </div>
             </div>
           ))}
