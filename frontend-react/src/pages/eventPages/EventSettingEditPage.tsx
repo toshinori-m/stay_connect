@@ -505,7 +505,7 @@ export default function EventSettingForm() {
           {/* 登録ボタン */}
           <div className="text-center my-5">
             <Button type="submit" variant="primary" size="sm" className="mr-4">更新</Button>
-            <Button type="submit" variant="red" size="sm" onClick={recruitmentHandleDelete}>削除</Button>
+            <Button type="button" variant="red" size="sm" onClick={recruitmentHandleDelete}>削除</Button>
           </div>
         </form>
       </div>
