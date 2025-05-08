@@ -193,7 +193,7 @@ export default function BasicSettingEditPage() {
   }
   
   const redirectToSendEmail = () => {
-    console.log("パスワード再設定メール送信画面は次のissueで作成予定！") // TODO: 後続タスクで処理を追加
+    navigate("/send-email")
   }
 
   const isEmailNotificationEnabled = () => {
