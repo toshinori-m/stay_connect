@@ -26,7 +26,7 @@ class RecruitmentsController < ApplicationController
 
   def show
     @recruitment = Recruitment
-      .preload(:sports_type, :prefecture, :sports_disciplines, :target_ages)
+      .preload(:sports_disciplines, :target_ages)
       .find(params[:id])
   end
 
