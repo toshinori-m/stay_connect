@@ -18,6 +18,7 @@ import EventSettingEditPage from "@/pages/eventPages/EventSettingEditPage"
 import TeamProfileListPage from "@/pages/teamPages/TeamProfileListPage"
 import TeamProfilePage from "@/pages/teamPages/TeamProfilePage"
 import TeamProfileEditPage from "@/pages/teamPages/TeamProfileEditPage"
+import TeamProfileIntroductionPage from "@/pages/teamPages/TeamProfileIntroductionPage"
 import BasicSettingEditPage from "@/pages/BasicSettingEditPage"
 import UserProfilePage from "@/pages/UserProfilePage"
 
@@ -77,6 +78,7 @@ export default function AppRouter() {
           <Route path="/team_profile_list" element={<TeamProfileListPage />} />
           <Route path="/team_profile" element={<TeamProfilePage />} />
           <Route path="/team_profile_edit/:id" element={<TeamProfileEditPage />} />
+          <Route path="/team_profile_introduction/:id" element={<TeamProfileIntroductionPage />} />
           <Route path="/basic_setting_edit" element={<BasicSettingEditPage />} />
           <Route path="/user_profile/:userId" element={<UserProfilePage />} />
         </Route>
