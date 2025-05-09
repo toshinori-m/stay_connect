@@ -7,6 +7,7 @@ import TextareaField from "@/components/ui/TextareaField"
 import RadioGroupField from "@/components/ui/RadioGroupField"
 import CheckboxField from "@/components/ui/CheckboxField"
 import Button from "@/components/ui/Button"
+import { z, ZodIssue } from "zod"
 
 interface User {
   id?: number
@@ -68,54 +69,63 @@ export default function BasicSettingEditPage() {
   const [actionState, action] = useActionState(
     async () => {
       setIsSubmitting(true)
-      const newErrors: string[] = []
-      const currentFormState = { ...formState }
-
-      // formStateから値を取得
-      const name = formState.user.name
-      const email = formState.user.email
-      const birthday = formState.user.birthday
-      const sex = formState.user.sex
-      const selfIntroduction = formState.user.self_introduction
-
-      // バリデーション
-      if (name.trim().length < NAME_MIN_LENGTH || name.trim().length > NAME_MAX_LENGTH) newErrors.push(`ユーザー名を${NAME_MIN_LENGTH}文字〜${NAME_MAX_LENGTH}文字で入力してください。`)
-      if (!email.trim()) newErrors.push("メールアドレスを入力してください。")
-      if (!birthday.trim()) newErrors.push("誕生日を入力してください。")
-      if (!sex.trim()) newErrors.push("性別を選択してください。")
-      if (selfIntroduction.trim().length === 0 || selfIntroduction.trim().length > MAX_LENGTH) newErrors.push(`自己紹介を${SELF_INTRODUCTION_MIN_LENGTH}文字〜${MAX_LENGTH}文字で入力してください。`)
-      if (!formState.user?.id) newErrors.push("ユーザー情報が見つかりません。")
-
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      const selectedStartDate = new Date(birthday)
-
-      if (selectedStartDate > today) newErrors.push("誕生日は今日以前の日付を選択してください。")
-
-      if (newErrors.length > 0) {
-        return { errors: newErrors, formData: currentFormState }
-      }
       
-      const formData = new FormData()
-      formData.append(`user[${USER_FIELDS.NAME}]`, formState.user.name)
-      formData.append(`user[${USER_FIELDS.EMAIL}]`, formState.user.email)
-      formData.append(`user[${USER_FIELDS.BIRTHDAY}]`, formState.user.birthday)
-      formData.append(`user[${USER_FIELDS.SEX}]`, formState.user.sex)
-      formData.append(`user[${USER_FIELDS.SELF_INTRODUCTION}]`, formState.user.self_introduction)
-      formData.append(`user[${USER_FIELDS.EMAIL_NOTIFICATION}]`, formState.user.email_notification)
+      try {
+        // バリデーション
+        const userSchema = z.object({
+          name: z.string()
+            .min(NAME_MIN_LENGTH, `ユーザー名を${NAME_MIN_LENGTH}文字以上で入力してください。`)
+            .max(NAME_MAX_LENGTH, `ユーザー名を${NAME_MAX_LENGTH}文字以内で入力してください。`),
+          email: z.string()
+            .nonempty("メールアドレスを入力してください。")
+            .email("正しいメールアドレスを入力してください。"),
+          sex: z.string().nonempty("性別を選択してください。"),
+          birthday: z.string()
+            .nonempty("誕生日を入力してください。")
+            .refine(
+              (val: string) => {
+                const today = new Date()
+                today.setHours(0, 0, 0, 0)
+                const selectedDate = new Date(val)
+                return selectedDate <= today
+              },
+              { message: "誕生日は今日以前の日付を選択してください。" }
+            ),
+          self_introduction: z.string()
+            .min(SELF_INTRODUCTION_MIN_LENGTH, `自己紹介を${SELF_INTRODUCTION_MIN_LENGTH}文字以上で入力してください。`)
+            .max(MAX_LENGTH, `自己紹介を${MAX_LENGTH}文字以内で入力してください。`),
+          id: z.number().optional()
+        })
 
-      if (formState.imageFile) {
-        formData.append(`user[${USER_FIELDS.IMAGE}]`, formState.imageFile)
-      }
+        // バリデーション実行
+        userSchema.parse(formState.user)
 
-      try {        
+        // エラーがなければフォームデータ作成
+        const formData = new FormData()
+        formData.append(`user[${USER_FIELDS.NAME}]`, formState.user.name)
+        formData.append(`user[${USER_FIELDS.EMAIL}]`, formState.user.email)
+        formData.append(`user[${USER_FIELDS.BIRTHDAY}]`, formState.user.birthday)
+        formData.append(`user[${USER_FIELDS.SEX}]`, formState.user.sex)
+        formData.append(`user[${USER_FIELDS.SELF_INTRODUCTION}]`, formState.user.self_introduction)
+        formData.append(`user[${USER_FIELDS.EMAIL_NOTIFICATION}]`, formState.user.email_notification)
+
+        if (formState.imageFile) {
+          formData.append(`user[${USER_FIELDS.IMAGE}]`, formState.imageFile)
+        }
+
+        // APIリクエスト
         await apiClient.patch(`/users/${formState.user.id}`, formData)
         navigate("/home")
         return { errors: [] }
-      } catch {
-        return {
-          errors: ["基本設定に誤りがあります。"],
-          formData: currentFormState
+        
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          // Zodバリデーションエラーを設定
+          const newErrors = error.errors.map((err: ZodIssue) => err.message)
+          return { errors: newErrors }
+        } else {
+          // その他のエラーを設定
+          return { errors: ["基本設定に誤りがあります。"] }
         }
       } finally {
         setIsSubmitting(false)
