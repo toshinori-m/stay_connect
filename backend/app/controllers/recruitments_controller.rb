@@ -25,7 +25,9 @@ class RecruitmentsController < ApplicationController
   end
 
   def show
-    @recruitment = Recruitment.find(params[:id])
+    @recruitment = Recruitment
+      .preload(:sports_disciplines, :target_ages)
+      .find(params[:id])
   end
 
   def destroy

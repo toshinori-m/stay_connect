@@ -11,7 +11,9 @@ json.data do
   json.purpose_body @recruitment.purpose_body
   json.other_body @recruitment.other_body
   json.sports_type_id @recruitment.sports_type_id
+  json.sports_type_name @recruitment.sports_type&.name
   json.prefecture_id @recruitment.prefecture_id
+  json.prefecture_name @recruitment.prefecture&.name
 
   json.sports_disciplines do
     json.array! @recruitment.sports_disciplines, :id, :name
