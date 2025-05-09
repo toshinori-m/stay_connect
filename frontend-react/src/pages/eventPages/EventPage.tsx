@@ -44,22 +44,22 @@ export default function EventPage() {
     if (!eventId || fetchedEventId === eventId) return
 
     fetchEventDetails(eventId)
-    .then(eventData => {
-      setEventDetails(eventData)
-      setFetchedEventId(eventId)
-      return Promise.all([
-        fetchSportsType(eventData.sports_type_id),
-        fetchPrefecture(eventData.prefecture_id)
-      ])
-    })
-    .then(([foundSportsType, foundPrefecture]) => {
-      setSportsType(foundSportsType?.name || "")
-      setPrefecture(foundPrefecture?.name || "")
-    })
-    .catch(() => {
-      setErrors(["基本設定を表示できませんでした。"])
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      .then(eventData => {
+        setEventDetails(eventData)
+        setFetchedEventId(eventId)
+        return Promise.all([
+          fetchSportsType(eventData.sports_type_id),
+          fetchPrefecture(eventData.prefecture_id)
+        ])
+      })
+      .then(([foundSportsType, foundPrefecture]) => {
+        setSportsType(foundSportsType?.name || "")
+        setPrefecture(foundPrefecture?.name || "")
+      })
+      .catch(() => {
+        setErrors(["基本設定を表示できませんでした。"])
+      })
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventId])
 
   const fetchEventDetails = async (eventId: string) => {
