@@ -6,7 +6,7 @@ import Button from "@/components/ui/Button"
 
 export default function TeamProfileList() {
   const [teams, setTeams] = useState<SelectOption[]>([])
-  const [errors, setErrors] = useState<string[]>([])
+  const [error, setError] = useState("")
   const MAX_TEAM_NUMBER = 5
   const apiClient = useApiClient()
   const navigate = useNavigate()
@@ -17,12 +17,12 @@ export default function TeamProfileList() {
   }, [])
 
   const fetchTeamProfile = async () => {
+    setError("")
     try {
-      setErrors([])
       const TeamProfileRes = (await apiClient.get('/teams')).data.data
       setTeams(TeamProfileRes)
     } catch {
-      setErrors(["チーム名を表示できませんでした。"])
+      setError("チーム名を表示できませんでした。")
     }
   }
 
@@ -31,18 +31,28 @@ export default function TeamProfileList() {
   }
 
   const deleteTeamProfile = async (id: number) => {
-    setErrors([])
+    setError("")
     try {
       const deleteTeamProfileRes = (await apiClient.delete(`/teams/${id}`)).data
       setTeams(deleteTeamProfileRes)
     } catch {
-      setErrors(["イベントを削除できませんでした。"])
+      setError("イベントを削除できませんでした。")
     }
   }
 
   const createTeamProfile = () => {
     navigate("/team_profile")
   }
+
+  const Error = (error: string) => {
+    if (error.length === 0) return null
+  
+    return (
+      <p className="text-red-500 text-sm list-disc list-inside text-center">
+        {error}
+      </p>
+    )
+  } 
 
   return (
     <div className="flex items-center justify-center mt-32 md:mt-20">
@@ -62,11 +72,8 @@ export default function TeamProfileList() {
           </Button>
         </div>
         <div className="flex flex-col items-center">
-          {errors.length > 0 && (
-            <div className="text-red-500 text-sm my-4">
-              {errors.map((err, index) => ( <div key={index}>{err}</div> ))}
-            </div>
-          )}
+          {Error(error)}
+
           <div className="flex flex-col items-center mt-10 mb-10">
             {teams.map((team) => (
               <div

@@ -66,6 +66,18 @@ export default function SignupPage() {
     }
   }
 
+  const ErrorList = (errors: string[]) => {
+    if (errors.length === 0) return null
+
+    return (
+      <ul className="text-red-500 my-4">
+        {errors.map((error, index) => (
+          <li key={index}>{error}</li>
+        ))}
+      </ul>
+    )
+  }
+
   return (
     <div className="flex items-center justify-center mt-16 md:mt-20">
       <div className="w-80 md:w-2/5 rounded-md bg-sky-100">
@@ -82,13 +94,7 @@ export default function SignupPage() {
           <CustomButton onClick={handleLoginClick} className="border-4 border-violet-400 border-dashed outline-dashed px-0">
             アカウントをお持ちの方はこちら
           </CustomButton>
-          {errors.length > 0 && (
-            <div className="text-red-500 my-4">
-              {errors.map((err, index) => (
-                <div key={index}>{err}</div>
-              ))}
-            </div>
-          )}
+          {ErrorList([...errors])}
         </div>
       </div>
     </div>

@@ -85,24 +85,23 @@ export default function EventSettingForm() {
     if (!recruitmentId) return
 
     fetchRecruitmentData(recruitmentId)
-    .then(({ recruitmentData, sportsDisciplineIds, targetAgeIds }) => {
-      if (!recruitmentData) return
-  
-      setRecruitmentFormState(recruitmentData)
-      setSelectedSportsType(recruitmentData.sports_type_id)
-      setSelectedTargetAge(targetAgeIds)
-      setPendingSportsDisciplineIds(sportsDisciplineIds)
-      setFetchedId(recruitmentId)
-    })
-    .catch(() => {
-      setErrors(["イベントを表示できませんでした。"])
-    })
+      .then(({ recruitmentData, sportsDisciplineIds, targetAgeIds }) => {
+        if (!recruitmentData) return
+    
+        setRecruitmentFormState(recruitmentData)
+        setSelectedSportsType(recruitmentData.sports_type_id)
+        setSelectedTargetAge(targetAgeIds)
+        setPendingSportsDisciplineIds(sportsDisciplineIds)
+        setFetchedId(recruitmentId)
+      })
+      .catch(() => {
+        setErrors(["イベントを表示できませんでした。"])
+      })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recruitmentId, sportsTypes, prefectures, targetAges])
 
   const fetchRecruitmentData = async (recruitmentId: string) => {
-    const recruitmentResponse = await apiClient.get(`/recruitments/${recruitmentId}`)
-    const recruitmentData = recruitmentResponse.data.data
+    const recruitmentData = (await apiClient.get(`/recruitments/${recruitmentId}`)).data.data
 
     const sportsDisciplineIds = recruitmentData.sports_disciplines.map(
       (item: { id: number; name: string }) => item.id

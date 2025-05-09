@@ -31,6 +31,18 @@ export default function ResetPassword() {
     }
   }
 
+  const ErrorList = (errors: string[]) => {
+    if (errors.length === 0) return null
+
+    return (
+      <ul className="my-4 md:mb-0 md:mr-4">
+        {errors.map((error, index) => (
+          <li key={index}>{error}</li>
+        ))}
+      </ul>
+    )
+  }
+
   return (
     <div className="flex items-center justify-center mt-56">
       <div className="md:w-3/5 w-full rounded-md shadow-gray-200 bg-sky-100">
@@ -49,13 +61,7 @@ export default function ResetPassword() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            {errors.length > 0 && (
-              <div className="text-sm text-red-500 my-4">
-                {errors.map((err, index) => (
-                  <div key={index}>{err}</div>
-                ))}
-              </div>
-            )}
+            {ErrorList([...errors])}
             <Button type="submit" variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">送信する</Button>
           </form>
         </div>
