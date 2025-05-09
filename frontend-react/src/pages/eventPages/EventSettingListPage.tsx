@@ -6,7 +6,7 @@ import Button from "@/components/ui/Button"
 
 export default function EventList() {
   const [recruitments, setRecruitments] = useState<SelectOption[]>([])
-  const [errors, setErrors] = useState<string[]>([])
+  const [error, setError] = useState("")
   const apiClient = useApiClient()
   const navigate = useNavigate()
 
@@ -16,12 +16,12 @@ export default function EventList() {
   }, [])
 
   const getRecruitment = async () => {
-    setErrors([])
+    setError("")
     try {
       const res = await apiClient.get('/recruitments')
       setRecruitments(res.data.data)
     } catch {
-      setErrors(["イベントを表示できませんでした。"])
+      setError("イベントを表示できませんでした。")
     }
   }
 
@@ -30,25 +30,31 @@ export default function EventList() {
   }
 
   const deleteRecruitment = async (id: number) => {
-    setErrors([])
+    setError("")
     try {
       const res = await apiClient.delete(`/recruitments/${id}`)
       setRecruitments(res.data)
     } catch {
-      setErrors(["イベントを削除できませんでした。"])
+      setError("イベントを削除できませんでした。")
     }
   }
+
+  const Error = (error: string) => {
+    if (error.length === 0) return null
+  
+    return (
+      <p className="text-red-500 text-sm list-disc list-inside text-center">
+        {error}
+      </p>
+    )
+  } 
 
   return (
     <div className="flex items-center justify-center mt-32 md:mt-20">
       <div className="w-full md:w-3/5 xl:w-2/5 pb-7 shadow-gray-200 bg-sky-100 rounded-lg">
         <h2 className="text-center mb-7 pt-10 font-bold text-3xl text-blue-600">イベント一覧</h2>
         <div className="flex flex-col items-center">
-          {errors.length > 0 && (
-            <div className="text-red-500 text-sm my-4">
-              {errors.map((err, index) => ( <div key={index}>{err}</div> ))}
-            </div>
-          )}
+          {Error(error)}
 
           {recruitments.map((recruitment) => (
             <div

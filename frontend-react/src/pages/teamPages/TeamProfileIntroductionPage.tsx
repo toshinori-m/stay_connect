@@ -137,6 +137,16 @@ export default function TeamProfileIntroduction() {
   const selectedSportsDisciplineNames = findNamesByIds(sportsDisciplineSelected, sportsDisciplines)
   const selectedTargetAgeNames = findNamesByIds(targetAgeSelected, targetAges)
 
+  const TagList = ({ items, className }: {items: string[], className?: string}) => (
+    <>
+      {items.map((item, index) => (
+        <span key={index} className={className}>
+          {item}
+        </span>
+      ))}
+    </>
+  )
+
   const ErrorList = (errors: string[]) => {
     if (errors.length === 0) return null
 
@@ -178,11 +188,7 @@ export default function TeamProfileIntroduction() {
           <li className="flex items-center gap-2 flex-wrap">
             <span className={labelClass}>種目: </span>
             <div className="flex flex-wrap gap-2 mt-1">
-              {selectedSportsDisciplineNames.map((name, index) => (
-                <span key={index} className={infoTagClass}>
-                  {name}
-                </span>
-              ))}
+              <TagList items={selectedSportsDisciplineNames} className={infoTagClass} />
             </div>
           </li>
         )}
@@ -201,11 +207,7 @@ export default function TeamProfileIntroduction() {
         <li className="flex items-center gap-2 flex-wrap">
           <span className={labelClass}>対象年齢: </span>
           <span className="flex flex-wrap gap-2 mt-1">
-            {selectedTargetAgeNames.map((name, index) => (
-              <span key={index} className={infoTagClass}>
-                {name}
-              </span>
-            ))}
+            <TagList items={selectedTargetAgeNames} className={infoTagClass} />
           </span>
         </li>
         <li>
