@@ -11,22 +11,31 @@ interface ChatRoom {
 export default function ChatRoomListPage() {
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([])
   const [errors, setErrors] = useState<string[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
   const apiClient = useApiClient()
   const navigate = useNavigate()
 
   useEffect(() => {
-    fetchChatRoomList()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const fetchChatRoomList = async () => {
     setErrors([])
-    try {
-      const chatRoomsData = (await apiClient.get("/chat_rooms")).data
-      setChatRooms(chatRoomsData)
-    } catch {
-      setErrors(["チャットルームリストを表示できませんでした。"])
-    }
+
+    apiClient.get(`/chat_rooms?page=${currentPage}`)
+      .then((chatRoom) => {
+        setChatRooms(chatRoom.data.data)
+        setTotalPages(chatRoom.data.totalPages)
+      })
+      .catch (() => {
+        setErrors(["チャットルームリストを表示できませんでした。"])
+      })
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage])
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1)
+  }
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1)
   }
 
   const editChatRoom = async (chatRoomId: number) => {
@@ -79,6 +88,12 @@ export default function ChatRoomListPage() {
               </div>
             </div>
           ))}
+
+          <div className="flex justify-between items-center mt-6 w-72">
+            <Button variant="primary" size="sm" onClick={handlePrevPage} disabled={currentPage === 1}>前へ</Button>
+            <span className="mx-4 text-gray-700">{currentPage} / {totalPages}</span>
+            <Button variant="primary" size="sm" onClick={handleNextPage} disabled={currentPage === totalPages}>次へ</Button>
+          </div>
         </div>
       </div>
     </div>
