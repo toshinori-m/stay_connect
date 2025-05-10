@@ -15,7 +15,13 @@ class ChatRoomsController < ApplicationController
   end
 
   def index
-    @chat_rooms_with_other_user = current_user.chat_rooms_with_other_users
+    page = (params[:page] || 1).to_i
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    all_rooms = current_user.chat_rooms_with_other_users
+    @paginated_chat_rooms = all_rooms.slice(offset, per_page) || []
+    @total_pages = (all_rooms.size / per_page.to_f).ceil
   end
 
   def show
