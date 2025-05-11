@@ -12,22 +12,31 @@ interface ChatRoom {
 export default function ChatRoomListPage() {
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([])
   const [errors, setErrors] = useState<string[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
   const apiClient = useApiClient()
   const navigate = useNavigate()
 
   useEffect(() => {
-    fetchChatRoomList()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const fetchChatRoomList = async () => {
     setErrors([])
-    try {
-      const chatRoomsData = (await apiClient.get("/chat_rooms")).data
-      setChatRooms(chatRoomsData)
-    } catch {
-      setErrors(["チャットルームリストを表示できませんでした。"])
-    }
+
+    apiClient.get(`/chat_rooms?page=${currentPage}`)
+      .then((chatRoom) => {
+        setChatRooms(chatRoom.data.data)
+        setTotalPages(chatRoom.data.totalPages)
+      })
+      .catch (() => {
+        setErrors(["チャットルームリストを表示できませんでした。"])
+      })
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage])
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1)
+  }
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1)
   }
 
   const editChatRoom = async (chatRoomId: number) => {
@@ -54,7 +63,7 @@ export default function ChatRoomListPage() {
       <div className="w-full md:w-3/5 xl:w-2/5 pb-7 shadow-gray-200 bg-sky-100 rounded-lg">
         <h2 className="text-center mb-7 pt-10 font-bold text-3xl text-blue-600">チャットルーム一覧</h2>
         <div className="flex flex-col items-center">
-          <ErrorDisplay className="text-center" tag="p" errors={(errors)}/>
+          <ErrorDisplay errors={(errors)}/>
 
           {chatRooms.map((chatRoom) => (
             <div 
@@ -68,6 +77,12 @@ export default function ChatRoomListPage() {
               </div>
             </div>
           ))}
+
+          <div className="flex justify-between items-center mt-6 w-72">
+            <Button variant="primary" size="sm" disabled={currentPage === 1} onClick={handlePrevPage}>前へ</Button>
+            <span className="mx-4 text-gray-700">{currentPage} / {totalPages}</span>
+            <Button variant="primary" size="sm" disabled={currentPage === totalPages} onClick={handleNextPage}>次へ</Button>
+          </div>
         </div>
       </div>
     </div>
