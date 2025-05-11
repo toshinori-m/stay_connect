@@ -52,7 +52,6 @@ export default function BasicSettingEditPage() {
 
   const [fetchedId, setFetchedId] = useState<string | null>(null)
   const [errors, setErrors] = useState<string[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [formState, setFormState] = useState<FormState>({
     user: {
       name: "",
@@ -66,9 +65,8 @@ export default function BasicSettingEditPage() {
     error: null
   })
 
-  const [actionState, action] = useActionState(
+  const [actionState, action, isPending] = useActionState(
     async () => {
-      setIsSubmitting(true)
       
       try {
         // バリデーション
@@ -127,8 +125,6 @@ export default function BasicSettingEditPage() {
           // その他のエラーを設定
           return { errors: ["基本設定に誤りがあります。"] }
         }
-      } finally {
-        setIsSubmitting(false)
       }
     },
     { errors: [] }
@@ -378,7 +374,9 @@ export default function BasicSettingEditPage() {
           </ul>
           {ErrorList([...(formState.error ? [formState.error] : []), ...errors, ...actionState.errors])}
           <div className="text-center my-5">
-            <Button type="submit" variant="primary" size="sm" className="mr-4" disabled={isSubmitting}>更新</Button>
+            <Button type="submit" variant="primary" size="sm" className="mr-4" disabled={isPending}>
+              {isPending ? "更新中..." : "更新"}
+            </Button>
           </div>
         </form>
       </div>
