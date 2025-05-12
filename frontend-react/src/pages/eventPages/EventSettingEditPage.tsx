@@ -9,6 +9,7 @@ import RadioGroupField from "@/components/ui/RadioGroupField"
 import useInitialFormData from "@/hooks/search/useInitialFormData"
 import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
 import Button from "@/components/ui/Button"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 
 interface RecruitmentData {
   name: string
@@ -289,18 +290,6 @@ export default function EventSettingForm() {
     }
   }
 
-  const ErrorList = (errors: string[]) => {
-    if (errors.length === 0) return null
-
-    return (
-      <div className="text-red-500 text-sm list-disc list-inside text-left md:pl-44 pl-12">
-        {errors.map((error, index) => (
-          <li key={index}>{error}</li>
-        ))}
-      </div>
-    )
-  }
-
   return (
     <div className="flex items-center justify-center mt-32 md:mt-20">
       <div className="w-full md:w-3/5 xl:w-2/5 shadow-gray-200 bg-sky-100 rounded-lg">
@@ -500,7 +489,10 @@ export default function EventSettingForm() {
               </div>
             </li>
           </ul>
-          {ErrorList([...initialErrors, ...sportsDisciplineErrors, ...errors, ...actionState.errors])}
+          <ErrorDisplay
+            className="text-left md:pl-44 pl-12"
+            errors={[...initialErrors, ...sportsDisciplineErrors, ...errors, ...actionState.errors]}
+          />
           {/* 登録ボタン */}
           <div className="text-center my-5">
             <Button type="submit" variant="primary" size="sm" className="mr-4">更新</Button>

@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { SelectOption } from "@/types"
 import { useApiClient } from "@/hooks/useApiClient"
 import Button from "@/components/ui/Button"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 
 export default function TeamProfileList() {
   const [teams, setTeams] = useState<SelectOption[]>([])
-  const [error, setError] = useState("")
+  const [errors, setErrors] = useState<string[]>([])
   const MAX_TEAM_NUMBER = 5
   const apiClient = useApiClient()
   const navigate = useNavigate()
@@ -17,12 +18,12 @@ export default function TeamProfileList() {
   }, [])
 
   const fetchTeamProfile = async () => {
-    setError("")
+    setErrors([])
     try {
       const TeamProfileRes = (await apiClient.get('/teams')).data.data
       setTeams(TeamProfileRes)
     } catch {
-      setError("チーム名を表示できませんでした。")
+      setErrors(["チーム紹介を表示できませんでした。"])
     }
   }
 
@@ -31,28 +32,18 @@ export default function TeamProfileList() {
   }
 
   const deleteTeamProfile = async (id: number) => {
-    setError("")
+    setErrors([])
     try {
       const deleteTeamProfileRes = (await apiClient.delete(`/teams/${id}`)).data
       setTeams(deleteTeamProfileRes)
     } catch {
-      setError("イベントを削除できませんでした。")
+      setErrors(["チーム紹介を削除できませんでした。"])
     }
   }
 
   const createTeamProfile = () => {
     navigate("/team_profile")
   }
-
-  const Error = (error: string) => {
-    if (error.length === 0) return null
-  
-    return (
-      <p className="text-red-500 text-sm list-disc list-inside text-center">
-        {error}
-      </p>
-    )
-  } 
 
   return (
     <div className="flex items-center justify-center mt-32 md:mt-20">
@@ -72,7 +63,7 @@ export default function TeamProfileList() {
           </Button>
         </div>
         <div className="flex flex-col items-center">
-          {Error(error)}
+          <ErrorDisplay className="text-center" tag="p" errors={(errors)}/>
 
           <div className="flex flex-col items-center mt-10 mb-10">
             {teams.map((team) => (
@@ -82,8 +73,8 @@ export default function TeamProfileList() {
               >
                 チーム名: {team.name}
                 <div className="flex justify-center mt-5">
-                  <Button variant="yellow" size="sm" className="my-4 md:mb-0 md:mr-4 mx-3" onClick={() => editTeamProfile(team.id)}>編集</Button>
-                  <Button variant="red" size="sm" className="my-4 md:mb-0 md:mr-4 mx-3" onClick={() => deleteTeamProfile(team.id)}>削除</Button>
+                  <Button variant="yellow" size="sm" className="my-4 mr-4" onClick={() => editTeamProfile(team.id)}>編集</Button>
+                  <Button variant="red" size="sm" className="my-4" onClick={() => deleteTeamProfile(team.id)}>削除</Button>
                 </div>
               </div>
             ))}

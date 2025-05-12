@@ -4,6 +4,7 @@ import { createConsumer } from "@rails/actioncable"
 import { useApiClient } from "@/hooks/useApiClient"
 import { useAuth } from "@/context/useAuthContext"
 import Button from "@/components/ui/Button"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 
 // メッセージの型定義
 interface ChatMessage {
@@ -110,18 +111,6 @@ export default function ChatRoomPage() {
     { errors: [] }
   )
 
-  const ErrorList = (errors: string[]) => {
-    if (errors.length === 0) return null
-  
-    return (
-      <ul className="text-red-500 text-sm list-disc list-inside text-left md:pl-44 pl-12">
-        {errors.map((error, index) => (
-          <li key={index}>{error}</li>
-        ))}
-      </ul>
-    )
-  }
-
   return (
     <div className="flex items-center justify-center mt-32 md:mt-20">
       <div className="w-full md:w-3/5 xl:w-2/5 shadow-gray-200 bg-sky-100 rounded-lg">
@@ -148,7 +137,10 @@ export default function ChatRoomPage() {
             <Button type="submit" variant="primary" size="sm">送信</Button>
           </div>
         </form>
-        {ErrorList([...errors, ...actionState.errors])}
+        <ErrorDisplay
+          className="text-center"
+          errors={[...errors, ...actionState.errors]}
+          />
         <div className="flex flex-col items-center justify-center">
           {messages.map((msg) => (
             <ul 

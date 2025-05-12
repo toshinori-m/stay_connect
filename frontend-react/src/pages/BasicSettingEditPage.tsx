@@ -7,6 +7,7 @@ import TextareaField from "@/components/ui/TextareaField"
 import RadioGroupField from "@/components/ui/RadioGroupField"
 import CheckboxField from "@/components/ui/CheckboxField"
 import Button from "@/components/ui/Button"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 import { z, ZodIssue } from "zod"
 
 interface User {
@@ -232,18 +233,6 @@ export default function BasicSettingEditPage() {
     updateFormState((USER_FIELDS.SEX), e.target.value)
   }
 
-  const ErrorList = (errors: string[]) => {
-    if (errors.length === 0) return null
-
-    return (
-      <div className="text-red-500 text-sm list-disc list-inside text-left md:pl-44 pl-12">
-        {errors.map((error, index) => (
-          <li key={index}>{error}</li>
-        ))}
-      </div>
-    )
-  }
-
   return (
     <div className="flex items-center justify-center mt-32 md:mt-20">
       <div className="w-full md:w-3/5 xl:w-2/5 shadow-gray-200 bg-sky-100 rounded-lg">
@@ -372,7 +361,10 @@ export default function BasicSettingEditPage() {
               </div>
             </li>
           </ul>
-          {ErrorList([...(formState.error ? [formState.error] : []), ...errors, ...actionState.errors])}
+          <ErrorDisplay
+            className="md:pl-44 pl-12"
+            errors={[...(formState.error ? [formState.error] : []), ...errors, ...actionState.errors]}
+          />
           <div className="text-center my-5">
             <Button type="submit" variant="primary" size="sm" className="mr-4" disabled={isPending}>
               {isPending ? "更新中..." : "更新"}

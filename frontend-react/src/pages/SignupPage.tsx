@@ -6,6 +6,7 @@ import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth"
 import { useApiClient } from "@/hooks/useApiClient"
 import { useSetAuth } from "@/context/useAuthContext"
 import { useNavigate } from "react-router-dom"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 
 export default function SignupPage() {
   const [errors, setErrors] = useState<string[]>([])
@@ -66,18 +67,6 @@ export default function SignupPage() {
     }
   }
 
-  const ErrorList = (errors: string[]) => {
-    if (errors.length === 0) return null
-
-    return (
-      <ul className="text-red-500 my-4">
-        {errors.map((error, index) => (
-          <li key={index}>{error}</li>
-        ))}
-      </ul>
-    )
-  }
-
   return (
     <div className="flex items-center justify-center mt-16 md:mt-20">
       <div className="w-80 md:w-2/5 rounded-md bg-sky-100">
@@ -94,7 +83,8 @@ export default function SignupPage() {
           <CustomButton onClick={handleLoginClick} className="border-4 border-violet-400 border-dashed outline-dashed px-0">
             アカウントをお持ちの方はこちら
           </CustomButton>
-          {ErrorList([...errors])}
+          <ErrorDisplay className="text-left md:pl-44 pl-12" tag="p" errors={(errors)}/>
+
         </div>
       </div>
     </div>

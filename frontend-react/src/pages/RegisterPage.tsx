@@ -6,6 +6,7 @@ import { useApiClient } from "@/hooks/useApiClient"
 import { useSetAuth } from "@/context/useAuthContext"
 import { useNavigate } from "react-router-dom"
 import Button from "@/components/ui/Button"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 
 export default function RegisterPage() {
   const [name, setName] = useState("")
@@ -78,18 +79,6 @@ export default function RegisterPage() {
     }
   }
 
-  const ErrorList = (errors: string[]) => {
-    if (errors.length === 0) return null
-
-    return (
-      <ul className="text-red-500 text-sm my-4">
-        {errors.map((error, index) => (
-          <li key={index}>{error}</li>
-        ))}
-      </ul>
-    )
-  }
-
   return (
     <div className="flex justify-center mt-4 md:mt-12">
       <div className="md:w-2/3 w-full rounded-md bg-sky-100 p-6">
@@ -129,7 +118,8 @@ export default function RegisterPage() {
               value={passwordConfirmation}
               onChange={(e) => setPasswordConfirmation(e.target.value)}
             />
-            {ErrorList([...errors])}
+            <ErrorDisplay className="text-left md:pl-44 pl-12" tag="p" errors={(errors)}/>
+
             <Button type="submit" variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">登録する</Button>
           </form>
         </div>

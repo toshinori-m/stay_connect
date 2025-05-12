@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useApiClient } from "@/hooks/useApiClient"
 import Button from "@/components/ui/Button"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 
 interface ChatRoom {
   id: number
@@ -48,24 +49,12 @@ export default function ChatRoomListPage() {
     }
   }
 
-  const ErrorList = (errors: string[]) => {
-    if (errors.length === 0) return null
-  
-    return (
-      <ul className="text-red-500 text-sm my-4">
-        {errors.map((error, index) => (
-          <li key={index}>{error}</li>
-        ))}
-      </ul>
-    )
-  }
-
   return (
     <div className="flex items-center justify-center mt-32 md:mt-20">
       <div className="w-full md:w-3/5 xl:w-2/5 pb-7 shadow-gray-200 bg-sky-100 rounded-lg">
         <h2 className="text-center mb-7 pt-10 font-bold text-3xl text-blue-600">チャットルーム一覧</h2>
         <div className="flex flex-col items-center">
-          {ErrorList([...errors])}
+          <ErrorDisplay className="text-center" tag="p" errors={(errors)}/>
 
           {chatRooms.map((chatRoom) => (
             <div 
@@ -74,8 +63,8 @@ export default function ChatRoomListPage() {
             >
               チャット名: {chatRoom.other_user_name}
               <div className="flex justify-center mt-5">
-                <Button variant="yellow" size="sm" className="my-4 md:mb-0 md:mr-4" onClick={() => editChatRoom(chatRoom.id)}>連絡</Button>
-                <Button variant="red" size="sm" className="my-4 md:mb-0 md:mr-4" onClick={() => deleteChatRoom(chatRoom.id)}>削除</Button>
+                <Button variant="yellow" size="sm" className="my-4 mr-4" onClick={() => editChatRoom(chatRoom.id)}>連絡</Button>
+                <Button variant="red" size="sm" className="my-4" onClick={() => deleteChatRoom(chatRoom.id)}>削除</Button>
               </div>
             </div>
           ))}
