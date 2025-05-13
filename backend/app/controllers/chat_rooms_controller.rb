@@ -14,14 +14,14 @@ class ChatRoomsController < ApplicationController
     render json: { errors: @chat_room.errors.full_messages }, status: 400 unless @chat_room.update(create_params)
   end
 
+  PER_PAGE = 10
   def index
-    page = (params[:page] || 1).to_i
-    per_page = 10
-    offset = (page - 1) * per_page
+    @paginated_chat_rooms = current_user
+      .chat_rooms_with_other_users
+      .page(params[:page])
+      .per(PER_PAGE)
 
-    all_rooms = current_user.chat_rooms_with_other_users
-    @paginated_chat_rooms = all_rooms.slice(offset, per_page) || []
-    @total_pages = (all_rooms.size / per_page.to_f).ceil
+    @total_pages = @paginated_chat_rooms.total_pages
   end
 
   def show
