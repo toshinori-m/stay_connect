@@ -119,7 +119,7 @@ export default function TeamProfileEditPage() {
     setPendingSportsDisciplineIds(null) // セット後クリア
   }, [pendingSportsDisciplineIds, sportsDisciplines])
 
-  const [actionState, action] = useActionState(
+  const [actionState, action, isPending] = useActionState(
     async () => {
       const newErrors: string[] = []
 
@@ -356,7 +356,9 @@ export default function TeamProfileEditPage() {
           <ErrorDisplay errors={[...initialErrors, ...sportsDisciplineErrors, ...errors, ...actionState.errors]}/>
 
           <div className="text-center my-5">
-            <Button type="submit" variant="primary" size="sm" className="mr-4">更新</Button>
+            <Button type="submit" variant="primary" size="sm" className="mr-4" disabled={isPending}>
+              {isPending ? "更新中..." : "更新"}
+            </Button>
             <Button type="button" variant="red" size="sm" onClick={teamProfileHandleDelete}>削除</Button>
           </div>
         </form>

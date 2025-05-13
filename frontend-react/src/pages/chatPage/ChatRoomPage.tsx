@@ -92,7 +92,7 @@ export default function ChatRoomPage() {
     setMessages(chatMessagesData)
   }
 
-  const [actionState, sendMessage] = useActionState(
+  const [actionState, sendMessage, isPending] = useActionState(
     async (_prevState: { errors: string[] }, formData: FormData) => {
       const errors: string[] = []
       const message = formData.get("chat_message[message]") as string
@@ -134,7 +134,7 @@ export default function ChatRoomPage() {
           )}
 
           <div className="text-center mb-4">
-            <Button type="submit" variant="primary" size="sm">送信</Button>
+            <Button type="submit" variant="primary" size="sm" disabled={isPending}>{isPending ? "送信中..." : "送信"}</Button>
           </div>
         </form>
         <ErrorDisplay className="text-center" errors={[...errors, ...actionState.errors]}/>
