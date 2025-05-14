@@ -50,7 +50,7 @@ export default function ResetPassword() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <ErrorDisplay className="text-left md:pl-44 pl-12" tag="p" errors={(errors)}/>
+            <ErrorDisplay errors={(errors)}/>
 
             <Button type="submit" variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">送信する</Button>
           </form>

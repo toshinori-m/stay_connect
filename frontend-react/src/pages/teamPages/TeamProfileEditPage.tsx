@@ -353,10 +353,8 @@ export default function TeamProfileEditPage() {
               <div className="text-red-500 text-sm">その他はあと{remainingCharacters(otherBody)}文字までです。</div>
             )}
           </ul>
-          <ErrorDisplay
-            className="text-left md:pl-44 pl-12"
-            errors={[...initialErrors, ...sportsDisciplineErrors, ...errors, ...actionState.errors]}
-          />
+          <ErrorDisplay errors={[...initialErrors, ...sportsDisciplineErrors, ...errors, ...actionState.errors]}/>
+
           <div className="text-center my-5">
             <Button type="submit" variant="primary" size="sm" className="mr-4">更新</Button>
             <Button type="button" variant="red" size="sm" onClick={teamProfileHandleDelete}>削除</Button>

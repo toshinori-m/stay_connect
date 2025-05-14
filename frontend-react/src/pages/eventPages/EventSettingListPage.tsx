@@ -45,11 +45,7 @@ export default function EventList() {
       <div className="w-full md:w-3/5 xl:w-2/5 pb-7 shadow-gray-200 bg-sky-100 rounded-lg">
         <h2 className="text-center mb-7 pt-10 font-bold text-3xl text-blue-600">イベント一覧</h2>
         <div className="flex flex-col items-center">
-          <ErrorDisplay
-            className="text-center"
-            tag="p"
-            errors={[...errors]}
-          />
+          <ErrorDisplay errors={[...errors]}/>
 
           {recruitments.map((recruitment) => (
             <div

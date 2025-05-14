@@ -83,7 +83,7 @@ export default function SignupPage() {
           <CustomButton onClick={handleLoginClick} className="border-4 border-violet-400 border-dashed outline-dashed px-0">
             アカウントをお持ちの方はこちら
           </CustomButton>
-          <ErrorDisplay className="text-left md:pl-44 pl-12" tag="p" errors={(errors)}/>
+          <ErrorDisplay errors={(errors)}/>
 
         </div>
       </div>

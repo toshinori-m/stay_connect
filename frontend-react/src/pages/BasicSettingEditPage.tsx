@@ -362,7 +362,6 @@ export default function BasicSettingEditPage() {
             </li>
           </ul>
           <ErrorDisplay
-            className="md:pl-44 pl-12"
             errors={[...(formState.error ? [formState.error] : []), ...errors, ...actionState.errors]}
           />
           <div className="text-center my-5">

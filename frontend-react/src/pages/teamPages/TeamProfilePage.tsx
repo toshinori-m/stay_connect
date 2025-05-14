@@ -304,10 +304,8 @@ export default function TeamProfilePage() {
                 </div>
               </li>
             </ul>
-            <ErrorDisplay
-              className="text-left md:pl-44 pl-12"
-              errors={[...initialErrors, ...disciplineErrors, ...actionState.errors]}
-            />
+            <ErrorDisplay errors={[...initialErrors, ...disciplineErrors, ...actionState.errors]}/>
+
             {/* 登録ボタン */}
             <div className="text-center mb-5">
               <Button variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">登録する</Button>

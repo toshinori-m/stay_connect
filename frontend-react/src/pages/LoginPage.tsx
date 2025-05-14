@@ -122,7 +122,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <ErrorDisplay className="text-center" tag="p" errors={(errors)}/>
+            <ErrorDisplay errors={(errors)}/>
             
             <Button type="submit" variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">ログイン</Button>
           </form>

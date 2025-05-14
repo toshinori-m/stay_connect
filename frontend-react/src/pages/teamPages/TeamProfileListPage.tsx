@@ -63,7 +63,7 @@ export default function TeamProfileList() {
           </Button>
         </div>
         <div className="flex flex-col items-center">
-          <ErrorDisplay className="text-center" tag="p" errors={(errors)}/>
+          <ErrorDisplay errors={(errors)}/>
 
           <div className="flex flex-col items-center mt-10 mb-10">
             {teams.map((team) => (

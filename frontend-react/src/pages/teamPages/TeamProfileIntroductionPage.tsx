@@ -155,10 +155,7 @@ export default function TeamProfileIntroduction() {
   return (
     <div className="mt-40 md:mt-20 max-w-2xl mx-auto p-6 bg-sky-100 shadow-lg rounded-lg break-words">
       {/* エラーメッセージの表示 */}
-      <ErrorDisplay
-        className="text-left md:pl-44 pl-12"
-        errors={[...initialErrors, ...sportsDisciplineErrors, ...errors]}
-      />
+      <ErrorDisplay errors={[...initialErrors, ...sportsDisciplineErrors, ...errors]}/>
 
       {/* 代表紹介ボタン */}
       <div className="text-right mb-4">

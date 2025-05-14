@@ -137,10 +137,8 @@ export default function ChatRoomPage() {
             <Button type="submit" variant="primary" size="sm">送信</Button>
           </div>
         </form>
-        <ErrorDisplay
-          className="text-center"
-          errors={[...errors, ...actionState.errors]}
-          />
+        <ErrorDisplay className="text-center" errors={[...errors, ...actionState.errors]}/>
+        
         <div className="flex flex-col items-center justify-center">
           {messages.map((msg) => (
             <ul 

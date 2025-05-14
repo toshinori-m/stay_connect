@@ -490,7 +490,6 @@ export default function EventSettingForm() {
             </li>
           </ul>
           <ErrorDisplay
-            className="text-left md:pl-44 pl-12"
             errors={[...initialErrors, ...sportsDisciplineErrors, ...errors, ...actionState.errors]}
           />
           {/* 登録ボタン */}

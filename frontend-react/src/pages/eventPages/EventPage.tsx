@@ -107,7 +107,7 @@ export default function EventPage() {
         </Button>
       </div>
       {/* エラーメッセージの表示 */}
-      <ErrorDisplay className="text-center" tag="p" errors={(errors)}/>
+      <ErrorDisplay errors={(errors)}/>
       <TitleAndValue title="競技">{eventDetails?.sports_type_name ?? "未設定"}</TitleAndValue>
 
       {eventDetails?.sports_disciplines && eventDetails.sports_disciplines.length > 0 && (
