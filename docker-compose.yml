@@ -32,6 +32,22 @@ services:
     stdin_open: true
     tty: true
 
+  backend-php:
+    build:
+      context: ./backend-php/
+      dockerfile: Dockerfile
+    command: tail -f /dev/null
+    volumes:
+      - ./backend-php:/app
+    environment:
+      TZ: Asia/Tokyo
+    ports:
+      - "3002:3000"
+    depends_on:
+      - db
+    stdin_open: true
+    tty: true
+
   frontend:
     build: 
       context: ./frontend/
