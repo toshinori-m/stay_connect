@@ -32,7 +32,7 @@ class User < ActiveRecord::Base
       .joins('INNER JOIN chat_room_users cru ON cru.chat_room_id = chat_rooms.id')
       .joins('INNER JOIN users other_users ON other_users.id = cru.user_id')
       .where.not('cru.user_id = ?', id)
-      .select('chat_rooms.*, cru.user_id AS other_user_id, other_users.name AS other_user_name')
+      .select('DISTINCT chat_rooms.*, cru.user_id AS other_user_id, other_users.name AS other_user_name')
   end
 
   private
