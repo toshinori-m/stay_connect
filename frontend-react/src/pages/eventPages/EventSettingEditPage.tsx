@@ -198,7 +198,7 @@ export default function EventSettingForm() {
     )
   }  
 
-  const [actionState, action] = useActionState(
+  const [actionState, action, isPending] = useActionState(
     async (_prevState:  { errors: string[] }, formData: FormData) => {
       const newErrors: string[] = []
       const currentFormState = { ...formState }
@@ -494,7 +494,9 @@ export default function EventSettingForm() {
           />
           {/* 登録ボタン */}
           <div className="text-center my-5">
-            <Button type="submit" variant="primary" size="sm" className="mr-4">更新</Button>
+            <Button type="submit" variant="primary" size="sm" className="mr-4" disabled={isPending}>
+              {isPending ? "更新中..." : "更新"}
+            </Button>
             <Button type="button" variant="red" size="sm" onClick={recruitmentHandleDelete}>削除</Button>
           </div>
         </form>

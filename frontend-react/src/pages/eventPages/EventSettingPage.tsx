@@ -105,7 +105,8 @@ export default function EventSettingPage() {
     )
   }  
 
-  const [actionState, action] = useActionState(
+
+  const [actionState, action, isPending] = useActionState(
     async (_prevState:  { errors: string[] }, formData: FormData) => {
       const newErrors: string[] = []
       const currentFormState = { ...formState }
@@ -390,7 +391,7 @@ export default function EventSettingPage() {
 
           {/* 登録ボタン */}
           <div className="text-center mb-5">
-            <Button variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">登録する</Button>
+            <Button variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4" disabled={isPending}>{isPending ? "登録中..." : "登録"}</Button>
           </div>
         </form>
       </div>

@@ -99,7 +99,7 @@ export default function TeamProfilePage() {
     )
   }  
 
-  const [actionState, action] = useActionState(
+  const [actionState, action, isPending] = useActionState(
     async () => {
       const newErrors = []
       const currentFormState = { ...formState }
@@ -308,7 +308,9 @@ export default function TeamProfilePage() {
 
             {/* 登録ボタン */}
             <div className="text-center mb-5">
-              <Button variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">登録する</Button>
+              <Button variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4" disabled={isPending}>
+                {isPending ? "登録中..." : "登録"}
+              </Button>
             </div>
           </form>
         </div>
