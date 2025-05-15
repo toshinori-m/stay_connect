@@ -3,6 +3,7 @@ import { getAuth, sendPasswordResetEmail } from "firebase/auth"
 import InputField from "@/components/ui/InputField"
 import Button from "@/components/ui/Button"
 import ErrorDisplay from "@/components/ui/ErrorDisplay"
+import { z, ZodIssue } from "zod"
 
 export default function ResetPassword() {
   const [email, setEmail] = useState("")
@@ -10,25 +11,31 @@ export default function ResetPassword() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const newErrors: string[] = []
-
-    if (!email.trim()) {
-      newErrors.push("メールアドレスを入力してください。")
-    }
-
-    if (newErrors.length > 0) {
-      setErrors(newErrors)
-      return
-    }
-
+    
     try {
       setErrors([])
       const auth = getAuth()
 
+      const resetSchema = z.object({
+        email: z.string()
+          .nonempty("メールアドレスを入力してください。")
+          .email("正しいメールアドレスを入力してください。"),
+      })
+
+      const formValues = { email }
+
+      resetSchema.parse(formValues)
+
       await sendPasswordResetEmail(auth, email)
       alert("再設定のご案内メールを送信しました。")
-    } catch {
-      setErrors(["メール送信に失敗しました。メールアドレスを確認してください。"])
+
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors = error.errors.map((err: ZodIssue) => err.message)
+        setErrors(newErrors)
+      } else {
+        setErrors(["メール送信に失敗しました。メールアドレスを確認してください。"])
+      }
     }
   }
 

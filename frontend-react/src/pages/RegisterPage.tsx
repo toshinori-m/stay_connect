@@ -7,6 +7,7 @@ import { useSetAuth } from "@/context/useAuthContext"
 import { useNavigate } from "react-router-dom"
 import Button from "@/components/ui/Button"
 import ErrorDisplay from "@/components/ui/ErrorDisplay"
+import { z, ZodIssue } from "zod"
 
 export default function RegisterPage() {
   const [name, setName] = useState("")
@@ -33,33 +34,30 @@ export default function RegisterPage() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
-    const newErrors: string[] = []
-
     try {
       setErrors([])
 
-      if (name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) {
-        newErrors.push(`名前は${MIN_NAME_LENGTH}文字以上${MAX_NAME_LENGTH}文字以内で入力してください。`)
-      }
+      const registerSchema = z.object({
+        name: z.string()
+          .trim()
+          .min(MIN_NAME_LENGTH, `名前は${MIN_NAME_LENGTH}文字以上で入力してください。`)
+          .max(MAX_NAME_LENGTH, `名前は${MAX_NAME_LENGTH}文字以内で入力してください。`),
+        email: z.string()
+          .nonempty("メールアドレスを入力してください。")
+          .email("正しいメールアドレスを入力してください。"),
+        password: z.string()
+          .min(MIN_PASSWORD_LENGTH, `パスワードは${MIN_PASSWORD_LENGTH}文字以上にしてください。`)
+          .max(MAX_PASSWORD_LENGTH, `パスワードは${MAX_PASSWORD_LENGTH}文字以内にしてください。`),
+        passwordConfirmation: z.string(),
+      }).refine((data) => data.password === data.passwordConfirmation, {
+        path: ["passwordConfirmation"],
+        message: "パスワードとパスワード確認が一致していません。",
+      })
 
-      if (!email.trim()) {
-        newErrors.push("メールアドレスを入力してください。")
-      }
+      const formValues = { name, email, password, passwordConfirmation }
 
-      if (!password) {
-        newErrors.push("パスワードを入力してください。")
-      } else if (password.length < MIN_PASSWORD_LENGTH) {
-        newErrors.push(`パスワードは${MIN_PASSWORD_LENGTH}文字以上にしてください。`)
-      }
-
-      if (password !== passwordConfirmation) {
-        newErrors.push("パスワードとパスワード確認が一致していません")
-      }
-
-      if (newErrors.length > 0) {
-        setErrors(newErrors)
-        return
-      }
+      // バリデーション実行
+      registerSchema.parse(formValues)
 
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       const user = userCredential.user
@@ -73,9 +71,15 @@ export default function RegisterPage() {
       })
       setUser(user)
       navigate("/home")
-    } catch {
-      setErrors(["登録に失敗しました。メールアドレスとパスワードを確認してください。"])
-      setUser(null)
+
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors = error.errors.map((err: ZodIssue) => err.message)
+        setErrors(newErrors)
+      } else {
+        setErrors(["登録に失敗しました。メールアドレスとパスワードを確認してください。"])
+        setUser(null)
+      }
     }
   }
 

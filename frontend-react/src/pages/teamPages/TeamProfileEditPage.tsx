@@ -10,6 +10,7 @@ import SelectField from "@/components/ui/SelectField"
 import RadioGroupField from "@/components/ui/RadioGroupField"
 import Button from "@/components/ui/Button"
 import ErrorDisplay from "@/components/ui/ErrorDisplay"
+import { z, ZodIssue } from "zod"
 
 interface TeamData {
   id: number
@@ -121,50 +122,75 @@ export default function TeamProfileEditPage() {
 
   const [actionState, action, isPending] = useActionState(
     async () => {
-      const newErrors: string[] = []
+      try {
+        // バリデーションスキーマ定義
+        const teamSchema = z.object({
+          sportsTypeId: z.string().nonempty("競技を選択してください。"),
+          sportsDisciplineIds: z.array(z.string()).refine(
+            (ids) => sportsDisciplines.length === 0 || ids.length > 0,
+            { message: "種目名を選択してください。" }
+          ),
+          prefectureId: z.string().nonempty("都道府県を選択してください。"),
+          targetAgeIds: z.array(z.string()).nonempty("対象年齢を選択してください。"),
+          teamName: z.string()
+            .trim()
+            .min(NAME_MIN_LENGTH, `チーム名を${NAME_MIN_LENGTH}文字以上で入力してください。`)
+            .max(NAME_MAX_LENGTH, `チーム名を${NAME_MAX_LENGTH}文字以内で入力してください。`),
+          area: z.string()
+            .trim()
+            .min(MIN_LENGTH, `活動地域を${MIN_LENGTH}文字以上で入力してください。`)
+            .max(MAX_LENGTH, `活動地域を${MAX_LENGTH}文字以内で入力してください。`),
+          sex: z.string().nonempty("性別を選択してください。"),
+          trackRecord: z.string()
+            .trim()
+            .min(MIN_LENGTH, `活動実績を${MIN_LENGTH}文字以上で入力してください。`)
+            .max(MAX_LENGTH, `活動実績を${MAX_LENGTH}文字以内で入力してください。`),
+          otherBody: z.string().trim().max(MAX_LENGTH, `その他は${MAX_LENGTH}文字以内で入力してください。`),
+        })
 
-      // バリデーション
-      if (teamName.trim().length < NAME_MIN_LENGTH || teamName.trim().length > NAME_MAX_LENGTH) {
-        newErrors.push(`チーム名を${NAME_MIN_LENGTH}文字〜${NAME_MAX_LENGTH}文字で入力してください。`)
-      }
-      if (!sportsTypeSelected) newErrors.push("競技を選択してください。")
-      if (!prefectureSelected) newErrors.push("都道府県を選択してください。")
-      if (targetAgeSelected.length === 0) newErrors.push("対象年齢を選択してください。")
-      if (!sex.trim()) newErrors.push("性別を選択してください。")
-      if (area.trim().length < MIN_LENGTH || area.trim().length > MAX_LENGTH) {
-        newErrors.push(`活動地域を${MIN_LENGTH}文字〜${MAX_LENGTH}文字で入力してください。`)
-      }
-      if (trackRecord.trim().length === 0 || trackRecord.trim().length > MAX_LENGTH) {
-        newErrors.push(`活動実績を${MIN_LENGTH}文字〜${MAX_LENGTH}文字で入力してください。`)
-      }
+        const formValues = {
+          sportsTypeId: sportsTypeSelected,
+          sportsDisciplineIds: sportsDisciplineSelected,
+          prefectureId: prefectureSelected,
+          targetAgeIds: targetAgeSelected,
+          teamName,
+          area,
+          sex,
+          trackRecord,
+          otherBody,
+        }
 
-      if (newErrors.length > 0) {
-        return { errors: newErrors }
-      }
+        // バリデーション実行
+        teamSchema.parse(formValues)
 
-      const formData = new FormData()
-      formData.append(`team[${TEAM_FIELDS.SPORTS_TYPE}]`, sportsTypeSelected)
-      formData.append(`team[${TEAM_FIELDS.PREFECTURE}]`, prefectureSelected)      
-      formData.append(`team[${TEAM_FIELDS.NAME}]`, teamName)
-      formData.append(`team[${TEAM_FIELDS.AREA}]`, area)
-      formData.append(`team[${TEAM_FIELDS.SEX}]`, sex)
-      formData.append(`team[${TEAM_FIELDS.TARGET_RECORD}]`, trackRecord)
-      formData.append(`team[${TEAM_FIELDS.OTHER_BODY}]`, otherBody)
+        const formData = new FormData()
+        formData.append(`team[${TEAM_FIELDS.SPORTS_TYPE}]`, formValues.sportsTypeId)
+        formData.append(`team[${TEAM_FIELDS.PREFECTURE}]`, formValues.prefectureId)
+        formData.append(`team[${TEAM_FIELDS.NAME}]`, formValues.teamName)
+        formData.append(`team[${TEAM_FIELDS.AREA}]`, formValues.area)
+        formData.append(`team[${TEAM_FIELDS.SEX}]`, formValues.sex)
+        formData.append(`team[${TEAM_FIELDS.TARGET_RECORD}]`, formValues.trackRecord)
+        formData.append(`team[${TEAM_FIELDS.OTHER_BODY}]`, formValues.otherBody)
 
-      targetAgeSelected.forEach(ageId => {
-        formData.append(`team[${TEAM_FIELDS.TARGET_AGE}][]`, ageId)
-      })
+        targetAgeSelected.forEach(ageId => {
+          formData.append(`team[${TEAM_FIELDS.TARGET_AGE}][]`, ageId)
+        })
 
-      sportsDisciplineSelected.forEach(disciplineId => {
-        formData.append(`team[${TEAM_FIELDS.SPORTS_DISCIPLINE}][]`, disciplineId)
-      })
+        sportsDisciplineSelected.forEach(disciplineId => {
+          formData.append(`team[${TEAM_FIELDS.SPORTS_DISCIPLINE}][]`, disciplineId)
+        })
 
-      try {        
         await apiClient.patch(`/teams/${teamId}`, formData)
         navigate("/team_profile_list")
         return { errors: [] }
-      } catch {
-        return { errors: ["チーム情報の更新に失敗しました。"] }
+
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          const newErrors = error.errors.map((err: ZodIssue) => err.message)
+          return { errors: newErrors }
+        } else {
+          return { errors: ["チーム情報の更新に失敗しました。"] }
+        }
       }
     },
     { errors: [] }

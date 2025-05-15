@@ -10,6 +10,7 @@ import useInitialFormData from "@/hooks/search/useInitialFormData"
 import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
 import Button from "@/components/ui/Button"
 import ErrorDisplay from "@/components/ui/ErrorDisplay"
+import { z, ZodIssue } from "zod"
 
 interface RecruitmentData {
   name: string
@@ -200,73 +201,102 @@ export default function EventSettingForm() {
 
   const [actionState, action, isPending] = useActionState(
     async (_prevState:  { errors: string[] }, formData: FormData) => {
-      const newErrors: string[] = []
-      const currentFormState = { ...formState }
-      
-      // FormDataから値を取得
-      const eventName = formData.get("eventName") as string
-      const eventUrl = formData.get("eventURL") as string
-      const area = formData.get("eventArea") as string
-      const sex = formData.get("eventSex") as string
-      const startDate = formData.get("eventStartDate") as string
-      const endDate = formData.get("eventEndDate") as string
-      const number = formData.get("eventNumber") as string
-      const purposeBody = formData.get("eventPurposeBody") as string
-      const otherBody = formData.get("eventOtherBody") as string
-
-      // 選択項目は状態から取得
-      const sportsTypeId = formState.sportsTypeSelected
-      const sportsDisciplineIds = formState.sportsDisciplineSelected
-      const targetAgeIds = formState.targetAgeSelected
-      const prefectureId = formState.prefectureSelected
-
-      // バリデーション
-      if (!sportsTypeId) newErrors.push("競技名を選択してください。")
-      if (sportsDisciplines.length > 0 && sportsDisciplineIds.length === 0) newErrors.push("種目名を選択してください。")
-      if (!prefectureId) newErrors.push("都道府県を選択してください。")
-      if (targetAgeIds.length === 0) newErrors.push("対象年齢を選択してください。")
-      if (!eventName.trim()) newErrors.push("イベント名を入力してください。")
-      if (!area.trim()) newErrors.push("イベント開催場所を入力してください。")
-      if (!sex.trim()) newErrors.push("性別を選択してください。")
-      if (!number.trim()) newErrors.push("募集チーム数を入力してください。")
-      if (!purposeBody.trim()) newErrors.push("イベント目的を入力してください。")
-
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      const selectedStartDate = new Date(startDate)
-      const selectedEndDate = new Date(endDate)
-
-      if (selectedStartDate < today) newErrors.push("開始日は今日以降の日付を選択してください。")
-      if (selectedEndDate < today) newErrors.push("今日以降の終了日付を選択してください。")
-
-      if (newErrors.length > 0) {
-        return { errors: newErrors, formData: currentFormState }
-      }
 
       try {
+        // バリデーションスキーマ定義
+        const eventSchema = z.object({
+          sportsTypeId: z.string().nonempty("競技名を選択してください。"),
+          sportsDisciplineIds: z.array(z.string()).refine(
+            (ids) => sportsDisciplines.length === 0 || ids.length > 0,
+            { message: "種目名を選択してください。" }
+          ),
+          prefectureId: z.string().nonempty( "都道府県を選択してください。"),
+          targetAgeIds: z.array(z.string()).nonempty("対象年齢を選択してください。"),
+          eventName: z.string()
+            .trim()
+            .nonempty("イベント名を入力してください。")
+            .max(MAX_LENGTH, `イベント名を${MAX_LENGTH}文字以内で入力してください。`),
+          area: z.string()
+            .trim()
+            .nonempty("イベント開催場所を入力してください。")
+            .max(MAX_LENGTH, `イベント開催場所を${MAX_LENGTH}文字以内で入力してください。`),
+          sex: z.string().nonempty("性別を選択してください。"),
+          number: z.coerce.number()
+            .min(1, "募集チーム数は1以上の数値を入力してください。"),
+          purposeBody: z.string()
+            .trim()
+            .nonempty("イベント目的を入力してください。")
+            .max(MAX_LENGTH, `イベント目的を${MAX_LENGTH}文字以内で入力してください。`),
+          startDate: z.string().nonempty("開始日を入力してください。")
+            .refine((val) => {
+              const today = new Date()
+              today.setHours(0, 0, 0, 0)
+              const selectedDate = new Date(val)
+              return selectedDate >= today
+            }, { message: "開始日は今日以降の日付を選択してください。" }),
+          endDate: z.string().nonempty("終了日を入力してください。")
+            .refine((val) => {
+              const today = new Date()
+              today.setHours(0, 0, 0, 0)
+              const selectedDate = new Date(val)
+              return selectedDate >= today
+            }, { message: "終了日は今日以降の日付を選択してください。" }),
+        })
+        .refine((data) => {
+          return new Date(data.endDate) >= new Date(data.startDate)
+        }, {
+          path: ["endDate"],  // エラーは endDate に紐付ける
+          message: "終了日は開始日以降の日付を選択してください。"
+        })
+
+        // formData から一括で値を取得
+        const formValues = {
+          sportsTypeId: formState.sportsTypeSelected,
+          sportsDisciplineIds: formState.sportsDisciplineSelected,
+          prefectureId: formState.prefectureSelected,
+          targetAgeIds: formState.targetAgeSelected,
+          eventName: formData.get("eventName") as string,
+          eventUrl: formData.get("eventURL") as string,
+          area: formData.get("eventArea") as string,
+          sex: formData.get("eventSex") as string,
+          startDate: formData.get("eventStartDate") as string,
+          endDate: formData.get("eventEndDate") as string,
+          number: formData.get("eventNumber") as string,
+          purposeBody: formData.get("eventPurposeBody") as string,
+          otherBody: formData.get("eventOtherBody") as string,
+        }
+
+        // バリデーション実行
+        eventSchema.parse(formValues)
+
         await apiClient.patch(`/recruitments/${recruitmentId}`, {
           recruitment: {
-            image: eventUrl,
-            name: eventName,
-            area,
-            sex,
-            number,
-            start_date: startDate,
-            end_date: endDate,
-            purpose_body: purposeBody,
-            other_body: otherBody,
-            sports_type_id: sportsTypeId,
-            sports_discipline_ids: sportsDisciplineIds,
-            prefecture_id: prefectureId,
-            target_age_ids: targetAgeIds,
+            sports_type_id: formValues.sportsTypeId,
+            sports_discipline_ids: formValues.sportsDisciplineIds,
+            prefecture_id: formValues.prefectureId,
+            target_age_ids: formValues.targetAgeIds,
+            name: formValues.eventName,
+            image: formValues.eventUrl,
+            area: formValues.area,
+            sex: formValues.sex,
+            start_date: formValues.startDate,
+            end_date: formValues.endDate,
+            number: formValues.number,
+            purpose_body: formValues.purposeBody,
+            other_body: formValues.otherBody,
           }
         })
         navigate("/event_setting_list")
         return { errors: [], formData: null }
-      } catch {
-        return {
-          errors: ["イベント更新に失敗しました。入力を確認してください。"],
-          formData: currentFormState
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          const newErrors = error.errors.map((err: ZodIssue) => err.message)
+          return { errors: newErrors, formData: { ...formState } }
+        } else {
+          return {
+            errors: ["イベント更新に失敗しました。入力を確認してください。"],
+            formData: { ...formState }
+          }
         }
       }
     },
