@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { useApiClient } from "@/hooks/useApiClient"
 import { SelectOption } from "@/types"
 import Button from "@/components/ui/Button"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 
 interface EventDetails {
   name: string
@@ -31,7 +32,7 @@ export default function EventPage() {
   const navigate = useNavigate()
   const [eventDetails, setEventDetails] = useState<EventDetails | null>(null)
   const [fetchedEventId, setFetchedEventId] = useState<string | null>(null)
-  const [error, setError] = useState("")
+  const [errors, setErrors] = useState<string[]>([])
   const { id: eventId } = useParams()
 
   const SEX_OPTIONS: ValueLabelOption[] = [
@@ -49,7 +50,7 @@ export default function EventPage() {
   const targetAgesNames = () => formatOptionNames(eventDetails?.target_ages)
 
   useEffect(() => {
-    setError("")
+    setErrors([])
 
     if (!eventId || fetchedEventId === eventId) return
 
@@ -59,7 +60,7 @@ export default function EventPage() {
         setFetchedEventId(eventId)
       })
       .catch(() => {
-        setError("基本設定を表示できませんでした。")
+        setErrors(["基本設定を表示できませんでした。"])
       })
       // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventId])
@@ -89,16 +90,6 @@ export default function EventPage() {
     </p>
   )
 
-  const Error = (error: string) => {
-    if (error.length === 0) return null
-  
-    return (
-      <p className="text-red-500 text-sm text-left md:pl-44 pl-12">
-        {error}
-      </p>
-    )
-  }  
-
   return (
     <div className="mt-40 md:mt-20 max-w-2xl mx-auto p-6 bg-sky-100 shadow-lg rounded-lg break-words">
       <h1 className="text-2xl font-light mb-4">
@@ -116,7 +107,7 @@ export default function EventPage() {
         </Button>
       </div>
       {/* エラーメッセージの表示 */}
-      {Error(error)}
+      <ErrorDisplay errors={(errors)}/>
       <TitleAndValue title="競技">{eventDetails?.sports_type_name ?? "未設定"}</TitleAndValue>
 
       {eventDetails?.sports_disciplines && eventDetails.sports_disciplines.length > 0 && (

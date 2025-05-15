@@ -9,6 +9,7 @@ import RadioGroupField from "@/components/ui/RadioGroupField"
 import useInitialFormData from "@/hooks/search/useInitialFormData"
 import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
 import Button from "@/components/ui/Button"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 
 interface RecruitmentData {
   name: string
@@ -85,24 +86,23 @@ export default function EventSettingForm() {
     if (!recruitmentId) return
 
     fetchRecruitmentData(recruitmentId)
-    .then(({ recruitmentData, sportsDisciplineIds, targetAgeIds }) => {
-      if (!recruitmentData) return
-  
-      setRecruitmentFormState(recruitmentData)
-      setSelectedSportsType(recruitmentData.sports_type_id)
-      setSelectedTargetAge(targetAgeIds)
-      setPendingSportsDisciplineIds(sportsDisciplineIds)
-      setFetchedId(recruitmentId)
-    })
-    .catch(() => {
-      setErrors(["イベントを表示できませんでした。"])
-    })
+      .then(({ recruitmentData, sportsDisciplineIds, targetAgeIds }) => {
+        if (!recruitmentData) return
+    
+        setRecruitmentFormState(recruitmentData)
+        setSelectedSportsType(recruitmentData.sports_type_id)
+        setSelectedTargetAge(targetAgeIds)
+        setPendingSportsDisciplineIds(sportsDisciplineIds)
+        setFetchedId(recruitmentId)
+      })
+      .catch(() => {
+        setErrors(["イベントを表示できませんでした。"])
+      })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recruitmentId, sportsTypes, prefectures, targetAges])
 
   const fetchRecruitmentData = async (recruitmentId: string) => {
-    const recruitmentResponse = await apiClient.get(`/recruitments/${recruitmentId}`)
-    const recruitmentData = recruitmentResponse.data.data
+    const recruitmentData = (await apiClient.get(`/recruitments/${recruitmentId}`)).data.data
 
     const sportsDisciplineIds = recruitmentData.sports_disciplines.map(
       (item: { id: number; name: string }) => item.id
@@ -288,18 +288,6 @@ export default function EventSettingForm() {
     } catch {
       setErrors(["イベントを削除できませんでした。"])
     }
-  }
-
-  const ErrorList = (errors: string[]) => {
-    if (errors.length === 0) return null
-
-    return (
-      <div className="text-red-500 text-sm list-disc list-inside text-left md:pl-44 pl-12">
-        {errors.map((error, index) => (
-          <li key={index}>{error}</li>
-        ))}
-      </div>
-    )
   }
 
   return (
@@ -501,7 +489,9 @@ export default function EventSettingForm() {
               </div>
             </li>
           </ul>
-          {ErrorList([...initialErrors, ...sportsDisciplineErrors, ...errors, ...actionState.errors])}
+          <ErrorDisplay
+            errors={[...initialErrors, ...sportsDisciplineErrors, ...errors, ...actionState.errors]}
+          />
           {/* 登録ボタン */}
           <div className="text-center my-5">
             <Button type="submit" variant="primary" size="sm" className="mr-4">更新</Button>

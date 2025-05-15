@@ -7,6 +7,7 @@ import InputField from "@/components/ui/InputField"
 import TextareaField from "@/components/ui/TextareaField"
 import RadioGroupField from "@/components/ui/RadioGroupField"
 import Button from "@/components/ui/Button"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 import useInitialFormData from "@/hooks/search/useInitialFormData"
 import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
 
@@ -143,18 +144,6 @@ export default function TeamProfilePage() {
     },
     { errors: [], formData: null }
   )
-
-  const ErrorList = (errors: string[]) => {
-    if (errors.length === 0) return null
-  
-    return (
-      <div className="text-red-500 text-sm list-disc list-inside text-left md:pl-44 pl-12">
-        {errors.map((error, index) => (
-          <li key={index}>{error}</li>
-        ))}
-      </div>
-    )
-  }
 
   useEffect(() => {
     if (actionState.formData) {
@@ -315,7 +304,8 @@ export default function TeamProfilePage() {
                 </div>
               </li>
             </ul>
-            {ErrorList([...initialErrors, ...disciplineErrors, ...actionState.errors])}
+            <ErrorDisplay errors={[...initialErrors, ...disciplineErrors, ...actionState.errors]}/>
+
             {/* 登録ボタン */}
             <div className="text-center mb-5">
               <Button variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">登録する</Button>

@@ -6,6 +6,7 @@ import { useApiClient } from "@/hooks/useApiClient"
 import { useSetAuth } from "@/context/useAuthContext"
 import { useNavigate } from "react-router-dom"
 import Button from "@/components/ui/Button"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 
 export default function RegisterPage() {
   const [name, setName] = useState("")
@@ -85,13 +86,7 @@ export default function RegisterPage() {
         <div className="my-10">
           <form className="my-5 text-center" onSubmit={handleSignUp}>
             <InputField
-              title={
-                <>
-                  名前
-                  <br />
-                  {`(${MIN_NAME_LENGTH}文字〜${MAX_NAME_LENGTH}文字)`}
-                </>
-              }
+              title={<>名前<br />{`(${MIN_NAME_LENGTH}文字〜${MAX_NAME_LENGTH}文字)`}</>}
               type="text"
               placeholder={`名前（${MIN_NAME_LENGTH}文字〜${MAX_NAME_LENGTH}文字）`}
               value={name}
@@ -110,38 +105,21 @@ export default function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
             />
             <InputField
-              title={
-                <>
-                  パスワード
-                  <br />
-                  {`(${MIN_PASSWORD_LENGTH}文字〜${MAX_PASSWORD_LENGTH}文字)`}
-                </>
-              }
+              title={<>パスワード<br />{`(${MIN_PASSWORD_LENGTH}文字〜${MAX_PASSWORD_LENGTH}文字)`}</>}
               type="password"
               placeholder={`パスワード(${MIN_PASSWORD_LENGTH}文字〜${MAX_PASSWORD_LENGTH}文字)`}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
             <InputField
-              title={
-                <>
-                  パスワード
-                  <br />
-                  (確認用)
-                </>
-              }
+              title={<>パスワード<br />(確認用)</>}
               type="password"
               placeholder="パスワード（確認用）"
               value={passwordConfirmation}
               onChange={(e) => setPasswordConfirmation(e.target.value)}
             />
-            {errors.length > 0 && (
-                <div className="text-red-500 text-sm my-4">
-                  {errors.map((err, index) => (
-                    <div key={index}>{err}</div>
-                  ))}
-                </div>
-              )}
+            <ErrorDisplay errors={(errors)}/>
+
             <Button type="submit" variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">登録する</Button>
           </form>
         </div>

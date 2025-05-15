@@ -8,6 +8,7 @@ import { useSetAuth } from "@/context/useAuthContext"
 import { useApiClient } from "@/hooks/useApiClient"
 import { AxiosError } from "axios"
 import Button from "@/components/ui/Button"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 
 export default function LoginPage() {
   const [errors, setErrors] = useState<string[]>([])
@@ -121,13 +122,8 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            {errors.length > 0 && (
-              <div className="text-sm text-red-500 my-4">
-                {errors.map((error, index) => (
-                  <div key={index}>{error}</div>
-                ))}
-              </div>
-            )}
+            <ErrorDisplay errors={(errors)}/>
+            
             <Button type="submit" variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">ログイン</Button>
           </form>
           <div className="flex flex-col items-center my-7 text-blue-600">

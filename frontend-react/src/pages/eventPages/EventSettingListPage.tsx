@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useApiClient } from "@/hooks/useApiClient"
 import { SelectOption } from "@/types"
 import Button from "@/components/ui/Button"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 
 export default function EventList() {
   const [recruitments, setRecruitments] = useState<SelectOption[]>([])
@@ -18,22 +19,22 @@ export default function EventList() {
   const getRecruitment = async () => {
     setErrors([])
     try {
-      const res = await apiClient.get('/recruitments')
-      setRecruitments(res.data.data)
+      const recruitmentsData = (await apiClient.get('/recruitments')).data.data
+      setRecruitments(recruitmentsData)
     } catch {
       setErrors(["イベントを表示できませんでした。"])
     }
   }
 
-  const editRecruitment = (id: number) => {
-    navigate(`/event_setting_edit/${id}`)
+  const editRecruitment = (recruitmentId: number) => {
+    navigate(`/event_setting_edit/${recruitmentId}`)
   }
 
-  const deleteRecruitment = async (id: number) => {
+  const deleteRecruitment = async (recruitmentId: number) => {
     setErrors([])
     try {
-      const res = await apiClient.delete(`/recruitments/${id}`)
-      setRecruitments(res.data)
+      const deleteRecruitmentData = (await apiClient.delete(`/recruitments/${recruitmentId}`)).data
+      setRecruitments(deleteRecruitmentData)
     } catch {
       setErrors(["イベントを削除できませんでした。"])
     }
@@ -44,11 +45,7 @@ export default function EventList() {
       <div className="w-full md:w-3/5 xl:w-2/5 pb-7 shadow-gray-200 bg-sky-100 rounded-lg">
         <h2 className="text-center mb-7 pt-10 font-bold text-3xl text-blue-600">イベント一覧</h2>
         <div className="flex flex-col items-center">
-          {errors.length > 0 && (
-            <div className="text-red-500 text-sm my-4">
-              {errors.map((err, index) => ( <div key={index}>{err}</div> ))}
-            </div>
-          )}
+          <ErrorDisplay errors={[...errors]}/>
 
           {recruitments.map((recruitment) => (
             <div
@@ -57,8 +54,8 @@ export default function EventList() {
             >
               イベント名: {recruitment.name}
               <div className="flex justify-center mt-5">
-                <Button variant="yellow" size="sm" className="my-4 md:mb-0 md:mr-4 mx-3" onClick={() => editRecruitment(recruitment.id)}>編集</Button>
-                <Button variant="red" size="sm" className="my-4 md:mb-0 md:mr-4 mx-3" onClick={() => deleteRecruitment(recruitment.id)}>削除</Button>
+                <Button variant="yellow" size="sm" className="my-4 mr-4" onClick={() => editRecruitment(recruitment.id)}>編集</Button>
+                <Button variant="red" size="sm" className="my-4" onClick={() => deleteRecruitment(recruitment.id)}>削除</Button>
               </div>
             </div>
           ))}

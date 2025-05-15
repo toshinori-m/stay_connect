@@ -5,6 +5,7 @@ import useInitialFormData from "@/hooks/search/useInitialFormData"
 import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
 import Button from "@/components/ui/Button"
 import { SelectOption } from "@/types"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 
 interface ValueLabelOption {
   value: string
@@ -137,17 +138,15 @@ export default function TeamProfileIntroduction() {
   const selectedSportsDisciplineNames = findNamesByIds(sportsDisciplineSelected, sportsDisciplines)
   const selectedTargetAgeNames = findNamesByIds(targetAgeSelected, targetAges)
 
-  const ErrorList = (errors: string[]) => {
-    if (errors.length === 0) return null
-
-    return (
-      <ul className="text-red-500 text-sm list-disc list-inside text-left md:pl-44 pl-12">
-        {errors.map((error, index) => (
-          <li key={index}>{error}</li>
-        ))}
-      </ul>
-    )
-  }
+  const TagList = ({ items, className }: {items: string[], className?: string}) => (
+    <>
+      {items.map((item, index) => (
+        <span key={index} className={className}>
+          {item}
+        </span>
+      ))}
+    </>
+  )
 
   const labelClass = "font-semibold text-blue-600"
   const infoTagClass =
@@ -156,8 +155,8 @@ export default function TeamProfileIntroduction() {
   return (
     <div className="mt-40 md:mt-20 max-w-2xl mx-auto p-6 bg-sky-100 shadow-lg rounded-lg break-words">
       {/* エラーメッセージの表示 */}
-      {ErrorList([...initialErrors, ...sportsDisciplineErrors, ...errors])}
-  
+      <ErrorDisplay errors={[...initialErrors, ...sportsDisciplineErrors, ...errors]}/>
+
       {/* 代表紹介ボタン */}
       <div className="text-right mb-4">
         <Button type="submit" variant="primary" size="sm" onClick={() => handleUserProfile(userId)}>
@@ -178,11 +177,7 @@ export default function TeamProfileIntroduction() {
           <li className="flex items-center gap-2 flex-wrap">
             <span className={labelClass}>種目: </span>
             <div className="flex flex-wrap gap-2 mt-1">
-              {selectedSportsDisciplineNames.map((name, index) => (
-                <span key={index} className={infoTagClass}>
-                  {name}
-                </span>
-              ))}
+              <TagList items={selectedSportsDisciplineNames} className={infoTagClass} />
             </div>
           </li>
         )}
@@ -201,11 +196,7 @@ export default function TeamProfileIntroduction() {
         <li className="flex items-center gap-2 flex-wrap">
           <span className={labelClass}>対象年齢: </span>
           <span className="flex flex-wrap gap-2 mt-1">
-            {selectedTargetAgeNames.map((name, index) => (
-              <span key={index} className={infoTagClass}>
-                {name}
-              </span>
-            ))}
+            <TagList items={selectedTargetAgeNames} className={infoTagClass} />
           </span>
         </li>
         <li>

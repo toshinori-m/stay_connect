@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { SelectOption } from "@/types"
 import { useApiClient } from "@/hooks/useApiClient"
 import Button from "@/components/ui/Button"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 
 export default function TeamProfileList() {
   const [teams, setTeams] = useState<SelectOption[]>([])
@@ -17,12 +18,12 @@ export default function TeamProfileList() {
   }, [])
 
   const fetchTeamProfile = async () => {
+    setErrors([])
     try {
-      setErrors([])
       const TeamProfileRes = (await apiClient.get('/teams')).data.data
       setTeams(TeamProfileRes)
     } catch {
-      setErrors(["チーム名を表示できませんでした。"])
+      setErrors(["チーム紹介を表示できませんでした。"])
     }
   }
 
@@ -36,7 +37,7 @@ export default function TeamProfileList() {
       const deleteTeamProfileRes = (await apiClient.delete(`/teams/${id}`)).data
       setTeams(deleteTeamProfileRes)
     } catch {
-      setErrors(["イベントを削除できませんでした。"])
+      setErrors(["チーム紹介を削除できませんでした。"])
     }
   }
 
@@ -62,11 +63,8 @@ export default function TeamProfileList() {
           </Button>
         </div>
         <div className="flex flex-col items-center">
-          {errors.length > 0 && (
-            <div className="text-red-500 text-sm my-4">
-              {errors.map((err, index) => ( <div key={index}>{err}</div> ))}
-            </div>
-          )}
+          <ErrorDisplay errors={(errors)}/>
+
           <div className="flex flex-col items-center mt-10 mb-10">
             {teams.map((team) => (
               <div
@@ -75,8 +73,8 @@ export default function TeamProfileList() {
               >
                 チーム名: {team.name}
                 <div className="flex justify-center mt-5">
-                  <Button variant="yellow" size="sm" className="my-4 md:mb-0 md:mr-4 mx-3" onClick={() => editTeamProfile(team.id)}>編集</Button>
-                  <Button variant="red" size="sm" className="my-4 md:mb-0 md:mr-4 mx-3" onClick={() => deleteTeamProfile(team.id)}>削除</Button>
+                  <Button variant="yellow" size="sm" className="my-4 mr-4" onClick={() => editTeamProfile(team.id)}>編集</Button>
+                  <Button variant="red" size="sm" className="my-4" onClick={() => deleteTeamProfile(team.id)}>削除</Button>
                 </div>
               </div>
             ))}

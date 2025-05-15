@@ -2,6 +2,7 @@ import { useState } from "react"
 import { getAuth, sendPasswordResetEmail } from "firebase/auth"
 import InputField from "@/components/ui/InputField"
 import Button from "@/components/ui/Button"
+import ErrorDisplay from "@/components/ui/ErrorDisplay"
 
 export default function ResetPassword() {
   const [email, setEmail] = useState("")
@@ -49,13 +50,8 @@ export default function ResetPassword() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            {errors.length > 0 && (
-              <div className="text-sm text-red-500 my-4">
-                {errors.map((err, index) => (
-                  <div key={index}>{err}</div>
-                ))}
-              </div>
-            )}
+            <ErrorDisplay errors={(errors)}/>
+
             <Button type="submit" variant="primary" size="sm" className="my-4 md:mb-0 md:mr-4">送信する</Button>
           </form>
         </div>
