@@ -10,6 +10,7 @@ import Button from "@/components/ui/Button"
 import ErrorDisplay from "@/components/ui/ErrorDisplay"
 import useInitialFormData from "@/hooks/search/useInitialFormData"
 import useFetchDisciplines from "@/hooks/search/useFetchDisciplines"
+import { z, ZodIssue } from "zod"
 
 export default function TeamProfilePage() {
   const apiClient = useApiClient()
@@ -36,7 +37,10 @@ export default function TeamProfilePage() {
 
   const { sportsDisciplines, errors: disciplineErrors } = useFetchDisciplines(formState.sportsTypeSelected)
 
+  const MIN_LENGTH = 1
+  const NAME_MIN_LENGTH = 2
   const SHOW_LIMIT_THRESHOLD = 5
+  const NAME_MAX_LENGTH = 100
   const MAX_LENGTH = 255
 
   const TEAM_FIELDS = {
@@ -101,44 +105,73 @@ export default function TeamProfilePage() {
 
   const [actionState, action, isPending] = useActionState(
     async () => {
-      const newErrors = []
-      const currentFormState = { ...formState }
-      
-      if (!formState.sportsTypeSelected) {newErrors.push("競技を選択して下さい")}
-      if (!formState.prefectureSelected) {newErrors.push("都道府県を選択して下さい")}
-      if (formState.targetAgeSelected.length === 0) {newErrors.push("対象年齢を選択して下さい")}
-      if (!formState.teamName?.trim()) {newErrors.push("チーム名を入力してください")}
-      if (!formState.area?.trim()) {newErrors.push("活動地域を入力してください")}
-      if (!formState.sex) {newErrors.push("性別を選択してください")}
-
-      if (newErrors.length > 0) {
-        return { errors: newErrors, formData: currentFormState }
-      }
-
       try {
-        const disciplineIds = formState.sportsDisciplineSelected.map(disciplineId => disciplineId)
-        const targetAgeIds = formState.targetAgeSelected.map(targetAgeId => targetAgeId)
-        
+        // バリデーションスキーマ定義
+        const teamSchema = z.object({
+          sportsTypeId: z.string().nonempty("競技を選択してください。"),
+          sportsDisciplineIds: z.array(z.string()).refine(
+            (ids) => sportsDisciplines.length === 0 || ids.length > 0,
+            { message: "種目名を選択してください。" }
+          ),
+          prefectureId: z.string().nonempty("都道府県を選択してください。"),
+          targetAgeIds: z.array(z.string()).nonempty("対象年齢を選択してください。"),
+          teamName: z.string()
+            .trim()
+            .min(NAME_MIN_LENGTH, `チーム名を${NAME_MIN_LENGTH}文字以上で入力してください。`)
+            .max(NAME_MAX_LENGTH, `チーム名を${NAME_MAX_LENGTH}文字以内で入力してください。`),
+          area: z.string()
+            .trim()
+            .min(MIN_LENGTH, `活動地域を${MIN_LENGTH}文字以上で入力してください。`)
+            .max(MAX_LENGTH, `活動地域を${MAX_LENGTH}文字以内で入力してください。`),
+          sex: z.string().nonempty("性別を選択してください。"),
+          trackRecord: z.string()
+            .trim()
+            .min(MIN_LENGTH, `活動実績を${MIN_LENGTH}文字以上で入力してください。`)
+            .max(MAX_LENGTH, `活動実績を${MAX_LENGTH}文字以内で入力してください。`),
+          otherBody: z.string().trim().max(MAX_LENGTH, `その他は${MAX_LENGTH}文字以内で入力してください。`),
+        })
+
+        const formValues = {
+          sportsTypeId: formState.sportsTypeSelected,
+          sportsDisciplineIds: formState.sportsDisciplineSelected,
+          prefectureId: formState.prefectureSelected,
+          targetAgeIds: formState.targetAgeSelected,
+          teamName: formState.teamName,
+          area: formState.area,
+          sex: formState.sex,
+          trackRecord: formState.trackRecord,
+          otherBody: formState.otherBody,
+        }
+
+        // バリデーション実行
+        teamSchema.parse(formValues)
+
         await apiClient.post("/teams", {
           team: { 
-            name: formState.teamName,
-            area: formState.area,
-            sex: formState.sex,
-            track_record: formState.trackRecord,
-            other_body: formState.otherBody,
-            sports_type_id: formState.sportsTypeSelected,
-            sports_discipline_ids: disciplineIds,
-            prefecture_id: formState.prefectureSelected,
-            target_age_ids: targetAgeIds
+            name: formValues.teamName,
+            area: formValues.area,
+            sex: formValues.sex,
+            track_record: formValues.trackRecord,
+            other_body: formValues.otherBody,
+            sports_type_id: formValues.sportsTypeId,
+            sports_discipline_ids: formValues.sportsDisciplineIds,
+            prefecture_id: formValues.prefectureId,
+            target_age_ids: formValues.targetAgeIds,
           }
         })
         
         navigate("/home")
         return { errors: [], formData: null }
-      } catch {
-        return {
-          errors: ["チーム登録に失敗しました。入力を確認してください。"],
-          formData: currentFormState
+
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          const newErrors = error.errors.map((err: ZodIssue) => err.message)
+          return { errors: newErrors, formData: { ...formState } }
+        } else {
+          return {
+            errors: ["チーム登録に失敗しました。入力を確認してください。"],
+            formData: { ...formState }
+          }
         }
       }
     },

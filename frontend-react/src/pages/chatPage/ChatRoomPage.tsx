@@ -5,6 +5,7 @@ import { useApiClient } from "@/hooks/useApiClient"
 import { useAuth } from "@/context/useAuthContext"
 import Button from "@/components/ui/Button"
 import ErrorDisplay from "@/components/ui/ErrorDisplay"
+import { z, ZodIssue } from "zod"
 
 // メッセージの型定義
 interface ChatMessage {
@@ -24,6 +25,7 @@ interface MessageChannel {
 }
 
 export default function ChatRoomPage() {
+  const MIN_LENGTH = 1
   const SHOW_LIMIT_THRESHOLD = 5
   const MAX_LENGTH = 255
 
@@ -47,8 +49,6 @@ export default function ChatRoomPage() {
       navigate("/login")
       return
     }
-
-    if (!user) return
 
     fetchChatRoom(chatRoomId)
       .then(() => {
@@ -94,18 +94,28 @@ export default function ChatRoomPage() {
 
   const [actionState, sendMessage, isPending] = useActionState(
     async (_prevState: { errors: string[] }, formData: FormData) => {
-      const errors: string[] = []
       const message = formData.get("chat_message[message]") as string
-  
-      if (!message?.trim()) { errors.push("メッセージを入力してください。") }
-      if (errors.length > 0) { return { errors } }
-  
+
       try {
+        const chatMessageSchema = z.object({
+          message: z.string()
+            .trim()
+            .min(MIN_LENGTH, `メッセージを${MIN_LENGTH}文字以上で入力してください。`)
+            .max(MAX_LENGTH, `メッセージを${MAX_LENGTH}文字以内で入力してください。`),
+        })
+
+        chatMessageSchema.parse({ message })  
+
         await apiClient.post(`/chat_rooms/${chatRoomId}/chat_messages`, formData)
         setFormState({ message: "" })
         return { errors: [] }
-      } catch {
-        return { errors: ["メッセージの送信に失敗しました。"] }
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          const newErrors = error.errors.map((err: ZodIssue) => err.message)
+          return { errors: newErrors }
+        } else {
+          return { errors: ["メッセージの送信に失敗しました。"] }
+        }
       }
     },
     { errors: [] }

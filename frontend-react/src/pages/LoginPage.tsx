@@ -9,6 +9,7 @@ import { useApiClient } from "@/hooks/useApiClient"
 import { AxiosError } from "axios"
 import Button from "@/components/ui/Button"
 import ErrorDisplay from "@/components/ui/ErrorDisplay"
+import { z, ZodIssue } from "zod"
 
 export default function LoginPage() {
   const [errors, setErrors] = useState<string[]>([])
@@ -48,23 +49,18 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    const newErrors: string[] = []
-
-    if (!email.trim()) {
-      newErrors.push("メールアドレスを入力してください。")
-    }
-    
-    if (!password) {
-      newErrors.push("パスワードを入力してください。")
-    }
-    
-    if (newErrors.length > 0) {
-      setErrors(newErrors)
-      return
-    }
-
     try {
       setErrors([])
+      const loginSchema = z.object({
+        email: z.string()
+          .nonempty("メールアドレスを入力してください。")
+          .email("正しいメールアドレスを入力してください。"),
+        password: z.string().nonempty("パスワードを入力してください。"),
+      })
+
+      const formValues = { email, password }
+      loginSchema.parse(formValues)
+
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
       const user = userCredential.user
 
@@ -82,8 +78,13 @@ export default function LoginPage() {
           setUser(null)
         }
       }
-    } catch {
-      setErrors(["ログインに失敗しました。メールアドレスとパスワードを確認してください。"])
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors = error.errors.map((err: ZodIssue) => err.message)
+        setErrors(newErrors)
+      } else {
+        setErrors(["ログインに失敗しました。メールアドレスとパスワードを確認してください。"])
+      }
     }
   }
 
