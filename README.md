@@ -83,6 +83,9 @@ DockerおよびDocker Composeがインストールされていることを確認
    ```
 4. **backend-php`.env`ファイルの作成**
 backend-phpのルートディレクトリの`.env.example`ファイルから`.env`ファイルに名称を修正します。
+   ```bash
+   cp backend-php/.env.example backend-php/.env
+   ```
 5. **動作確認**
 下のURLにアクセスします
 - **Frontend（Vue.js）**: [http://localhost:81/](http://localhost:81/)
