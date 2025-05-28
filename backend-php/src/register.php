@@ -25,9 +25,10 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 
 require_once __DIR__ . '/../config/database.php';
-$pdo = getPDO();
 
 try {
+  $pdo = getPDO();
+
   // emailの重複チェック
   $checkEmailStmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = :email");
   $checkEmailStmt->execute([':email' => $email]);
