@@ -30,16 +30,21 @@
 - Tailwind CSS `3`
 - Firebase `11.3.1`（Google認証）
 
-#### バックエンド
+#### バックエンド（Ruby on Rails）
 - Ruby `3.2.2`
 - Ruby on Rails `7.0.7`
 - REST API（データの取得・更新）
+
+#### バックエンド（PHP）
+- PHP `8.1`
+- REST API（データの取得・更新）
+- PDO を使用したデータベース接続
 
 ---
 
 ## 動作環境
 - Docker / Docker Compose `2.29.1`
-- MySQL `8.0`
+- PostgreSQL `17.5`
 - 推奨ブラウザ: Google Chrome, Firefox
 
 ---
@@ -56,7 +61,7 @@
    yarn install
    cd ../
 
-   # React フロントエンドのセットアップ（開発中）
+   # React フロントエンドのセットアップ
    cd frontend-react
    yarn install
    cd ../
@@ -76,12 +81,17 @@ DockerおよびDocker Composeがインストールされていることを確認
    docker-compose build   # イメージをビルド
    docker-compose up -d   # コンテナをバックグラウンドで起動
    ```
-4. **動作確認**
+4. **backend-php`.env`ファイルの作成**
+backend-phpのルートディレクトリの`.env.example`ファイルから`.env`ファイルに名称を修正します。
+5. **動作確認**
 下のURLにアクセスします
 - **Frontend（Vue.js）**: [http://localhost:81/](http://localhost:81/)
 - **Frontend（React + TypeScript）**: [http://localhost:5173/](http://localhost:5173/)
 - **Backend（Ruby on Rails）**: [http://localhost:3001/](http://localhost:3001/)
+- **Backend（PHP）**: [http://localhost:3002/](http://localhost:3002/)
 - **Database（PostgreSQL）**: `localhost:3307` （ユーザー: `root`, パスワード: `password`）
+※詳しいバックエンド処理の実装例については、下記Zenn記事も参考にしてください。
+[React + PHP + PostgreSQLのAPI開発記事](https://zenn.dev/toshi052312/articles/ff3787c8cbb29c)
 
 ---
 
