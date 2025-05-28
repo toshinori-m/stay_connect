@@ -25,7 +25,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 
 require_once __DIR__ . '/../config/database.php';
-$pdo = require __DIR__ . '/../config/database.php';
+$pdo = getPDO();
 
 try {
   // emailの重複チェック
