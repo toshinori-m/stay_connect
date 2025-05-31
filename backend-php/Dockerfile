@@ -2,11 +2,10 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# GPG問題を避けるための応急処置を追加
 RUN rm -rf /var/lib/apt/lists/* \
   && apt-get clean \
   && apt-get update --allow-insecure-repositories \
-  && apt-get install -y tzdata php-fpm
+  && apt-get install -y tzdata php-fpm php8.1-pgsql
 
 WORKDIR /app
 

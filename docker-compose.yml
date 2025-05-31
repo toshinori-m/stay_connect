@@ -10,25 +10,25 @@ services:
     ports:
       - 5432:5432
     
-  # backend:
-  #   build:
-  #     context: ./backend/
-  #     dockerfile: Dockerfile
-  #   command: bundle exec rails s -p 3000 -b '0.0.0.0'
-  #   volumes:
-  #     - ./backend:/myapp
-  #   environment:
-  #     TZ: Asia/Tokyo
-  #     RAILS_ENV: development
-  #     # DB_HOST: db
-  #     DB_USER: root
-  #     # MYSQL_ROOT_PASSWORD:
-  #   ports:
-  #     - "3001:3000"
-  #   depends_on:
-  #     - db
-  #   stdin_open: true
-  #   tty: true
+  backend:
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    volumes:
+      - ./backend:/myapp
+    environment:
+      TZ: Asia/Tokyo
+      RAILS_ENV: development
+      # DB_HOST: db
+      DB_USER: root
+      # MYSQL_ROOT_PASSWORD:
+    ports:
+      - "3001:3000"
+    depends_on:
+      - db
+    stdin_open: true
+    tty: true
 
   backend-php:
     build:
@@ -50,19 +50,20 @@ services:
     depends_on:
       - backend-php
 
-  # frontend:
-  #   build: 
-  #     context: ./frontend/
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./frontend:/frontend
-  #   command: yarn run serve
-  #   ports:
-  #     - 81:8080
-  #   depends_on:
-  #     - backend
-  #   stdin_open: true
-  #   tty: true
+  frontend:
+    build: 
+      context: ./frontend/
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/node_modules
+    command: yarn run serve
+    ports:
+      - 81:8080
+    depends_on:
+      - backend
+    stdin_open: true
+    tty: true
     
   frontend-react:
     build:
@@ -70,10 +71,12 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./frontend-react:/frontend-react
+      - /frontend-react/node_modules
     command: yarn run dev
     ports:
       - "5173:5173"
     depends_on:
+      - backend
       - backend-php
     stdin_open: true
     tty: true
