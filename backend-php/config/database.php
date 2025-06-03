@@ -18,5 +18,7 @@ function getPDO(): PDO
     return $pdo;
   } catch (PDOException $e) {
     throw $e;
+  } catch (Exception $e) {
+    throw $e;
   }
 }

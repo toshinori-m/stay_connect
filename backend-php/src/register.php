@@ -30,18 +30,18 @@ try {
   $pdo = getPDO();
 
   // emailの重複チェック
-  $checkEmailStmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = :email");
+  $checkEmailStmt = $pdo->prepare("SELECT 1 FROM users WHERE email = :email LIMIT 1");
   $checkEmailStmt->execute([':email' => $email]);
-  if ($checkEmailStmt->fetchColumn() > 0) {
+  if ($checkEmailStmt->fetch()) {
     http_response_code(409);
     echo json_encode(['error' => 'このメールアドレスはすでに登録されています。']);
     exit;
   }
 
   // uidの重複チェック
-  $checkUidStmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE uid = :uid");
+  $checkUidStmt = $pdo->prepare("SELECT 1 FROM users WHERE uid = :uid LIMIT 1");
   $checkUidStmt->execute([':uid' => $uid]);
-  if ($checkUidStmt->fetchColumn() > 0) {
+  if ($checkUidStmt->fetch()) {
     http_response_code(409);
     echo json_encode(['error' => 'このUIDはすでに登録されています。']);
     exit;
@@ -58,6 +58,7 @@ try {
   ]);
   http_response_code(201);
   echo json_encode(['message' => 'ユーザー登録が完了しました。']);
+  exit(0);
 
 } catch (PDOException $e) {
   if ($e->getCode() === '23505') {
@@ -79,4 +80,11 @@ try {
       'message' => $e->getMessage()
     ]);
   }
+} catch (Exception $e) {
+  // 予期しない例外（PDO以外）
+  http_response_code(500);
+  echo json_encode([
+    'error' => '予期しないエラーが発生しました。',
+    'message' => $e->getMessage()
+  ]);
 }

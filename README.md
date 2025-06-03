@@ -126,11 +126,11 @@ docker compose run --rm backend bash -c "bundle exec rails db:create && bundle e
 
 ### React + PHP 構成で使用する場合の.env 設定
 
-React フロントエンド（frontend-react）は、デフォルトで Rails バックエンド（http://localhost:3001）と通信する設定です。
-PHP バックエンド（http://localhost:3002）を使用する場合は、`frontend-react/.env` ファイル内の 下の箇所をコメントアウトしてください。
+React フロントエンド（frontend-react）は、デフォルトで PHP バックエンド（http://localhost:3002）と通信する設定です。
+Rails バックエンド（http://localhost:3001）を使用する場合は、`frontend-react/.env` ファイル内の 下の箇所のコメントアウトを外してください。
 
 ```bash
-VITE_API_BASE_URL="http://localhost:3001"
+# VITE_API_BASE_URL="http://localhost:3001"
 ```
 
 ---
