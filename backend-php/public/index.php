@@ -9,6 +9,9 @@ $routes = [
   'POST' => [
     '/users' => __DIR__ . '/../src/register.php',
   ],
+  'GET' => [
+    '/users/me' => __DIR__ . '/../src/users_me.php',
+  ]
 ];
 
 if (isset($routes[$requestMethod][$requestUri])) {
