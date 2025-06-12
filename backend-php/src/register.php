@@ -4,7 +4,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 if (!isset($input['user'])) {
   http_response_code(400);
   echo json_encode(['error' => 'ユーザー情報が送信されていません。']);
-  exit;
+  exit(1);
 }
 
 $user = $input['user'];
@@ -15,13 +15,13 @@ $uid = trim($user['uid'] ?? '');
 if (!$name || !$email || !$uid) {
   http_response_code(400);
   echo json_encode(['error' => '必須項目が不足しています。']);
-  exit;
+  exit(1);
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
   http_response_code(400);
   echo json_encode(['error' => '正しいメールアドレス形式で入力してください。']);
-  exit;
+  exit(1);
 }
 
 require_once __DIR__ . '/../config/database.php';
@@ -35,7 +35,7 @@ try {
   if ($checkEmailStmt->fetch()) {
     http_response_code(409);
     echo json_encode(['error' => 'このメールアドレスはすでに登録されています。']);
-    exit;
+    exit(1);
   }
 
   // uidの重複チェック
@@ -44,7 +44,7 @@ try {
   if ($checkUidStmt->fetch()) {
     http_response_code(409);
     echo json_encode(['error' => 'このUIDはすでに登録されています。']);
-    exit;
+    exit(1);
   }
 
   $stmt = $pdo->prepare("
@@ -59,7 +59,6 @@ try {
   http_response_code(201);
   echo json_encode(['message' => 'ユーザー登録が完了しました。']);
   exit(0);
-
 } catch (PDOException $e) {
   if ($e->getCode() === '23505') {
     // メッセージ内に 'email' や 'uid' が含まれているか判定
@@ -73,12 +72,14 @@ try {
       http_response_code(422);
       echo json_encode(['error' => '重複したデータが存在します。']);
     }
+    exit(1);
   } else {
     http_response_code(500);
     echo json_encode([
       'error' => 'ユーザー登録に失敗しました。',
       'message' => $e->getMessage()
     ]);
+    exit(1);
   }
 } catch (Exception $e) {
   // 予期しない例外（PDO以外）
@@ -87,4 +88,5 @@ try {
     'error' => '予期しないエラーが発生しました。',
     'message' => $e->getMessage()
   ]);
+  exit(1);
 }
