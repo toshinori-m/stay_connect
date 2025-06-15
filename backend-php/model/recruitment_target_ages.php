@@ -4,18 +4,23 @@ class RecruitmentTargetAge
   public static function insert(PDO $pdo, int $recruitmentId, array $targetAgeIds, string $now): void {
     if (empty($targetAgeIds)) return;
 
-    $stmt = $pdo->prepare("
-      INSERT INTO recruitment_target_ages (recruitment_id, target_age_id, created_at, updated_at)
-      VALUES (:recruitment_id, :target_age_id, :created_at, :updated_at)
-    ");
+    $placeholders = [];
+    $params = [];
 
-    foreach ($targetAgeIds as $id) {
-      $stmt->execute([
-        ':recruitment_id' => $recruitmentId,
-        ':target_age_id' => $id,
-        ':created_at' => $now,
-        ':updated_at' => $now,
-      ]);
+    foreach ($targetAgeIds as $index => $id) {
+      $placeholders[] = "(?, ?, ?, ?)";
+      $params[] = $recruitmentId;
+      $params[] = $id;
+      $params[] = $now;
+      $params[] = $now;
     }
+
+    $sql = "
+      INSERT INTO recruitment_target_ages
+        (recruitment_id, target_age_id, created_at, updated_at)
+      VALUES " . implode(", ", $placeholders);
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
   }
 }

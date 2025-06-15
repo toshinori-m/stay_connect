@@ -7,12 +7,20 @@ require_once __DIR__ . '/../model/recruitment_disciplines.php';
 require_once __DIR__ . '/../model/recruitment_target_ages.php';
 
 header('Content-Type: application/json');
-
 $uid = authenticate_uid();
 
 try {
   $pdo = getPDO();
+  $user = findUserByUid($pdo, $uid);
 
+  if (!$user) {
+    http_response_code(401);
+    echo json_encode(['error' => ['user' => ['ユーザーが存在しません']]]);
+    exit(1);
+  }
+
+  $now = (new DateTime())->format('Y-m-d H:i:s');
+  $userId = $user['id'];
   $input = json_decode(file_get_contents("php://input"), true);
 
   if (!$input || !isset($input['recruitment'])) {
@@ -35,19 +43,7 @@ try {
     exit(1);
   }
 
-  $stmt = $pdo->prepare("SELECT id FROM users WHERE uid = :uid LIMIT 1");
-  $stmt->execute([':uid' => $uid]);
-  $user = $stmt->fetch(PDO::FETCH_ASSOC);
-  $now = (new DateTime())->format('Y-m-d H:i:s');
-
-  if (!$user) {
-    http_response_code(401);
-    echo json_encode(['error' => ['user' => ['ユーザーが存在しません']]]);
-    exit(1);
-  }
-
   $pdo->beginTransaction();
-  $userId = $user['id'];
 
   // メインテーブル登録
   $recruitmentId = Recruitment::create($pdo, $data, $userId, $sexValue, $startDate, $endDate, $now);
