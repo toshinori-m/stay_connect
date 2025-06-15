@@ -3,8 +3,9 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../lib/authenticate.php';
 require_once __DIR__ . '/../lib/error_handler.php';
 require_once __DIR__ . '/../lib/validate_recruitments.php';
-require_once __DIR__ . '/../lib/recruitment_pivot_saver.php';
-require_once __DIR__ . '/../lib/recruitment_repository.php';
+require_once __DIR__ . '/../lib/model/recruitment.php';
+require_once __DIR__ . '/../lib/model/recruitment_disciplines.php';
+require_once __DIR__ . '/../lib/model/recruitment_target_ages.php';
 
 header('Content-Type: application/json');
 
@@ -49,11 +50,12 @@ try {
   $pdo->beginTransaction();
   $userId = $user['id'];
 
-  // recruitments テーブルへ登録
-  $recruitmentId = insertRecruitment($pdo, $data, $userId, $sexValue, $startDate, $endDate, $now);
+  // メインテーブル登録
+  $recruitmentId = createRecruitment($pdo, $data, $userId, $sexValue, $startDate, $endDate, $now);
 
- // 中間テーブル
-  saveRecruitmentPivots($pdo, $recruitmentId, $data, $now);
+  // 中間テーブル登録
+  insertRecruitmentDisciplines($pdo, $recruitmentId, $data['sports_discipline_ids'] ?? [], $now);
+  insertRecruitmentTargetAges($pdo, $recruitmentId, $data['target_age_ids'] ?? [], $now);
 
   $pdo->commit();
 

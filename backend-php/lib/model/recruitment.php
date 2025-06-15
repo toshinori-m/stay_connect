@@ -1,5 +1,5 @@
 <?php
-function insertRecruitment(PDO $pdo, array $data, int $userId, int $sexValue, DateTime $startDate, DateTime $endDate, string $now): int {
+function createRecruitment(PDO $pdo, array $data, int $userId, int $sexValue, DateTime $startDate, DateTime $endDate, string $now): int {
   $stmt = $pdo->prepare("
     INSERT INTO recruitments (
       user_id, sports_type_id, prefecture_id,
