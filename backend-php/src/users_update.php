@@ -36,8 +36,58 @@ try {
     exit(1);
   }
 
-  // Reactから送信されるmultipart/form-data形式のデータを取得
-  $userInput = $_POST['user'] ?? [];
+  // PATCH + multipart/form-data を手動でパース
+  $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+  if (!preg_match('/boundary=(.*)$/', $contentType, $matches)) {
+    http_response_code(400);
+    echo json_encode(['error' => 'boundary が見つかりません']);
+    exit(1);
+  }
+  $boundary = '--' . $matches[1];
+  $rawData = file_get_contents('php://input');
+  $parts = explode($boundary, $rawData);
+  array_shift($parts);
+  array_pop($parts);
+
+  $parsed = [];
+
+  foreach ($parts as $part) {
+    if (empty(trim($part))) continue;
+
+    list($rawHeaders, $body) = explode("\r\n\r\n", $part, 2);
+    $headers = [];
+    foreach (explode("\r\n", trim($rawHeaders)) as $line) {
+      if (strpos($line, ':') === false) continue;
+      list($k, $v) = explode(':', $line, 2);
+      $headers[strtolower(trim($k))] = trim($v);
+    }
+
+    if (!isset($headers['content-disposition'])) continue;
+    if (!preg_match('/name="([^"]+)"(?:; filename="([^"]+)")?/', $headers['content-disposition'], $matches)) continue;
+
+    $name = $matches[1];
+    $filename = $matches[2] ?? null;
+
+    if ($filename) {
+      $tmpPath = '/tmp/' . uniqid('upload_', true) . '_' . basename($filename);
+      file_put_contents($tmpPath, rtrim($body, "\r\n"));
+      $parsed[$name] = [
+        'filename' => $filename,
+        'tmp_path' => $tmpPath,
+      ];
+    } else {
+      $parsed[$name] = rtrim($body, "\r\n");
+    }
+  }
+
+  // user[...] の形式を再構成
+  $userInput = [];
+  foreach ($parsed as $key => $val) {
+    if (preg_match('/^user\[(.+)\]$/', $key, $m)) {
+      $userInput[$m[1]] = $val;
+    }
+  }
+error_log('userInput[birthday]: "' . ($userInput['birthday'] ?? 'なし') . '"');
   $data = [
     'name' => $userInput['name'] ?? '',
     'email' => $userInput['email'] ?? '',
@@ -46,7 +96,7 @@ try {
     'self_introduction' => $userInput['self_introduction'] ?? '',
     'email_notification' => $userInput['email_notification'] ?? 'receives',
   ];
-
+error_log('data[birthday]: "' . $data['birthday'] . '"');
   $emailNotificationRaw = strtolower(trim($data['email_notification'] ?? ''));
 
   if ($emailNotificationRaw === 'receives' || $emailNotificationRaw === 'true') {
@@ -93,17 +143,17 @@ try {
 
   // 画像の処理
   $imagePath = null;
-  if (isset($_FILES['user']['name']['image']) && $_FILES['user']['error']['image'] === UPLOAD_ERR_OK) {
+  if (isset($userInput['image']['tmp_path'])) {
     $uploadDir = __DIR__ . '/../public/uploads/';
     if (!is_dir($uploadDir)) {
       mkdir($uploadDir, 0755, true);
     }
 
-    $ext = pathinfo($_FILES['user']['name']['image'], PATHINFO_EXTENSION);
+    $ext = pathinfo($userInput['image']['filename'], PATHINFO_EXTENSION);
     $filename = uniqid('user_', true) . '.' . $ext;
     $destination = $uploadDir . $filename;
 
-    if (move_uploaded_file($_FILES['user']['tmp_name']['image'], $destination)) {
+    if (rename($userInput['image']['tmp_path'], $destination)) {
       $imagePath = '/uploads/' . $filename;
     } else {
       $errors['image'][] = '画像のアップロードに失敗しました。';
@@ -145,7 +195,7 @@ try {
   if ($imagePath) {
     $params[':image'] = $imagePath;
   }
-
+error_log('params[:birthday]: "' . $data['birthday'] . '"');
   // 実行
   $stmt = $pdo->prepare($sql);
 
@@ -163,7 +213,7 @@ try {
   }
 
   $stmt->execute();
-
+error_log('更新件数: ' . $stmt->rowCount());
   http_response_code(200);
   echo json_encode(['message' => 'ユーザー情報を更新しました']);
   exit(0);
