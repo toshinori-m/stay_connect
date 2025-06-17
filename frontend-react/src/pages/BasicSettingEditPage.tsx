@@ -113,7 +113,7 @@ export default function BasicSettingEditPage() {
         }
 
         // APIリクエスト
-        await apiClient.patch(`/users/${formState.user.id}`, formData)
+        await apiClient.post(`/users/${formState.user.id}`, formData)
         navigate("/home")
         return { errors: [] }
         

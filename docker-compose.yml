@@ -37,6 +37,7 @@ services:
     volumes:
       - ./backend-php:/app
       - ./backend-php/etc/www.conf:/etc/php/8.1/fpm/pool.d/www.conf
+      - ./backend-php/php.ini:/etc/php/8.1/fpm/php.ini
     depends_on:
       - db
 
