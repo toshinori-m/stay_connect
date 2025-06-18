@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../lib/authenticate.php';
 require_once __DIR__ . '/../lib/error_handler.php';
+require_once __DIR__ . '/../model/user.php';
 
 header('Content-Type: application/json');
 
@@ -15,13 +16,9 @@ $userIdFromUrl = $_GET['route_params'][0];
 try {
   $uid = authenticate_uid();
   $pdo = getPDO();
+  $user = findUserByUid($pdo, $uid);
 
-  $errors = [];
-
-  // ユーザー認証
-  $stmt = $pdo->prepare("SELECT id FROM users WHERE uid = :uid LIMIT 1");
-  $stmt->execute([':uid' => $uid]);
-  $user = $stmt->fetch(PDO::FETCH_ASSOC);
+  // $errors = [];
 
   if (!$user) {
     http_response_code(401);
@@ -87,7 +84,7 @@ try {
       $userInput[$m[1]] = $val;
     }
   }
-error_log('userInput[birthday]: "' . ($userInput['birthday'] ?? 'なし') . '"');
+
   $data = [
     'name' => $userInput['name'] ?? '',
     'email' => $userInput['email'] ?? '',
@@ -96,7 +93,7 @@ error_log('userInput[birthday]: "' . ($userInput['birthday'] ?? 'なし') . '"')
     'self_introduction' => $userInput['self_introduction'] ?? '',
     'email_notification' => $userInput['email_notification'] ?? 'receives',
   ];
-error_log('data[birthday]: "' . $data['birthday'] . '"');
+
   $emailNotificationRaw = strtolower(trim($data['email_notification'] ?? ''));
 
   if ($emailNotificationRaw === 'receives' || $emailNotificationRaw === 'true') {
@@ -109,18 +106,7 @@ error_log('data[birthday]: "' . $data['birthday'] . '"');
   }
 
   // バリデーション
-  $name = trim($data['name']);
-  if ($name === '') {
-    $errors['name'][] = '名前を入力してください。';
-  } elseif (mb_strlen($name) < 2) {
-    $errors['name'][] = '名前は2文字以上で入力してください。';
-  } elseif (mb_strlen($name) > 100) {
-    $errors['name'][] = '名前は100文字以内で入力してください。';
-  }
-
-  if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-    $errors['email'][] = 'メールアドレスの形式が不正です。';
-  }
+  $errors = User::validateProfile($data);
 
   $sexValue = $data['sex'];
   $sexInt = null;
@@ -131,14 +117,6 @@ error_log('data[birthday]: "' . $data['birthday'] . '"');
     $sexInt = 1;
   } else {
     $errors['sex'][] = '性別の値が不正です。';
-  }
-
-  // 画像の処理の前にログを出力（ここに追加）
-  error_log("FILES LOG: " . print_r($_FILES, true));
-  if (isset($_FILES['user']['name']['image'])) {
-      error_log("画像ファイル名: " . $_FILES['user']['name']['image']);
-      error_log("画像の一時パス: " . $_FILES['user']['tmp_name']['image']);
-      error_log("画像のエラーコード: " . $_FILES['user']['error']['image']); // 0 = 成功
   }
 
   // 画像の処理
@@ -167,19 +145,12 @@ error_log('data[birthday]: "' . $data['birthday'] . '"');
     exit(1);
   }
 
+  $data['sex'] = $sexInt;
+  $data['email_notification'] = $emailNotification;
+  $data['image'] = $imagePath ?? null;
+
   // SQL文構築
-  $sql = "
-    UPDATE users SET
-      name = :name,
-      email = :email,
-      birthday = :birthday,
-      sex = :sex,
-      self_introduction = :self_introduction,
-      email_notification = :email_notification,"
-      . ($imagePath ? " image = :image," : "") . "
-      updated_at = :updated_at
-    WHERE id = :id
-  ";
+  User::update($pdo, $userIdFromToken, $data);
 
   // パラメータ
   $params = [
@@ -195,25 +166,7 @@ error_log('data[birthday]: "' . $data['birthday'] . '"');
   if ($imagePath) {
     $params[':image'] = $imagePath;
   }
-error_log('params[:birthday]: "' . $data['birthday'] . '"');
-  // 実行
-  $stmt = $pdo->prepare($sql);
 
-  $stmt->bindValue(':name', $data['name']);
-  $stmt->bindValue(':email', $data['email']);
-  $stmt->bindValue(':birthday', $data['birthday']);
-  $stmt->bindValue(':sex', $sexInt, PDO::PARAM_INT);
-  $stmt->bindValue(':self_introduction', $data['self_introduction']);
-  $stmt->bindValue(':email_notification', $emailNotification, PDO::PARAM_BOOL);
-  $stmt->bindValue(':updated_at', (new DateTime())->format('Y-m-d H:i:s'));
-  $stmt->bindValue(':id', $userIdFromToken, PDO::PARAM_INT);
-
-  if ($imagePath) {
-    $stmt->bindValue(':image', $imagePath);
-  }
-
-  $stmt->execute();
-error_log('更新件数: ' . $stmt->rowCount());
   http_response_code(200);
   echo json_encode(['message' => 'ユーザー情報を更新しました']);
   exit(0);

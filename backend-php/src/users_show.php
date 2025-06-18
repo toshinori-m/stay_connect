@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../lib/error_handler.php';
+require_once __DIR__ . '/../model/User.php';
 
 header('Content-Type: application/json');
 
@@ -15,11 +16,8 @@ try {
   }
 
   $userId = $_GET['route_params'][0];
-
   // DBからユーザー情報を取得
-  $stmt = $pdo->prepare("SELECT * FROM users WHERE uid = :uid LIMIT 1");
-  $stmt->execute([':uid' => $userId]);
-  $user = $stmt->fetch(PDO::FETCH_ASSOC);
+  $user = User::findByUid($pdo, $userId);
 
   if (!$user) {
     http_response_code(404);
@@ -28,20 +26,10 @@ try {
   }
 
   // 必要な情報のみ返却
-  $response = [
-    'id' => (int)$user['id'],
-    'name' => $user['name'],
-    'email' => $user['email'],
-    'uid' => $user['uid'],
-    'birthday' => $user['birthday'],
-    'sex' => (int)$user['sex'] === 0 ? 'man' : 'woman',
-    'self_introduction' => $user['self_introduction'],
-    'email_notification' => $user['email_notification'] ? 'receives' : 'not_receive',
-    'image_url' => $user['image_url'] ?? null,
-  ];
+  $formattedUser = User::formatUserData($user);
 
   http_response_code(200);
-  echo json_encode(['data' => $response]);
+  echo json_encode(['data' => $formattedUser]);
   exit(0);
 
 } catch (PDOException $e) {
