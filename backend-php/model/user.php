@@ -9,21 +9,6 @@ class User
     return $user ?: null;
   }
 
-  public static function formatUserData(array $user): array
-  {
-    return [
-      'id' => (int)$user['id'],
-      'name' => $user['name'],
-      'email' => $user['email'],
-      'uid' => $user['uid'],
-      'birthday' => $user['birthday'],
-      'sex' => (int)$user['sex'] === 0 ? 'man' : 'woman',
-      'self_introduction' => $user['self_introduction'],
-      'email_notification' => $user['email_notification'] ? 'receives' : 'not_receive',
-      'image_url' => $user['image_url'] ?? null,
-    ];
-  }
-
   public static function update(PDO $pdo, int $id, array $data): void
   {
     $sql = "

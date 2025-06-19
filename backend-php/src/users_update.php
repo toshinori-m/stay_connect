@@ -5,20 +5,11 @@ require_once __DIR__ . '/../lib/error_handler.php';
 require_once __DIR__ . '/../model/user.php';
 
 header('Content-Type: application/json');
-
-if (!isset($_GET['route_params'][0])) {
-  http_response_code(400);
-  echo json_encode(['error' => 'ユーザーIDが指定されていません']);
-  exit(1);
-}
-$userIdFromUrl = $_GET['route_params'][0];
+$uid = authenticate_uid();
 
 try {
-  $uid = authenticate_uid();
   $pdo = getPDO();
   $user = findUserByUid($pdo, $uid);
-
-  // $errors = [];
 
   if (!$user) {
     http_response_code(401);
@@ -26,7 +17,15 @@ try {
     exit(1);
   }
 
+  if (!isset($_GET['route_params'][0])) {
+    http_response_code(400);
+    echo json_encode(['error' => 'ユーザーIDが指定されていません']);
+    exit(1);
+  }
+
+  $userIdFromUrl = $_GET['route_params'][0];
   $userIdFromToken = $user['id'];
+
   if ((string)$userIdFromUrl !== (string)$userIdFromToken) {
     http_response_code(403);
     echo json_encode(['error' => '他人のプロフィールは更新できません']);
