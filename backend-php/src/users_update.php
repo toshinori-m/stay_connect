@@ -3,6 +3,8 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../lib/authenticate.php';
 require_once __DIR__ . '/../lib/error_handler.php';
 require_once __DIR__ . '/../model/user.php';
+require_once __DIR__ . '/../lib/image_handler.php';
+require_once __DIR__ . '/../lib/formdata_parser.php';
 
 header('Content-Type: application/json');
 $uid = authenticate_uid();
@@ -39,42 +41,9 @@ try {
     echo json_encode(['error' => 'boundary が見つかりません']);
     exit(1);
   }
-  $boundary = '--' . $matches[1];
+  $boundary = $matches[1];
   $rawData = file_get_contents('php://input');
-  $parts = explode($boundary, $rawData);
-  array_shift($parts);
-  array_pop($parts);
-
-  $parsed = [];
-
-  foreach ($parts as $part) {
-    if (empty(trim($part))) continue;
-
-    list($rawHeaders, $body) = explode("\r\n\r\n", $part, 2);
-    $headers = [];
-    foreach (explode("\r\n", trim($rawHeaders)) as $line) {
-      if (strpos($line, ':') === false) continue;
-      list($k, $v) = explode(':', $line, 2);
-      $headers[strtolower(trim($k))] = trim($v);
-    }
-
-    if (!isset($headers['content-disposition'])) continue;
-    if (!preg_match('/name="([^"]+)"(?:; filename="([^"]+)")?/', $headers['content-disposition'], $matches)) continue;
-
-    $name = $matches[1];
-    $filename = $matches[2] ?? null;
-
-    if ($filename) {
-      $tmpPath = '/tmp/' . uniqid('upload_', true) . '_' . basename($filename);
-      file_put_contents($tmpPath, rtrim($body, "\r\n"));
-      $parsed[$name] = [
-        'filename' => $filename,
-        'tmp_path' => $tmpPath,
-      ];
-    } else {
-      $parsed[$name] = rtrim($body, "\r\n");
-    }
-  }
+  $parsed = parseMultipartFormData($rawData, $boundary);
 
   // user[...] の形式を再構成
   $userInput = [];
@@ -84,65 +53,27 @@ try {
     }
   }
 
-  $data = [
-    'name' => $userInput['name'] ?? '',
-    'email' => $userInput['email'] ?? '',
-    'birthday' => $userInput['birthday'] ?? '',
-    'sex' => $userInput['sex'] ?? '',
-    'self_introduction' => $userInput['self_introduction'] ?? '',
-    'email_notification' => $userInput['email_notification'] ?? 'receives',
-  ];
+  $data = buildUserData($userInput);
 
-  $emailNotificationRaw = strtolower(trim($data['email_notification'] ?? ''));
-
-  if ($emailNotificationRaw === 'receives' || $emailNotificationRaw === 'true') {
-    $emailNotification = true;
-  } elseif ($emailNotificationRaw === 'not_receive' || $emailNotificationRaw === 'false') {
-    $emailNotification = false;
-  } else {
-    $errors['email_notification'][] = 'メール通知の値が不正です。';
-    $emailNotification = null;
-  }
+  $errors = [];
+  $emailNotification = normalizeEmailNotification($data['email_notification'], $errors);
 
   // バリデーション
   $errors = User::validateProfile($data);
 
-  $sexValue = $data['sex'];
-  $sexInt = null;
-
-  if ($sexValue === 'man') {
-    $sexInt = 0;
-  } elseif ($sexValue === 'woman') {
-    $sexInt = 1;
-  } else {
-    $errors['sex'][] = '性別の値が不正です。';
-  }
+  $sexInt = convertSexToInt($data['sex'], $errors);
 
   // 画像の処理
   $imagePath = null;
   if (isset($userInput['image']['tmp_path'])) {
-    $uploadDir = __DIR__ . '/../public/uploads/';
-    if (!is_dir($uploadDir)) {
-      mkdir($uploadDir, 0755, true);
-    }
-
-    $ext = pathinfo($userInput['image']['filename'], PATHINFO_EXTENSION);
-    $filename = uniqid('user_', true) . '.' . $ext;
-    $destination = $uploadDir . $filename;
-
-    if (rename($userInput['image']['tmp_path'], $destination)) {
-      $imagePath = '/uploads/' . $filename;
-    } else {
+    $imagePath = saveUploadedImage($userInput['image']);
+    if (!$imagePath) {
       $errors['image'][] = '画像のアップロードに失敗しました。';
     }
   }
 
   // エラーがあれば返す
-  if (!empty($errors)) {
-    http_response_code(422);
-    echo json_encode(['errors' => $errors]);
-    exit(1);
-  }
+  respondValidationErrors($errors);
 
   $data['sex'] = $sexInt;
   $data['email_notification'] = $emailNotification;
@@ -174,4 +105,30 @@ try {
   handlePDOException($e);
 } catch (Exception $e) {
   handleException($e);
+}
+
+function buildUserData(array $userInput): array {
+  return [
+    'name' => $userInput['name'] ?? '',
+    'email' => $userInput['email'] ?? '',
+    'birthday' => $userInput['birthday'] ?? '',
+    'sex' => $userInput['sex'] ?? '',
+    'self_introduction' => $userInput['self_introduction'] ?? '',
+    'email_notification' => $userInput['email_notification'] ?? 'receives',
+  ];
+}
+
+function normalizeEmailNotification(string $raw, array &$errors): ?bool {
+  $val = strtolower(trim($raw));
+  if (in_array($val, ['receives', 'true'], true)) return true;
+  if (in_array($val, ['not_receive', 'false'], true)) return false;
+  $errors['email_notification'][] = 'メール通知の値が不正です。';
+  return null;
+}
+
+function convertSexToInt(string $sex, array &$errors): ?int {
+  if ($sex === 'man') return 0;
+  if ($sex === 'woman') return 1;
+  $errors['sex'][] = '性別の値が不正です。';
+  return null;
 }
