@@ -51,7 +51,9 @@ export default {
       try {
         this.errors = []
         const apiClient = getApiClient()
-        const res = await apiClient.get(`/users_profile/${this.$route.params.userId}`)
+        const res = await apiClient.get(`/users_profile/${this.$route.params.userId}`, {
+          withCredentials: true
+        })
         this.userProfile = res.data.data
         this.fetchTeams()
       } catch {
@@ -64,6 +66,8 @@ export default {
         const apiClient = getApiClient()
         const res = await apiClient.post('/chat_rooms', {
           other_user_id: this.userProfile.id
+        }, {
+          withCredentials: true
         })
         this.$router.push({ name: 'ChatRoomPage', params: { id: res.data.data.id } })
       } catch {
@@ -74,7 +78,9 @@ export default {
       try {
         this.errors = []
         const apiClient = getApiClient()
-        const res = await apiClient.get(`/users/${this.userProfile.id}/teams_profile`)
+        const res = await apiClient.get(`/users/${this.userProfile.id}/teams_profile`, {
+          withCredentials: true
+        })
         this.teams = res.data
       } catch {
         this.errors.push('チーム情報を取得できませんでした。')
@@ -92,7 +98,9 @@ export default {
       try {
         this.errors = []
         const apiClient = getApiClient();
-        const res = await apiClient.get('/users/show')
+        const res = await apiClient.get('/users/show', {
+          withCredentials: true
+        })
         this.currentUser = res.data.data
       } catch {
         console.error('現在のユーザーを取得できませんでした')

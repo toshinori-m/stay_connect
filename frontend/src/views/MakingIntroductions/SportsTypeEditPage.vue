@@ -50,6 +50,8 @@ export default {
         if (!sportsType) return;
         await apiClient.patch(`/sports_types/${sportsTypeId}`, {
           name: sportsType.name
+        }, {
+          withCredentials: true
         })
         this.$router.push({ name: 'SportsTypePage' })
       } catch {
@@ -60,7 +62,9 @@ export default {
       try {
         const apiClient = getApiClient()
         this.error = null
-        await apiClient.delete(`/sports_types/${sportsTypeId}`)
+        await apiClient.delete(`/sports_types/${sportsTypeId}`, {
+          withCredentials: true
+        })
         this.$router.push({ name: 'SportsTypePage' })
       } catch {
         this.error = '競技名を削除出来ませんでした。'

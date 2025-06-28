@@ -50,6 +50,8 @@ export default {
         if (!targetAge) return;
         await apiClient.patch(`/target_ages/${targetAgeId}`, {
           name: targetAge.name
+        }, {
+          withCredentials: true
         })
         this.$router.push({ name: 'TargetAgePage' })
       } catch {
@@ -60,7 +62,9 @@ export default {
       try {
         const apiClient = getApiClient()
         this.error = null
-        await apiClient.delete(`/target_ages/${targetAgeId}`)
+        await apiClient.delete(`/target_ages/${targetAgeId}`, {
+          withCredentials: true
+        })
         this.$router.push({ name: 'TargetAgePage' })
       } catch {
         this.error = '対象年齢を削除出来ませんでした。'

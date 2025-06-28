@@ -56,7 +56,9 @@ export default {
       try {
         this.errors = []
         const apiClient = getApiClient()
-        const res = await apiClient.get(`/chat_rooms/${this.$route.params.id}`)
+        const res = await apiClient.get(`/chat_rooms/${this.$route.params.id}`, {
+          withCredentials: true
+        })
         this.chatRoom = res.data.chat_room
         this.otherUserName = res.data.other_user.name
       } catch {
@@ -67,7 +69,9 @@ export default {
       try {
         this.errors = []
         const apiClient = getApiClient()
-        const res = await apiClient.get(`/chat_rooms/${this.$route.params.id}/chat_messages`)
+        const res = await apiClient.get(`/chat_rooms/${this.$route.params.id}/chat_messages`, {
+          withCredentials: true
+        })
         this.messages = res.data
       } catch {
         this.errors.push('チャットルームを表示できませんでした。')
@@ -81,6 +85,8 @@ export default {
           chat_message: { 
             message: this.message
           }
+        }, {
+          withCredentials: true
         })
         this.message = ''
       } catch (errors) {

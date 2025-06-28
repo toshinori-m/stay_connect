@@ -33,6 +33,8 @@ export default {
         this.error = null
         await apiClient.post('/sports_types', {
           name: this.name
+        }, {
+          withCredentials: true
         })
         this.$router.push({ name: 'EventSettingPage' })
       } catch {

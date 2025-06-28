@@ -45,7 +45,9 @@ export default {
       try {
         this.error = null
         const apiClient = getApiClient()
-        const res = await apiClient.delete(`/recruitments/${recruitmentId}`)
+        const res = await apiClient.delete(`/recruitments/${recruitmentId}`,{
+          withCredentials: true
+        })
         this.recruitments = res.data
         this.$router.push({ name: 'EventSettingListPage' })
       } catch {

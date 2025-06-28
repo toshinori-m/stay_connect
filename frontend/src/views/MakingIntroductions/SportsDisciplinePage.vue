@@ -56,6 +56,8 @@ export default {
         await apiClient.post('/sports_disciplines', {
           sports_type_id: this.selected,
           name: this.name
+        }, {
+          withCredentials: true
         })
         this.$router.push({ name: 'EventSettingPage' })
       } catch {

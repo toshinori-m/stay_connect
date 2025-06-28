@@ -60,7 +60,8 @@ export default {
         const res = await apiClient.get('/sports_disciplines', {
           params: {
             sports_type_id: this.sport_type_selected.id
-          }
+          },
+          withCredentials: true
         })
         this.sports_disciplines = res.data.data
       } catch {
@@ -75,6 +76,8 @@ export default {
         if (!sportsDiscipline) return;
         await apiClient.patch(`/sports_disciplines/${sportsDisciplineId}`, {
           name: sportsDiscipline.name
+        }, {
+          withCredentials: true
         })
         this.$router.push({ name: 'SportsDisciplinePage' })
       } catch {
@@ -85,7 +88,9 @@ export default {
       try {
         const apiClient = getApiClient()
         this.error = null
-        await apiClient.delete(`/sports_disciplines/${sportsDisciplineId}`)
+        await apiClient.delete(`/sports_disciplines/${sportsDisciplineId}`, {
+          withCredentials: true
+        })
         this.$router.push({ name: 'SportsDisciplinePage' })
       } catch {
         this.error = '競技名を削除出来ませんでした。'

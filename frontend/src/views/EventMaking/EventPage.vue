@@ -52,7 +52,9 @@ export default {
         this.errors = []
         const recruitmentId = this.$route.params.id
         const apiClient = getApiClient()
-        const res = await apiClient.get(`/recruitments/${recruitmentId}`)
+        const res = await apiClient.get(`/recruitments/${recruitmentId}`, {
+          withCredentials: true
+        })
         this.eventDetails = res.data.data
         this.getPrefectures()
         await this.getSportsType()

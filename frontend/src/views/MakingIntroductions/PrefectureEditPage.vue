@@ -39,7 +39,7 @@ export default {
         const res = await apiClient.get(`/prefectures/`)
         this.prefectures = res.data.data
       } catch {
-      this.error = '競技名を表示できませんでした。'
+      this.error = '都道府県を表示できませんでした。'
       }
     },
     async editPrefecture(prefectureId) {
@@ -50,20 +50,24 @@ export default {
         if (!prefecture) return;
         await apiClient.patch(`/prefectures/${prefectureId}`, {
           name: prefecture.name,
+        }, {
+          withCredentials: true
         })
         this.$router.push({ name: 'PrefecturePage' })
       } catch {
-        this.error = '競技名に誤りがあります。'
+        this.error = '都道府県に誤りがあります。'
       }
     },
     async deletePrefecture(prefectureId) {
       try {
         const apiClient = getApiClient()
         this.error = null
-        await apiClient.delete(`/prefectures/${prefectureId}`)
+        await apiClient.delete(`/prefectures/${prefectureId}`, {
+          withCredentials: true
+        })
         this.$router.push({ name: 'PrefecturePage' })
       } catch {
-        this.error = '競技名を削除出来ませんでした。'
+        this.error = '都道府県を削除出来ませんでした。'
       }
     },
     prefectureCancel() {

@@ -232,6 +232,8 @@ export default {
             prefecture_id: this.prefecture_selected,
             target_age_ids: targetAgeIds
           }
+        }, {
+          withCredentials: true
         })
         this.$router.push({ name: 'HomePage' })
       } catch (error) {

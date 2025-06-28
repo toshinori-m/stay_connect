@@ -203,7 +203,9 @@ export default {
         const apiClient = getApiClient()
         this.errors = []
         const recruitmentId = this.$route.params.id;
-        const res = await apiClient.get(`/recruitments/${recruitmentId}`)
+        const res = await apiClient.get(`/recruitments/${recruitmentId}`, {
+          withCredentials: true
+        })
         this.recruitments = res.data.data
         const rdsRes = await apiClient.get(`/recruitments/${recruitmentId}/sports_disciplines`)
         this.recruitment_sports_disciplines = rdsRes.data
@@ -293,6 +295,8 @@ export default {
             prefecture_id: this.prefecture_selected,
             target_age_ids: targetAgeIds
           }
+        }, {
+          withCredentials: true
         })
         this.$router.push({ name: 'EventSettingListPage' })
       } catch (error) {
@@ -304,7 +308,9 @@ export default {
         const apiClient = getApiClient()
         this.errors = []
         if (this.recruitments.id !== recruitmentId) return
-        await apiClient.delete(`/recruitments/${recruitmentId}`)
+        await apiClient.delete(`/recruitments/${recruitmentId}`, {
+          withCredentials: true
+        })
         this.$router.push({ name: 'EventSettingListPage' })
       } catch {
         this.errors.push('イベントを削除出来ませんでした。')

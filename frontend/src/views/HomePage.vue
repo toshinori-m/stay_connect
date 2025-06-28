@@ -140,7 +140,10 @@ export default {
           prefecture_name: this.prefecture_selected.name,
           target_age_name: this.target_age_selected.name,
         }
-        const res = await apiClient.get('/searches', { params })
+        const res = await apiClient.get('/searches', {
+          params,
+          withCredentials: true
+        })
         this.recruitments = res.data
       } catch (error) {
         let message

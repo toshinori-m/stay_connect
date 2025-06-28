@@ -34,7 +34,9 @@ export default {
       try {
         const apiClient = getApiClient()
         this.error = null
-        const res = await apiClient.get('/chat_rooms')
+        const res = await apiClient.get('/chat_rooms', {
+          withCredentials: true
+        })
         this.chat_rooms = res.data
       } catch (error) {
         this.error = error.response ? error.response.data :'チャットルームを表示できませんでした。'
@@ -44,7 +46,9 @@ export default {
       try {
         this.error = null
         const apiClient = getApiClient()
-        const res = await apiClient.delete(`/chat_rooms/${chatRoomId}`)
+        const res = await apiClient.delete(`/chat_rooms/${chatRoomId}`, {
+          withCredentials: true
+        })
         this.chat_rooms = res.data
         this.$router.push({ name: 'ChatRoomListPage' })
       } catch {

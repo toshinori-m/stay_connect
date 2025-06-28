@@ -96,7 +96,9 @@ export default {
         const apiClient = getApiClient()
         this.error = null
         const uid = JSON.parse(localStorage.getItem('currentUser')).uid
-        const res = await apiClient.get(`/users/${uid}`)
+        const res = await apiClient.get(`/users/${uid}`, {
+          withCredentials: true
+        })
         this.user = res.data.data
       } catch {
         this.$router.push({name: 'LoginPage'})
@@ -119,7 +121,9 @@ export default {
           formData.append('user[image]', this.imageFile);
         }
         if (!this.user || !this.user.id) return
-        await apiClient.patch(`/users/${this.user.id}`, formData)
+        await apiClient.patch(`/users/${this.user.id}`, formData, {
+          withCredentials: true
+        })
         this.$router.push({ name: 'HomePage' })
       } catch {
         this.error = '基本設定に誤りがあります。'
