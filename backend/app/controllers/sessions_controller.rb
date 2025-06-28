@@ -1,12 +1,12 @@
 class SessionsController < ApplicationController
   def create
-    uid = params[:uid]
+    uid = params[:uid] || params.dig(:session, :uid)
     user = User.find_by(uid: uid)
 
     if user
       response.set_header('access-token', SecureRandom.hex(16))
       response.set_header('client', SecureRandom.hex(8))
-      response.set_header('uid', uid)
+      response.set_header('uid', user.uid)
 
       render json: { message: 'ログイン成功' }, status: :ok
     else

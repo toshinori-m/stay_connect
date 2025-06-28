@@ -56,6 +56,13 @@ export default {
           'access-token': res.headers['access-token'],
           client: res.headers['client']
         })
+        localStorage.setItem('currentUser', JSON.stringify({
+          name: user.displayName,
+          email: user.email,
+          uid: res.headers['uid'],
+          'access-token': res.headers['access-token'],
+          client: res.headers['client']
+        }))
         this.$router.push({ name: 'HomePage' })
       } catch {
         this.error = 'メールアドレスかパスワードが違います'
@@ -78,6 +85,13 @@ export default {
           'access-token': res.headers['access-token'],
           client: res.headers['client']
         })
+        localStorage.setItem('currentUser', JSON.stringify({
+          name: user.displayName,
+          email: user.email,
+          uid: res.headers['uid'],
+          'access-token': res.headers['access-token'],
+          client: res.headers['client']
+        }))
         this.$router.push({ name: 'HomePage' })
       } catch {
         this.error = "ユーザー登録からGoogleアカウントで登録して下さい"

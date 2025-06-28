@@ -94,6 +94,13 @@ export default {
           'access-token': res.headers['access-token'],
           client: res.headers['client']
         })
+        localStorage.setItem('currentUser', JSON.stringify({
+          name: this.name,
+          email: user.email,
+          uid: res.headers['uid'],
+          'access-token': res.headers['access-token'],
+          client: res.headers['client']
+        }))
         this.$router.push({ name: 'HomePage' })
         return res
       } catch (error) {
