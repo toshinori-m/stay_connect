@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import getApiClient from '@/lib/apiClient'
 import { auth } from "@/plugins/firebase"
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
@@ -45,9 +46,15 @@ export default {
         this.error = null
         const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password)
         const user = userCredential.user
+        const apiClient = getApiClient()
+        const res = await apiClient.post('/sessions', {
+          uid: user.uid
+        })
         this.$store.commit('setUser', {
           email: user.email,
-          uid: user.uid
+          uid: res.headers['uid'],
+          'access-token': res.headers['access-token'],
+          client: res.headers['client']
         })
         this.$router.push({ name: 'HomePage' })
       } catch {
@@ -60,10 +67,16 @@ export default {
         const provider = new GoogleAuthProvider()
         const result = await signInWithPopup(auth, provider)
         const user = result.user
+        const apiClient = getApiClient()
+        const res = await apiClient.post('/sessions', {
+          uid: user.uid
+        })
         this.$store.commit('setUser', {
           name: user.displayName,
           email: user.email,
-          uid: user.uid
+          uid: res.headers['uid'],
+          'access-token': res.headers['access-token'],
+          client: res.headers['client']
         })
         this.$router.push({ name: 'HomePage' })
       } catch {

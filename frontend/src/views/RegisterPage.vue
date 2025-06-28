@@ -90,7 +90,9 @@ export default {
         this.$store.commit('setUser', {
           name: this.name,
           email: user.email,
-          uid: user.uid
+          uid: res.headers['uid'],
+          'access-token': res.headers['access-token'],
+          client: res.headers['client']
         })
         this.$router.push({ name: 'HomePage' })
         return res

@@ -34,6 +34,7 @@ Rails.application.routes.draw do
         resources :chat_room_users, only: [:index, :create]
       end
     end
+    post '/sessions', to: 'sessions#create'
     root to: proc { [204, {}, ['']] }
   end
 end
