@@ -4,6 +4,11 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     @user.save!
+    response.set_header('access-token', SecureRandom.hex(16))
+    response.set_header('client', SecureRandom.hex(8))
+    response.set_header('uid', @user.uid)
+
+    render :create, status: :created
   rescue ActiveRecord::RecordInvalid => e
     render json: { errors: e.record.errors.messages }, status: :unprocessable_entity 
   end
