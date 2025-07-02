@@ -11,3 +11,11 @@ function authenticate_uid(): string
 
   return $uid;
 }
+
+function findUserByUid(PDO $pdo, string $uid): ?array
+{
+  $stmt = $pdo->prepare("SELECT id FROM users WHERE uid = :uid LIMIT 1");
+  $stmt->execute([':uid' => $uid]);
+  $user = $stmt->fetch(PDO::FETCH_ASSOC);
+  return $user ?: null;
+}

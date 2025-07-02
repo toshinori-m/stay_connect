@@ -8,6 +8,7 @@ header("Content-Type: application/json; charset=UTF-8");
 $routes = [
   'POST' => [
     '/users' => __DIR__ . '/../src/register.php',
+    '/recruitments' => __DIR__ . '/../src/recruitments_store.php'
   ],
   'GET' => [
     '/users/me' => __DIR__ . '/../src/users_me.php',
