@@ -64,13 +64,13 @@ try {
   if ($e->getCode() === '23505') {
     // メッセージ内に 'email' や 'uid' が含まれているか判定
     if (strpos($e->getMessage(), 'email') !== false) {
-      http_response_code(409);
+      http_response_code(422);
       echo json_encode(['error' => 'このメールアドレスはすでに登録されています。']);
     } elseif (strpos($e->getMessage(), 'uid') !== false) {
-      http_response_code(409);
+      http_response_code(422);
       echo json_encode(['error' => 'このUIDはすでに登録されています。']);
     } else {
-      http_response_code(409);
+      http_response_code(422);
       echo json_encode(['error' => '重複したデータが存在します。']);
     }
   } else {

@@ -65,8 +65,12 @@ export default function LoginPage() {
       const user = userCredential.user
 
       try {
-        await apiClient.get("/users/me")
         setUser(user)
+        await apiClient.get("/users/me", {
+          headers: {
+            uid: user.uid,
+          }
+        })
         navigate("/home")
       } catch (error: unknown) {
         const axiosError = error as AxiosError
@@ -96,6 +100,11 @@ export default function LoginPage() {
       const result = await signInWithPopup(auth, provider)
       const firebaseUser = result.user
       setUser(firebaseUser)
+      await apiClient.get("/users/me", {
+        headers: {
+          uid: firebaseUser.uid,
+        }
+      })
       navigate("/home")
     } catch {
       setErrors(["googleアカウントでログインに失敗しました。再試行してください。"])
