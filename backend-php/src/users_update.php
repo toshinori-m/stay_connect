@@ -56,7 +56,7 @@ try {
   $data = buildUserData($userInput);
 
   $errors = [];
-  $emailNotification = normalizeEmailNotification($data['email_notification'], $errors);
+  $emailNotification = convertToEmailNotificationFlag($data['email_notification'], $errors);
 
   // バリデーション
   $errors = User::validateProfile($data);
@@ -66,14 +66,14 @@ try {
   // 画像の処理
   $imagePath = null;
   if (isset($userInput['image']['tmp_path'])) {
-    $imagePath = saveUploadedImage($userInput['image']);
+    $imagePath = storeUploadedFileLocally($userInput['image']);
     if (!$imagePath) {
       $errors['image'][] = '画像のアップロードに失敗しました。';
     }
   }
 
   // エラーがあれば返す
-  respondValidationErrors($errors);
+  handleValidationErrors($errors);
 
   $data['sex'] = $sexInt;
   $data['email_notification'] = $emailNotification;
@@ -118,12 +118,12 @@ function buildUserData(array $userInput): array {
   ];
 }
 
-function normalizeEmailNotification(string $raw, array &$errors): ?bool {
+function convertToEmailNotificationFlag(string $raw): bool {
   $val = strtolower(trim($raw));
   if (in_array($val, ['receives', 'true'], true)) return true;
   if (in_array($val, ['not_receive', 'false'], true)) return false;
-  $errors['email_notification'][] = 'メール通知の値が不正です。';
-  return null;
+
+  throw new InvalidArgumentException("Invalid email notification value: $raw");
 }
 
 function convertSexToInt(string $sex, array &$errors): ?int {

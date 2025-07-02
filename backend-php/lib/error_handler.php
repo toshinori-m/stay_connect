@@ -19,7 +19,7 @@ function handleException(Exception $e): void
   exit(1);
 }
 
-function respondValidationErrors(array $errors): void {
+function handleValidationErrors(array $errors): void {
   if (!empty($errors)) {
     http_response_code(422);
     echo json_encode(['errors' => $errors]);
