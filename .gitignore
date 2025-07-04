@@ -28,6 +28,8 @@
 
 /backend/config/master.key
 
+/backend-php/.env
+
 /frontend/.DS_Store
 /frontend/node_modules
 /frontend/dist

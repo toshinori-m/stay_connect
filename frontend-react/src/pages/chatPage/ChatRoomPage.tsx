@@ -53,7 +53,7 @@ export default function ChatRoomPage() {
     fetchChatRoom(chatRoomId)
       .then(() => {
         // WebSocket接続の設定
-        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001"
+        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3002"
         const wsProtocol = apiBaseUrl.startsWith("https") ? "wss" : "ws"
         
         const consumer = createConsumer(`${wsProtocol}://${new URL(apiBaseUrl).host}/cable?uid=${userId}`)
