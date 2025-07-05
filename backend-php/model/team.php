@@ -99,4 +99,25 @@ class Team
 
     return (int)$pdo->lastInsertId();
   }
+
+  public static function fetchAllByUserId(PDO $pdo, int $userId, int $limit = 5): array {
+    $stmt = $pdo->prepare("SELECT id, name FROM teams WHERE user_id = :user_id ORDER BY id LIMIT :limit");
+    $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  public static function deleteByIdAndUserId(PDO $pdo, int $teamId, int $userId): bool {
+    $stmt = $pdo->prepare("DELETE FROM teams WHERE id = :id AND user_id = :user_id");
+    $stmt->execute([':id' => $teamId, ':user_id' => $userId]);
+    return $stmt->rowCount() > 0;
+  }
+
+  public static function findByIdAndUserId(PDO $pdo, int $teamId, int $userId): ?array {
+    $stmt = $pdo->prepare("SELECT id, name, sports_type_id, sex, area, prefecture_id, track_record, other_body FROM teams WHERE id = :id AND user_id = :user_id");
+    $stmt->execute([':id' => $teamId, ':user_id' => $userId]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result ?: null;
+  }
 }
