@@ -49,15 +49,14 @@ try {
   $recruitmentId = Recruitment::create($pdo, $data, $userId, $sexValue, $startDate, $endDate, $now);
 
   // 中間テーブル登録
-  RecruitmentDiscipline::insert($pdo, $recruitmentId, $data['sports_discipline_ids'] ?? [], $now);
-  RecruitmentTargetAge::insert($pdo, $recruitmentId, $data['target_age_ids'] ?? [], $now);
+  RecruitmentDiscipline::create($pdo, $recruitmentId, $data['sports_discipline_ids'] ?? [], $now);
+  RecruitmentTargetAge::create($pdo, $recruitmentId, $data['target_age_ids'] ?? [], $now);
 
   $pdo->commit();
 
   http_response_code(201);
   echo json_encode(['message' => 'イベントが登録されました', 'recruitment_id' => $recruitmentId]);
   exit(0);
-
 } catch (PDOException $e) {
   handlePDOException($e);
 } catch (Exception $e) {

@@ -32,7 +32,6 @@ try {
   // バリデーション
   $validation = Team::validate($data, $pdo);
   $errors = $validation['errors'];
-  $sexValue = $validation['sexValue'];
 
   if (!empty($errors)) {
     http_response_code(422);
@@ -43,18 +42,17 @@ try {
   $pdo->beginTransaction();
 
   // チーム登録
-  $teamId = Team::create($pdo, $data, $user['id'], $sexValue, $now);
+  $teamId = Team::create($pdo, $data, $user['id'], $now);
 
   // 中間テーブル登録
-  TeamDiscipline::insert($pdo, $teamId, $data['sports_discipline_ids'] ?? [], $now);
-  TeamTargetAge::insert($pdo, $teamId, $data['target_age_ids'] ?? [], $now);
+  TeamDiscipline::create($pdo, $teamId, $data['sports_discipline_ids'] ?? [], $now);
+  TeamTargetAge::create($pdo, $teamId, $data['target_age_ids'] ?? [], $now);
 
   $pdo->commit();
 
   http_response_code(201);
   echo json_encode(['message' => 'チームが登録されました', 'team_id' => $teamId]);
   exit(0);
-
 } catch (PDOException $e) {
   handlePDOException($e);
 } catch (Exception $e) {

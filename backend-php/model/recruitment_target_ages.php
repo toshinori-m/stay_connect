@@ -1,7 +1,8 @@
 <?php
 class RecruitmentTargetAge
 {
-  public static function insert(PDO $pdo, int $recruitmentId, array $targetAgeIds, string $now): void {
+  public static function create(PDO $pdo, int $recruitmentId, array $targetAgeIds, string $now): void
+  {
     if (empty($targetAgeIds)) return;
 
     $placeholders = [];

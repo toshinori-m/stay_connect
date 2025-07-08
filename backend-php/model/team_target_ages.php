@@ -1,7 +1,8 @@
 <?php
 class TeamTargetAge
 {
-  public static function insert(PDO $pdo, int $teamId, array $targetAgeIds, string $now): void {
+  public static function create(PDO $pdo, int $teamId, array $targetAgeIds, string $now): void
+  {
     if (empty($targetAgeIds)) return;
 
     $placeholders = [];

@@ -63,12 +63,19 @@ class Team
     }
 
     return [
-      'errors' => $errors,
-      'sexValue' => $sexValue
+      'errors' => $errors
     ];
   }
 
-  public static function create(PDO $pdo, array $data, int $userId, int $sexValue, string $now): int {
+  public static function create(PDO $pdo, array $data, int $userId, string $now): int {
+  $sexMap = [
+    'man' => 0,
+    'woman' => 1,
+    'mix' => 2,
+    'man_and_woman' => 3,
+  ];
+  $sexValue = $sexMap[$data['sex']] ?? null;
+
     $stmt = $pdo->prepare("
       INSERT INTO teams (
         user_id, name, area, sex,

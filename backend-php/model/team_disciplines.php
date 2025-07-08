@@ -1,7 +1,8 @@
 <?php
 class TeamDiscipline
 {
-  public static function insert(PDO $pdo, int $teamId, array $disciplineIds, string $now): void {
+  public static function create(PDO $pdo, int $teamId, array $disciplineIds, string $now): void
+  {
     if (empty($disciplineIds)) return;
 
     $placeholders = [];
