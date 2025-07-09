@@ -5,9 +5,11 @@ require_once __DIR__ . '/../lib/error_handler.php';
 require_once __DIR__ . '/../model/team.php';
 require_once __DIR__ . '/../model/team_disciplines.php';
 require_once __DIR__ . '/../model/team_target_ages.php';
+require_once __DIR__ . '/../model/team.php';
 
 header('Content-Type: application/json');
 $uid = authenticate_uid();
+
 
 try {
   $pdo = getPDO();
@@ -34,13 +36,7 @@ try {
     exit;
   }
 
-  $sexMap = [
-    1 => 'man',
-    2 => 'woman',
-    3 => 'mix',
-    4 => 'man_and_woman'
-  ];
-  $team['sex'] = $sexMap[$team['sex']] ?? '';
+  $team['sex'] = array_flip(Team::SEX_MAP)[$team['sex']] ?? '';
 
   // 中間テーブルのIDも取得
   $team['sports_discipline'] = TeamDiscipline::getIdsByTeamId($pdo, $teamId);

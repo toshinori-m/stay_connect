@@ -38,7 +38,7 @@ try {
   $pdo->commit();
 
   if (!$deleted) {
-    http_response_code(403);
+    http_response_code(404);
     echo json_encode(['error' => '削除対象が存在しないか、権限がありません']);
     exit(1);
   }
