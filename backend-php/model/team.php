@@ -1,14 +1,15 @@
 <?php
 class Team
 {
-  public static function create(PDO $pdo, array $data, int $userId, string $now): int {
-    $sexMap = [
-      'man' => 0,
-      'woman' => 1,
-      'mix' => 2,
-      'man_and_woman' => 3,
-    ];
-    $sexValue = $sexMap[$data['sex']] ?? null;
+  public const SEX_MAP = [
+    'man' => 0,
+    'woman' => 1,
+    'mix' => 2,
+    'man_and_woman' => 3,
+  ];
+  
+  public static function create(PDO $pdo, array $data, int $userId, int $sexValue, $now = null): int {
+    $now = $now ?? date('Y-m-d H:i:s');
 
     $stmt = $pdo->prepare("
       INSERT INTO teams (
