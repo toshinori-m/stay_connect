@@ -39,8 +39,8 @@ try {
   $team['sex'] = array_flip(Team::SEX_MAP)[$team['sex']] ?? '';
 
   // 中間テーブルのIDも取得
-  $team['sports_discipline'] = TeamDiscipline::getIdsByTeamId($pdo, $teamId);
-  $team['target_age'] = TeamTargetAge::getIdsByTeamId($pdo, $teamId);
+  $team['sports_disciplines'] = TeamDiscipline::getIdsByTeamId($pdo, $teamId);
+  $team['target_ages'] = TeamTargetAge::getIdsByTeamId($pdo, $teamId);
 
   echo json_encode(['data' => $team]);
 } catch (PDOException $e) {

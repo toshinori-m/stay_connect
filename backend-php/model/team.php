@@ -119,4 +119,31 @@ class Team
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     return $result ?: null;
   }
+
+  public static function update(PDO $pdo, int $teamId, array $data, int $sexValue, string $now): void {
+    $stmt = $pdo->prepare("
+      UPDATE teams SET
+        name = :name,
+        area = :area,
+        sex = :sex,
+        track_record = :track_record,
+        other_body = :other_body,
+        sports_type_id = :sports_type_id,
+        prefecture_id = :prefecture_id,
+        updated_at = :updated_at
+      WHERE id = :id
+    ");
+
+    $stmt->execute([
+      ':name' => $data['name'],
+      ':area' => $data['area'],
+      ':sex' => $sexValue,
+      ':track_record' => $data['track_record'],
+      ':other_body' => $data['other_body'] ?? null,
+      ':sports_type_id' => $data['sports_type_id'],
+      ':prefecture_id' => $data['prefecture_id'],
+      ':updated_at' => $now,
+      ':id' => $teamId
+    ]);
+  }
 }
