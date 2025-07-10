@@ -1,17 +1,16 @@
 <?php
 class Team
 {
+  public const SEX_MAP = [
+    'man' => 0,
+    'woman' => 1,
+    'mix' => 2,
+    'man_and_woman' => 3,
+  ];
+  
   public static function validate(array $data, PDO $pdo): array {
     $errors = [];
-
-    // enum変換: sex
-    $sexMap = [
-      'man' => 0,
-      'woman' => 1,
-      'mix' => 2,
-      'man_and_woman' => 3,
-    ];
-    $sexValue = $sexMap[$data['sex']] ?? null;
+    $sexValue = Team::SEX_MAP[$data['sex']] ?? null;
 
     // 必須チェックと長さ制限
     if (empty(trim($data['name'] ?? ''))) {
