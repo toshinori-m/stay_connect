@@ -62,7 +62,9 @@ class Recruitment
     ];
   }
 
-  public static function create(PDO $pdo, array $data, int $userId, int $sexValue, DateTime $startDate, DateTime $endDate, string $now): int {
+  public static function create(PDO $pdo, array $data, int $userId, int $sexValue, DateTime $startDate, DateTime $endDate, $now = null): int {
+    $now = $now ?? date('Y-m-d H:i:s');
+
     $stmt = $pdo->prepare("
       INSERT INTO recruitments (
         user_id, sports_type_id, prefecture_id,

@@ -68,7 +68,9 @@ class Team
     ];
   }
 
-  public static function create(PDO $pdo, array $data, int $userId, int $sexValue, string $now): int {
+  public static function create(PDO $pdo, array $data, int $userId, int $sexValue, $now = null): int {
+    $now = $now ?? date('Y-m-d H:i:s');
+
     $stmt = $pdo->prepare("
       INSERT INTO teams (
         user_id, name, area, sex,
@@ -118,5 +120,34 @@ class Team
     $stmt->execute([':id' => $teamId, ':user_id' => $userId]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     return $result ?: null;
+  }
+
+  public static function update(PDO $pdo, int $teamId, array $data, int $sexValue, $now = null): void {
+    $now = $now ?? date('Y-m-d H:i:s');
+
+    $stmt = $pdo->prepare("
+      UPDATE teams SET
+        name = :name,
+        area = :area,
+        sex = :sex,
+        track_record = :track_record,
+        other_body = :other_body,
+        sports_type_id = :sports_type_id,
+        prefecture_id = :prefecture_id,
+        updated_at = :updated_at
+      WHERE id = :id
+    ");
+
+    $stmt->execute([
+      ':name' => $data['name'],
+      ':area' => $data['area'],
+      ':sex' => $sexValue,
+      ':track_record' => $data['track_record'],
+      ':other_body' => $data['other_body'] ?? null,
+      ':sports_type_id' => $data['sports_type_id'],
+      ':prefecture_id' => $data['prefecture_id'],
+      ':updated_at' => $now,
+      ':id' => $teamId
+    ]);
   }
 }

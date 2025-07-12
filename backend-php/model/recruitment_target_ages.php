@@ -1,13 +1,14 @@
 <?php
 class RecruitmentTargetAge
 {
-  public static function insert(PDO $pdo, int $recruitmentId, array $targetAgeIds, string $now): void {
+  public static function create(PDO $pdo, int $recruitmentId, array $targetAgeIds, $now = null): void {
     if (empty($targetAgeIds)) return;
 
+    $now = $now ?? date('Y-m-d H:i:s');
     $placeholders = [];
     $params = [];
 
-    foreach ($targetAgeIds as $index => $id) {
+    foreach ($targetAgeIds as $id) {
       $placeholders[] = "(?, ?, ?, ?)";
       $params[] = $recruitmentId;
       $params[] = $id;

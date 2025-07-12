@@ -19,7 +19,7 @@ try {
     exit(1);
   }
 
-  $now = (new DateTime())->format('Y-m-d H:i:s');
+  $now = $now ?? date('Y-m-d H:i:s');
   $userId = $user['id'];
   $input = json_decode(file_get_contents("php://input"), true);
 
@@ -46,11 +46,11 @@ try {
   $pdo->beginTransaction();
 
   // メインテーブル登録
-  $recruitmentId = Recruitment::create($pdo, $data, $userId, $sexValue, $startDate, $endDate, $now);
+  $recruitmentId = Recruitment::create($pdo, $data, $userId, $sexValue, $startDate, $endDate);
 
   // 中間テーブル登録
-  RecruitmentDiscipline::insert($pdo, $recruitmentId, $data['sports_discipline_ids'] ?? [], $now);
-  RecruitmentTargetAge::insert($pdo, $recruitmentId, $data['target_age_ids'] ?? [], $now);
+  RecruitmentDiscipline::create($pdo, $recruitmentId, $data['sports_discipline_ids'] ?? []);
+  RecruitmentTargetAge::create($pdo, $recruitmentId, $data['target_age_ids'] ?? []);
 
   $pdo->commit();
 
