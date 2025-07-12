@@ -27,7 +27,6 @@ try {
   }
 
   $data = $input['team'];
-  $now = (new DateTime())->format('Y-m-d H:i:s');
 
   // バリデーション
   $validation = Team::validate($data, $pdo);
@@ -43,11 +42,11 @@ try {
   $pdo->beginTransaction();
 
   // チーム登録
-  $teamId = Team::create($pdo, $data, $user['id'], $sexValue, $now);
+  $teamId = Team::create($pdo, $data, $user['id'], $sexValue);
 
   // 中間テーブル登録
-  TeamDiscipline::insert($pdo, $teamId, $data['sports_discipline_ids'] ?? [], $now);
-  TeamTargetAge::insert($pdo, $teamId, $data['target_age_ids'] ?? [], $now);
+  TeamDiscipline::create($pdo, $teamId, $data['sports_discipline_ids'] ?? []);
+  TeamTargetAge::create($pdo, $teamId, $data['target_age_ids'] ?? []);
 
   $pdo->commit();
 

@@ -68,7 +68,9 @@ class Team
     ];
   }
 
-  public static function create(PDO $pdo, array $data, int $userId, int $sexValue, string $now): int {
+  public static function create(PDO $pdo, array $data, int $userId, int $sexValue, $now = null): int {
+    $now = $now ?? date('Y-m-d H:i:s');
+
     $stmt = $pdo->prepare("
       INSERT INTO teams (
         user_id, name, area, sex,
@@ -120,7 +122,9 @@ class Team
     return $result ?: null;
   }
 
-  public static function update(PDO $pdo, int $teamId, array $data, int $sexValue, string $now): void {
+  public static function update(PDO $pdo, int $teamId, array $data, int $sexValue, $now = null): void {
+    $now = $now ?? date('Y-m-d H:i:s');
+
     $stmt = $pdo->prepare("
       UPDATE teams SET
         name = :name,

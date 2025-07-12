@@ -65,8 +65,6 @@ try {
     $data['target_age_ids'] = [$data['target_age_ids']];
   }
 
-  $now = (new DateTime())->format('Y-m-d H:i:s');
-
   $validation = Team::validate($data, $pdo);
   $errors = $validation['errors'];
   $sexValue = $validation['sexValue'];
@@ -79,11 +77,11 @@ try {
 
   $pdo->beginTransaction();
 
-  Team::update($pdo, $teamId, $data, $sexValue, $now);
+  Team::update($pdo, $teamId, $data, $sexValue);
   TeamDiscipline::deleteByTeamId($pdo, $teamId);
-  TeamDiscipline::insert($pdo, $teamId, $data['sports_discipline_ids'], $now);
+  TeamDiscipline::create($pdo, $teamId, $data['sports_discipline_ids']);
   TeamTargetAge::deleteByTeamId($pdo, $teamId);
-  TeamTargetAge::insert($pdo, $teamId, $data['target_age_ids'], $now);
+  TeamTargetAge::create($pdo, $teamId, $data['target_age_ids']);
 
   $pdo->commit();
 
