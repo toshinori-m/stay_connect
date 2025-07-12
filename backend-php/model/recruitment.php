@@ -5,7 +5,15 @@ class Recruitment
 {
   public static function validate(array $data, PDO $pdo): array {
     $errors = [];
-    $sexValue = Team::SEX_MAP[$data['sex']] ?? null;
+    
+    // enum変換: sex
+    $sexMap = [
+      'man' => 0,
+      'woman' => 1,
+      'mix' => 2,
+      'man_and_woman' => 3,
+    ];
+    $sexValue = $sexMap[$data['sex']] ?? null;
 
     // sports_type_id のバリデーションと関連種目の存在確認
     if (empty($data['sports_type_id'])) {

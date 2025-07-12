@@ -36,7 +36,13 @@ try {
     exit;
   }
 
-  $team['sex'] = array_flip(Team::SEX_MAP)[$team['sex']] ?? '';
+  $sexMap = [
+    0 => 'man',
+    1 => 'woman',
+    2 => 'mix',
+    3 => 'man_and_woman'
+  ];
+  $team['sex'] = $sexMap[$team['sex']] ?? '';
 
   // 中間テーブルのIDも取得
   $team['sports_disciplines'] = TeamDiscipline::getIdsByTeamId($pdo, $teamId);

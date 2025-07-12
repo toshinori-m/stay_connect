@@ -5,6 +5,7 @@ require_once __DIR__ . '/../lib/error_handler.php';
 require_once __DIR__ . '/../model/team.php';
 require_once __DIR__ . '/../model/team_disciplines.php';
 require_once __DIR__ . '/../model/team_target_ages.php';
+require_once __DIR__ . '/../Utils/team_util.php';
 
 header('Content-Type: application/json');
 $uid = authenticate_uid();
@@ -30,7 +31,7 @@ try {
   $now = (new DateTime())->format('Y-m-d H:i:s');
 
   // バリデーション
-  $validation = Team::validate($data, $pdo);
+  $validation = TeamUtil::validate($data, $pdo);
   $errors = $validation['errors'];
 
   if (!empty($errors)) {
