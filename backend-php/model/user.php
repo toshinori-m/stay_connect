@@ -9,8 +9,10 @@ class User
     return $user ?: null;
   }
 
-  public static function update(PDO $pdo, int $id, array $data): void
+  public static function update(PDO $pdo, int $id, array $data, $now = null): void
   {
+    $now = $now ?? date('Y-m-d H:i:s');
+
     $sql = "
       UPDATE users SET
         name = :name,
@@ -37,7 +39,7 @@ class User
     $stmt->bindValue(':sex', $data['sex'], PDO::PARAM_INT);
     $stmt->bindValue(':self_introduction', $data['self_introduction']);
     $stmt->bindValue(':email_notification', $data['email_notification'], PDO::PARAM_BOOL);
-    $stmt->bindValue(':updated_at', (new DateTime())->format('Y-m-d H:i:s'));
+    $stmt->bindValue(':updated_at', $now);
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
 
     if ($data['image']) {

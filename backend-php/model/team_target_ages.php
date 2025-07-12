@@ -1,10 +1,10 @@
 <?php
 class TeamTargetAge
 {
-  public static function create(PDO $pdo, int $teamId, array $targetAgeIds, string $now): void
-  {
+  public static function create(PDO $pdo, int $teamId, array $targetAgeIds, $now = null): void {
     if (empty($targetAgeIds)) return;
 
+    $now = $now ?? date('Y-m-d H:i:s');
     $placeholders = [];
     $params = [];
 
