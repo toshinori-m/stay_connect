@@ -2,9 +2,10 @@
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../lib/authenticate.php';
 require_once __DIR__ . '/../lib/error_handler.php';
-require_once __DIR__ . '/../model/recruitment.php';
-require_once __DIR__ . '/../model/recruitment_disciplines.php';
-require_once __DIR__ . '/../model/recruitment_target_ages.php';
+require_once __DIR__ . '/../model/team.php';
+require_once __DIR__ . '/../model/team_disciplines.php';
+require_once __DIR__ . '/../model/team_target_ages.php';
+require_once __DIR__ . '/../Utils/team_util.php';
 
 header('Content-Type: application/json');
 $uid = authenticate_uid();
@@ -19,23 +20,19 @@ try {
     exit(1);
   }
 
-  $now = (new DateTime())->format('Y-m-d H:i:s');
-  $userId = $user['id'];
   $input = json_decode(file_get_contents("php://input"), true);
-
-  if (!$input || !isset($input['recruitment'])) {
+  if (!$input || !isset($input['team'])) {
     http_response_code(400);
     echo json_encode(['error' => ['base' => ['リクエスト形式が不正です']]]);
     exit(1);
   }
 
-  $data = $input['recruitment'];
+  $data = $input['team'];
+  $now = (new DateTime())->format('Y-m-d H:i:s');
 
-  $validation = Recruitment::validate($data, $pdo);
+  // バリデーション
+  $validation = TeamUtil::validate($data, $pdo);
   $errors = $validation['errors'];
-  $sexValue = $validation['sexValue'];
-  $startDate = $validation['startDate'];
-  $endDate = $validation['endDate'];
 
   if (!empty($errors)) {
     http_response_code(422);
@@ -45,17 +42,17 @@ try {
 
   $pdo->beginTransaction();
 
-  // メインテーブル登録
-  $recruitmentId = Recruitment::create($pdo, $data, $userId, $sexValue, $startDate, $endDate, $now);
+  // チーム登録
+  $teamId = Team::create($pdo, $data, $user['id'], $now);
 
   // 中間テーブル登録
-  RecruitmentDiscipline::create($pdo, $recruitmentId, $data['sports_discipline_ids'] ?? [], $now);
-  RecruitmentTargetAge::create($pdo, $recruitmentId, $data['target_age_ids'] ?? [], $now);
+  TeamDiscipline::create($pdo, $teamId, $data['sports_discipline_ids'] ?? [], $now);
+  TeamTargetAge::create($pdo, $teamId, $data['target_age_ids'] ?? [], $now);
 
   $pdo->commit();
 
   http_response_code(201);
-  echo json_encode(['message' => 'イベントが登録されました', 'recruitment_id' => $recruitmentId]);
+  echo json_encode(['message' => 'チームが登録されました', 'team_id' => $teamId]);
   exit(0);
 } catch (PDOException $e) {
   handlePDOException($e);

@@ -7,7 +7,9 @@ header("Content-Type: application/json; charset=UTF-8");
 
 $routes = [
   'POST' => [
-    '/users' => __DIR__ . '/../src/register.php'
+    '/users' => __DIR__ . '/../src/register.php',
+    '/recruitments' => __DIR__ . '/../src/recruitments_store.php',
+    '/teams' => __DIR__ . '/../src/teams_store.php'
   ],
   'GET' => [
     '/users/me' => __DIR__ . '/../src/users_me.php',
@@ -16,10 +18,15 @@ $routes = [
     '/prefectures' => __DIR__ . '/../src/prefectures.php',
     '/target_ages' => __DIR__ . '/../src/target_ages.php',
     '/searches' => __DIR__ . '/../src/searches.php',
-    '/users/:uid' => __DIR__ . '/../src/users_show.php'
+    '/users/:uid' => __DIR__ . '/../src/users_show.php',
+    '/teams' => __DIR__ . '/../src/teams_index.php',
+    '/teams/:id' => __DIR__ . '/../src/teams_show.php'
   ],
   'PATCH' => [
     '/users/:id' => __DIR__ . '/../src/users_update.php'
+  ],
+  'DELETE' => [
+    '/teams/:id' => __DIR__ . '/../src/teams_delete.php',
   ]
 ];
 

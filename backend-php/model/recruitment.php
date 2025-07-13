@@ -1,9 +1,11 @@
 <?php
+require_once __DIR__ . '/team.php';
+
 class Recruitment
 {
   public static function validate(array $data, PDO $pdo): array {
     $errors = [];
-
+    
     // enum変換: sex
     $sexMap = [
       'man' => 0,
