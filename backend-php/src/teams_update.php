@@ -6,6 +6,7 @@ require_once __DIR__ . '/../lib/formdata_parser.php';
 require_once __DIR__ . '/../model/team.php';
 require_once __DIR__ . '/../model/team_disciplines.php';
 require_once __DIR__ . '/../model/team_target_ages.php';
+require_once __DIR__ . '/../Utils/team_util.php';
 
 header('Content-Type: application/json');
 $uid = authenticate_uid();
@@ -65,9 +66,8 @@ try {
     $data['target_age_ids'] = [$data['target_age_ids']];
   }
 
-  $validation = Team::validate($data, $pdo);
+  $validation = TeamUtil::validate($data, $pdo);
   $errors = $validation['errors'];
-  $sexValue = $validation['sexValue'];
 
   if (!empty($errors)) {
     http_response_code(422);
@@ -77,7 +77,7 @@ try {
 
   $pdo->beginTransaction();
 
-  Team::update($pdo, $teamId, $data, $sexValue);
+  Team::update($pdo, $teamId, $data, Team::SEX_MAP[$data['sex']]);
   TeamDiscipline::deleteByTeamId($pdo, $teamId);
   TeamDiscipline::create($pdo, $teamId, $data['sports_discipline_ids']);
   TeamTargetAge::deleteByTeamId($pdo, $teamId);

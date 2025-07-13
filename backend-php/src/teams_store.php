@@ -42,7 +42,7 @@ try {
   $pdo->beginTransaction();
 
   // チーム登録
-  $teamId = Team::create($pdo, $data, $user['id'], $sexValue);
+  $teamId = Team::create($pdo, $data, $user['id'], Team::SEX_MAP[$data['sex']]);
 
   // 中間テーブル登録
   TeamDiscipline::create($pdo, $teamId, $data['sports_discipline_ids'] ?? []);
