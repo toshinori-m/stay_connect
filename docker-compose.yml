@@ -30,19 +30,41 @@ services:
     stdin_open: true
     tty: true
 
-  # frontend:
-  #   build: 
-  #     context: ./frontend/
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./frontend:/frontend
-  #   command: yarn run serve
-  #   ports:
-  #     - 81:8080
-  #   depends_on:
-  #     - backend
-  #   stdin_open: true
-  #   tty: true
+  backend-php:
+    build:
+      context: ./backend-php
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend-php:/app
+      - ./backend-php/etc/www.conf:/etc/php/8.1/fpm/pool.d/www.conf
+      - ./backend-php/php.ini:/etc/php/8.1/fpm/php.ini
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "3002:80"
+    volumes:
+      - ./backend-php:/app
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend-php
+
+  frontend:
+    build: 
+      context: ./frontend/
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/node_modules
+    command: yarn run serve
+    ports:
+      - 81:8080
+    depends_on:
+      - backend
+    stdin_open: true
+    tty: true
     
   frontend-react:
     build:
@@ -50,11 +72,13 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./frontend-react:/frontend-react
+      - /frontend-react/node_modules
     command: yarn run dev
     ports:
       - "5173:5173"
     depends_on:
       - backend
+      - backend-php
     stdin_open: true
     tty: true
     
