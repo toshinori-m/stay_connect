@@ -39,13 +39,27 @@ function parseMultipartFormData(string $rawData, string $boundary): array
       // ファイルの場合は一時ファイルとして保存
       $tmpPath = '/tmp/' . uniqid('upload_', true) . '_' . basename($filename);
       file_put_contents($tmpPath, rtrim($body, "\r\n"));
+
       $parsed[$name] = [
         'filename' => $filename,
         'tmp_path' => $tmpPath,
       ];
-    } else {
-      $parsed[$name] = rtrim($body, "\r\n");
+      continue;
     }
+
+    // ファイルでなければテキストデータとして処理
+    $value = rtrim($body, "\r\n");
+
+    if (!isset($parsed[$name])) {
+      $parsed[$name] = $value;
+      continue;
+    }
+
+    if (!is_array($parsed[$name])) {
+      $parsed[$name] = [$parsed[$name]];
+    }
+
+    $parsed[$name][] = $value;
   }
 
   return $parsed;

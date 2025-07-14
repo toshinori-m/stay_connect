@@ -23,7 +23,8 @@ $routes = [
     '/teams/:id' => __DIR__ . '/../src/teams_show.php'
   ],
   'PATCH' => [
-    '/users/:id' => __DIR__ . '/../src/users_update.php'
+    '/users/:id' => __DIR__ . '/../src/users_update.php',
+    '/teams/:id' => __DIR__ . '/../src/teams_update.php'
   ],
   'DELETE' => [
     '/teams/:id' => __DIR__ . '/../src/teams_delete.php',

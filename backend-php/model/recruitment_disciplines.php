@@ -1,14 +1,14 @@
 <?php
 class RecruitmentDiscipline
 {
-  public static function create(PDO $pdo, int $recruitmentId, array $disciplineIds, string $now): void
-  {
+  public static function create(PDO $pdo, int $recruitmentId, array $disciplineIds, $now = null): void {
     if (empty($disciplineIds)) return;
 
+    $now = $now ?? date('Y-m-d H:i:s');
     $placeholders = [];
     $params = [];
 
-    foreach ($disciplineIds as $index => $id) {
+    foreach ($disciplineIds as $id) {
       $placeholders[] = "(?, ?, ?, ?)";
       $params[] = $recruitmentId;
       $params[] = $id;

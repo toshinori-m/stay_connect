@@ -4,15 +4,6 @@ class TeamUtil
   public static function validate(array $data, PDO $pdo): array {
     $errors = [];
 
-    // enum変換: sex
-    $sexMap = [
-      'man' => 0,
-      'woman' => 1,
-      'mix' => 2,
-      'man_and_woman' => 3,
-    ];
-    $sexValue = $sexMap[$data['sex']] ?? null;
-
     // 必須チェックと長さ制限
     if (empty(trim($data['name'] ?? ''))) {
       $errors['name'][] = "チーム名を入力してください。";
@@ -26,8 +17,10 @@ class TeamUtil
       $errors['area'][] = "活動地域は255文字以内で入力してください。";
     }
 
-    if ($sexValue === null) {
+    if (empty($data['sex'])) {
       $errors['sex'][] = "性別を選択してください。";
+    } elseif (!array_key_exists($data['sex'], Team::SEX_MAP)) {
+      $errors['sex'][] = "性別の値が不正です。";
     }
 
     if (empty(trim($data['track_record'] ?? ''))) {
