@@ -5,6 +5,7 @@ require_once __DIR__ . '/../lib/error_handler.php';
 require_once __DIR__ . '/../model/recruitment.php';
 require_once __DIR__ . '/../model/recruitment_disciplines.php';
 require_once __DIR__ . '/../model/recruitment_target_ages.php';
+require_once __DIR__ . '/../utils/recruitment_util.php';
 
 header('Content-Type: application/json');
 $uid = authenticate_uid();
@@ -31,11 +32,8 @@ try {
 
   $data = $input['recruitment'];
 
-  $validation = Recruitment::validate($data, $pdo);
+  $validation = RecruitmentUtil::validate($data, $pdo);
   $errors = $validation['errors'];
-  $sexValue = $validation['sexValue'];
-  $startDate = $validation['startDate'];
-  $endDate = $validation['endDate'];
 
   if (!empty($errors)) {
     http_response_code(422);
