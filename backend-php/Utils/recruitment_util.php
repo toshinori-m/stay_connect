@@ -74,7 +74,9 @@ class RecruitmentUtil
     }
 
     return [
-      'errors' => $errors
+      'errors' => $errors,
+      'startDate' => $startDate,
+      'endDate' => $endDate
     ];
   }
 }

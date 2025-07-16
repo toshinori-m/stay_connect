@@ -42,9 +42,11 @@ try {
   }
 
   $pdo->beginTransaction();
+  $startDate = $validation['startDate'];
+  $endDate = $validation['endDate'];
 
   // メインテーブル登録
-  $recruitmentId = Recruitment::create($pdo, $data, $userId, $sexValue, $startDate, $endDate);
+  $recruitmentId = Recruitment::create($pdo, $data, $userId, Team::SEX_MAP[$data['sex']], $startDate, $endDate);
 
   // 中間テーブル登録
   RecruitmentDiscipline::create($pdo, $recruitmentId, $data['sports_discipline_ids'] ?? []);
