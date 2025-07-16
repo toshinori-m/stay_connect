@@ -20,7 +20,9 @@ $routes = [
     '/searches' => __DIR__ . '/../src/searches.php',
     '/users/:uid' => __DIR__ . '/../src/users_show.php',
     '/teams' => __DIR__ . '/../src/teams_index.php',
-    '/teams/:id' => __DIR__ . '/../src/teams_show.php'
+    '/teams/:id' => __DIR__ . '/../src/teams_show.php',
+    '/recruitments' => __DIR__ . '/../src/recruitments_index.php',
+    '/recruitments/:id' => __DIR__ . '/../src/recruitments_show.php',
   ],
   'PATCH' => [
     '/users/:id' => __DIR__ . '/../src/users_update.php',
@@ -28,6 +30,7 @@ $routes = [
   ],
   'DELETE' => [
     '/teams/:id' => __DIR__ . '/../src/teams_delete.php',
+    '/recruitments/:id' => __DIR__ . '/../src/recruitments_delete.php',
   ]
 ];
 
