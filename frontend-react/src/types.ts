@@ -14,3 +14,16 @@ export interface SelectOption {
   id: number
   name: string
 }
+
+// テームデータの型
+export interface TeamData {
+  id: number
+  name: string
+  area: string
+  sex?: string
+  track_record?: string
+  other_body?: string
+  sports_type_id?: number
+  prefecture_id?: number
+  created_at?: string
+}

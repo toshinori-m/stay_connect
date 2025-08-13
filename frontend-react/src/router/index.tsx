@@ -19,6 +19,7 @@ import TeamProfileListPage from "@/pages/teamPages/TeamProfileListPage"
 import TeamProfilePage from "@/pages/teamPages/TeamProfilePage"
 import TeamProfileEditPage from "@/pages/teamPages/TeamProfileEditPage"
 import TeamProfileIntroductionPage from "@/pages/teamPages/TeamProfileIntroductionPage"
+import TeamListPage from "@/pages/teamPages/TeamListPage"
 import BasicSettingEditPage from "@/pages/BasicSettingEditPage"
 import UserProfilePage from "@/pages/UserProfilePage"
 
@@ -69,6 +70,17 @@ export default function AppRouter() {
       <Route element={<RequireAuth />}>
         <Route element={<HomeLayout />}>
           <Route path="/home" element={<HomePage />} />
+        </Route>
+      </Route>
+
+      {/* Temporary: teams route without auth for testing */}
+      <Route element={<HomeLayout />}>
+        <Route path="/teams" element={<TeamListPage />} />
+        <Route path="/team" element={<TeamListPage />} />
+      </Route>
+
+      <Route element={<RequireAuth />}>
+        <Route element={<HomeLayout />}>
           <Route path="/events/:id" element={<EventPage />} />
           <Route path="/event_setting" element={<EventSettingPage />} />
           <Route path="/event_setting_list" element={<EventSettingListPage />} />
