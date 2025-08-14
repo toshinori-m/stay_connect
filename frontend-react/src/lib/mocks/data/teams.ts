@@ -1,6 +1,6 @@
-import { TeamData } from "@/types"
+import { Team } from "@/types"
 
-export const mockTeams: TeamData[] = [
+export const mockTeams: Team[] = [
   {
     id: 1,
     name: "東京フットボールクラブ",

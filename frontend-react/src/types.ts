@@ -16,7 +16,7 @@ export interface SelectOption {
 }
 
 // テームデータの型
-export interface TeamData {
+export interface Team {
   id: number
   name: string
   area: string

@@ -1,8 +1,8 @@
 import { createAxiosInstance } from "@/lib/apiClient"
-import { TeamData } from "@/types"
+import { Team } from "@/types"
 
 interface TeamListResponse {
-  teams: TeamData[]
+  teams: Team[]
   total: number
 }
 
