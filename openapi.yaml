@@ -1,0 +1,661 @@
+openapi: 3.1.0
+info:
+  title: Stay Connect API
+  description: スポーツチーム連携アプリケーション「Stay Connect」のAPI仕様書
+  version: 1.0.0
+  contact:
+    name: Stay Connect Team
+    email: info@stay-connect.com
+
+servers:
+  - url: http://localhost:3000
+    description: 開発環境
+  - url: https://api.stay-connect.com
+    description: 本番環境
+
+paths:
+  /teams:
+    get:
+      tags:
+        - Teams
+      summary: チーム一覧取得
+      description: 認証されたユーザーが所属するチームの一覧を取得します
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: チーム一覧の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "成功しました"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TeamListItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags:
+        - Teams
+      summary: チーム作成
+      description: 新しいチームを作成します
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamCreateRequest'
+      responses:
+        '200':
+          description: チームの作成に成功しました
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /teams/{id}:
+    get:
+      tags:
+        - Teams
+      summary: チーム詳細取得
+      description: 指定されたIDのチーム詳細情報を取得します
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: チームID
+      responses:
+        '200':
+          description: チーム詳細の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TeamDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Teams
+      summary: チーム更新
+      description: 指定されたIDのチーム情報を更新します
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: チームID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamCreateRequest'
+      responses:
+        '200':
+          description: チームの更新に成功しました
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      tags:
+        - Teams
+      summary: チーム削除
+      description: 指定されたIDのチームを削除します
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: チームID
+      responses:
+        '200':
+          description: チームの削除に成功しました
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamListItem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users:
+    post:
+      tags:
+        - Users
+      summary: ユーザー作成
+      description: 新しいユーザーを作成します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+      responses:
+        '201':
+          description: ユーザーの作成に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /users/me:
+    get:
+      tags:
+        - Users
+      summary: 現在のユーザー情報取得
+      description: 認証されたユーザーの情報を取得します
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: ユーザー情報の取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMe'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: ユーザー詳細取得
+      description: 指定されたIDのユーザー詳細情報を取得します
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ユーザーID
+      responses:
+        '200':
+          description: ユーザー詳細の取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags:
+        - Users
+      summary: ユーザー更新
+      description: 指定されたIDのユーザー情報を更新します
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ユーザーID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        '200':
+          description: ユーザーの更新に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /chat_rooms:
+    get:
+      tags:
+        - Chat Rooms
+      summary: チャットルーム一覧取得
+      description: 認証されたユーザーが参加するチャットルームの一覧を取得します
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: チャットルーム一覧の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChatRoom'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags:
+        - Chat Rooms
+      summary: チャットルーム作成
+      description: 新しいチャットルームを作成します
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRoomCreateRequest'
+      responses:
+        '201':
+          description: チャットルームの作成に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatRoom'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /searches:
+    get:
+      tags:
+        - Searches
+      summary: 検索
+      description: チーム・ユーザーを条件で検索します
+      parameters:
+        - name: q
+          in: query
+          description: 検索キーワード
+          schema:
+            type: string
+        - name: sports_type_id
+          in: query
+          description: スポーツタイプID
+          schema:
+            type: integer
+        - name: prefecture_id
+          in: query
+          description: 都道府県ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 検索結果の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      oneOf:
+                        - $ref: '#/components/schemas/TeamListItem'
+                        - $ref: '#/components/schemas/User'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    TeamListItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: チームID
+        name:
+          type: string
+          description: チーム名
+        area:
+          type: string
+          description: 活動地域
+        sex:
+          type: string
+          enum: [man, woman, mix, man_and_woman]
+          description: 性別
+        track_record:
+          type: string
+          description: 実績
+        other_body:
+          type: string
+          nullable: true
+          description: その他
+        sports_type_id:
+          type: integer
+          nullable: true
+          description: スポーツタイプID
+        prefecture_id:
+          type: integer
+          nullable: true
+          description: 都道府県ID
+        sports_disciplines:
+          type: array
+          items:
+            type: integer
+          description: スポーツ種目ID配列
+        target_ages:
+          type: array
+          items:
+            type: integer
+          description: 対象年齢ID配列
+
+    TeamDetail:
+      allOf:
+        - $ref: '#/components/schemas/TeamListItem'
+        - type: object
+          properties:
+            user_id:
+              type: integer
+              format: int64
+              description: 作成者のユーザーID
+
+    TeamCreateRequest:
+      type: object
+      required:
+        - name
+        - area
+        - sex
+        - track_record
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          description: チーム名
+        area:
+          type: string
+          maxLength: 255
+          description: 活動地域
+        sex:
+          type: string
+          enum: [man, woman, mix, man_and_woman]
+          description: 性別
+        track_record:
+          type: string
+          description: 実績
+        other_body:
+          type: string
+          nullable: true
+          description: その他
+        sports_type_id:
+          type: integer
+          nullable: true
+          description: スポーツタイプID
+        prefecture_id:
+          type: integer
+          nullable: true
+          description: 都道府県ID
+        sports_discipline_ids:
+          type: array
+          items:
+            type: integer
+          description: スポーツ種目ID配列
+        target_age_ids:
+          type: array
+          items:
+            type: integer
+          description: 対象年齢ID配列
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ユーザーID
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: ユーザー名
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+        uid:
+          type: string
+          description: Firebase UID
+        birthday:
+          type: string
+          format: date
+          nullable: true
+          description: 生年月日
+        sex:
+          type: string
+          enum: [man, woman]
+          nullable: true
+          description: 性別
+        self_introduction:
+          type: string
+          nullable: true
+          description: 自己紹介
+        email_notification:
+          type: boolean
+          description: メール通知設定
+        image_url:
+          type: string
+          format: uri
+          nullable: true
+          description: プロフィール画像URL
+
+    UserMe:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        uid:
+          type: string
+
+    UserCreateRequest:
+      type: object
+      required:
+        - name
+        - email
+        - uid
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: ユーザー名
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+        uid:
+          type: string
+          description: Firebase UID
+        birthday:
+          type: string
+          format: date
+          nullable: true
+          description: 生年月日
+        sex:
+          type: string
+          enum: [man, woman]
+          nullable: true
+          description: 性別
+        self_introduction:
+          type: string
+          nullable: true
+          description: 自己紹介
+        email_notification:
+          type: boolean
+          default: true
+          description: メール通知設定
+        image:
+          type: string
+          format: binary
+          nullable: true
+          description: プロフィール画像
+
+    UserUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: ユーザー名
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+        birthday:
+          type: string
+          format: date
+          nullable: true
+          description: 生年月日
+        sex:
+          type: string
+          enum: [man, woman]
+          nullable: true
+          description: 性別
+        self_introduction:
+          type: string
+          nullable: true
+          description: 自己紹介
+        email_notification:
+          type: boolean
+          description: メール通知設定
+        image:
+          type: string
+          format: binary
+          nullable: true
+          description: プロフィール画像
+
+    ChatRoom:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: チャットルームID
+        name:
+          type: string
+          description: チャットルーム名
+        description:
+          type: string
+          nullable: true
+          description: チャットルームの説明
+        paid_or_free:
+          type: string
+          enum: [paid, free]
+          description: 有料・無料区分
+        created_at:
+          type: string
+          format: date-time
+          description: 作成日時
+        updated_at:
+          type: string
+          format: date-time
+          description: 更新日時
+
+    ChatRoomCreateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: チャットルーム名
+        description:
+          type: string
+          nullable: true
+          description: チャットルームの説明
+        paid_or_free:
+          type: string
+          enum: [paid, free]
+          default: free
+          description: 有料・無料区分
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: エラーメッセージ
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: バリデーションエラーの詳細
+
+  responses:
+    Unauthorized:
+      description: 認証が必要です
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: リソースが見つかりません
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    UnprocessableEntity:
+      description: バリデーションエラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: サーバー内部エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
