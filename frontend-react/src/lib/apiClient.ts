@@ -1,15 +1,8 @@
 import axios from "axios"
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001"
-
 export const createAxiosInstance = (uid?: string) => {
-  const instance = axios.create({
-    baseURL: apiBaseUrl,
+  return axios.create({
+    baseURL: import.meta.env.VITE_API_BASE_URL,
+    headers: uid ? { uid } : {}
   })
-
-  if (uid) {
-    instance.defaults.headers["uid"] = uid
-  }
-
-  return instance
 }

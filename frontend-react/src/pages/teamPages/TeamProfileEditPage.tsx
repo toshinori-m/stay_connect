@@ -11,17 +11,7 @@ import RadioGroupField from "@/components/ui/RadioGroupField"
 import Button from "@/components/ui/Button"
 import ErrorDisplay from "@/components/ui/ErrorDisplay"
 import { z, ZodIssue } from "zod"
-
-interface TeamData {
-  id: number
-  name: string
-  area: string
-  sex: string
-  track_record: string
-  other_body: string
-  sports_type_id: number
-  prefecture_id: number
-}
+import { Team } from "@/types"
 
 export default function TeamProfileEditPage() {
   const SHOW_LIMIT_THRESHOLD = 5
@@ -100,7 +90,7 @@ export default function TeamProfileEditPage() {
     return { teamData, sportsDisciplineIds, targetAgeIds }
   }  
 
-  const setTeamFormState = (teamData: TeamData) => {
+  const setTeamFormState = (teamData: Team) => {
     setTeamName(teamData.name || "")
     setArea(teamData.area || "")
     setSex(teamData.sex || "")

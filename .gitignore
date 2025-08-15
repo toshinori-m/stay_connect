@@ -25,6 +25,7 @@
 /tmp/storage/*
 !/backend/tmp/storage/
 !/backend/tmp/storage/.keep
+/backend-php/.env
 
 /backend/config/master.key
 
